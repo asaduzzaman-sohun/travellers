@@ -29,6 +29,10 @@ namespace TourFlow.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<decimal>("BalanceRemaining")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
                     b.Property<string>("BookingReference")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -49,6 +53,20 @@ namespace TourFlow.Infrastructure.Migrations
 
                     b.Property<string>("CustomerPhone")
                         .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<decimal>("DepositPaid")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<string>("DietaryRequirements")
+                        .HasColumnType("text");
+
+                    b.Property<string>("EmergencyContactName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("EmergencyContactPhone")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
@@ -107,6 +125,9 @@ namespace TourFlow.Infrastructure.Migrations
                     b.Property<string>("Accommodation")
                         .HasColumnType("text");
 
+                    b.Property<string>("ActivityMetrics")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
@@ -162,10 +183,18 @@ namespace TourFlow.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsVerifiedBooking")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("Rating")
                         .HasColumnType("integer");
 
                     b.Property<string>("ReviewerEmail")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<string>("ReviewerLocation")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
@@ -175,8 +204,18 @@ namespace TourFlow.Infrastructure.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
 
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
                     b.Property<Guid>("TourPackageId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("TripDateFormatted")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone");
@@ -213,6 +252,10 @@ namespace TourFlow.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<decimal>("DepositAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
@@ -235,6 +278,11 @@ namespace TourFlow.Infrastructure.Migrations
                     b.Property<int>("DurationNights")
                         .HasColumnType("integer");
 
+                    b.Property<string>("EndCity")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.PrimitiveCollection<List<string>>("Exclusions")
                         .IsRequired()
                         .HasColumnType("text[]");
@@ -242,6 +290,15 @@ namespace TourFlow.Infrastructure.Migrations
                     b.PrimitiveCollection<List<string>>("GalleryImages")
                         .IsRequired()
                         .HasColumnType("text[]");
+
+                    b.PrimitiveCollection<List<string>>("Highlights")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("IdealSeason")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.PrimitiveCollection<List<string>>("Inclusions")
                         .IsRequired()
@@ -259,10 +316,24 @@ namespace TourFlow.Infrastructure.Migrations
                     b.Property<int>("MaxGroupSize")
                         .HasColumnType("integer");
 
+                    b.PrimitiveCollection<List<string>>("PackingTips")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("Region")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<string>("Slug")
                         .IsRequired()
                         .HasMaxLength(220)
                         .HasColumnType("character varying(220)");
+
+                    b.Property<string>("StartCity")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Summary")
                         .IsRequired()

@@ -29,8 +29,13 @@ public class TourFlowDbContext : DbContext
             entity.Property(e => e.Slug).HasMaxLength(220).IsRequired();
             entity.Property(e => e.Destination).HasMaxLength(150).IsRequired();
             entity.Property(e => e.Country).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Region).HasMaxLength(100);
+            entity.Property(e => e.StartCity).HasMaxLength(100);
+            entity.Property(e => e.EndCity).HasMaxLength(100);
+            entity.Property(e => e.IdealSeason).HasMaxLength(100);
             entity.Property(e => e.BasePrice).HasPrecision(18, 2);
             entity.Property(e => e.DiscountPrice).HasPrecision(18, 2);
+            entity.Property(e => e.DepositAmount).HasPrecision(18, 2);
 
             entity.HasMany(e => e.ItineraryDays)
                 .WithOne(e => e.TourPackage)
@@ -68,8 +73,11 @@ public class TourFlowDbContext : DbContext
             entity.Property(e => e.BookingReference).HasMaxLength(50).IsRequired();
             entity.Property(e => e.CustomerName).HasMaxLength(150).IsRequired();
             entity.Property(e => e.CustomerEmail).HasMaxLength(150).IsRequired();
+            entity.Property(e => e.CustomerPhone).HasMaxLength(50);
             entity.Property(e => e.UnitPrice).HasPrecision(18, 2);
             entity.Property(e => e.TotalAmount).HasPrecision(18, 2);
+            entity.Property(e => e.DepositPaid).HasPrecision(18, 2);
+            entity.Property(e => e.BalanceRemaining).HasPrecision(18, 2);
 
             entity.HasMany(e => e.Travelers)
                 .WithOne(e => e.Booking)
@@ -89,7 +97,10 @@ public class TourFlowDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.ReviewerName).HasMaxLength(150).IsRequired();
+            entity.Property(e => e.ReviewerLocation).HasMaxLength(150);
             entity.Property(e => e.ReviewerEmail).HasMaxLength(150).IsRequired();
+            entity.Property(e => e.Title).HasMaxLength(200);
+            entity.Property(e => e.TripDateFormatted).HasMaxLength(100);
         });
     }
 }

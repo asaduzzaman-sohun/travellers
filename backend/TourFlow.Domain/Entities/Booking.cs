@@ -17,11 +17,16 @@ public class Booking : BaseEntity
     public int NumberOfTravelers { get; set; }
     public decimal UnitPrice { get; set; }
     public decimal TotalAmount { get; set; }
+    public decimal DepositPaid { get; set; }
+    public decimal BalanceRemaining { get; set; }
 
-    public BookingStatus Status { get; set; } = BookingStatus.Pending;
-    public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Unpaid;
+    public BookingStatus Status { get; set; } = BookingStatus.Confirmed;
+    public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Paid;
 
+    public string? DietaryRequirements { get; set; }
     public string? SpecialRequests { get; set; }
+    public string? EmergencyContactName { get; set; }
+    public string? EmergencyContactPhone { get; set; }
     public string? PaymentTransactionId { get; set; }
 
     // Navigation properties

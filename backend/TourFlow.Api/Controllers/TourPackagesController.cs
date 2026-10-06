@@ -21,6 +21,8 @@ public class TourPackagesController : ControllerBase
     public async Task<IActionResult> GetTours(
         [FromQuery] string? search,
         [FromQuery] TourCategory? category,
+        [FromQuery] string? region,
+        [FromQuery] DifficultyLevel? difficulty,
         [FromQuery] bool? featured)
     {
         var query = _context.TourPackages
@@ -34,12 +36,23 @@ public class TourPackagesController : ControllerBase
             var searchLower = search.Trim().ToLower();
             query = query.Where(t => t.Title.ToLower().Contains(searchLower) ||
                                      t.Destination.ToLower().Contains(searchLower) ||
-                                     t.Country.ToLower().Contains(searchLower));
+                                     t.Country.ToLower().Contains(searchLower) ||
+                                     t.Region.ToLower().Contains(searchLower));
         }
 
         if (category.HasValue)
         {
             query = query.Where(t => t.Category == category.Value);
+        }
+
+        if (difficulty.HasValue)
+        {
+            query = query.Where(t => t.Difficulty == difficulty.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(region) && region != "All")
+        {
+            query = query.Where(t => t.Region.ToLower() == region.ToLower());
         }
 
         if (featured.HasValue && featured.Value)
@@ -48,7 +61,8 @@ public class TourPackagesController : ControllerBase
         }
 
         var tours = await query
-            .OrderByDescending(t => t.CreatedAtUtc)
+            .OrderByDescending(t => t.IsFeatured)
+            .ThenByDescending(t => t.CreatedAtUtc)
             .Select(t => new
             {
                 t.Id,
@@ -57,16 +71,22 @@ public class TourPackagesController : ControllerBase
                 t.Summary,
                 t.Destination,
                 t.Country,
+                t.Region,
+                t.StartCity,
+                t.EndCity,
+                t.IdealSeason,
                 t.DurationDays,
                 t.DurationNights,
                 t.BasePrice,
                 t.DiscountPrice,
+                t.DepositAmount,
                 t.MaxGroupSize,
                 t.Difficulty,
                 t.Category,
                 t.CoverImageUrl,
+                t.Highlights,
                 t.IsFeatured,
-                AverageRating = t.Reviews.Any() ? t.Reviews.Average(r => r.Rating) : 5.0,
+                AverageRating = t.Reviews.Any() ? Math.Round(t.Reviews.Average(r => r.Rating), 1) : 5.0,
                 TotalReviews = t.Reviews.Count,
                 UpcomingDepartures = t.Schedules
                     .Where(s => s.StartDate >= DateTime.UtcNow && (s.TotalSeats - s.BookedSeats) > 0)
@@ -122,7 +142,11 @@ public class TourPackagesController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(tour.Slug))
         {
-            tour.Slug = tour.Title.ToLower().Replace(" ", "-");
+            tour.Slug = tour.Title.ToLower()
+                .Replace(" ", "-")
+                .Replace(":", "")
+                .Replace("&", "and")
+                .Replace(",", "");
         }
 
         _context.TourPackages.Add(tour);

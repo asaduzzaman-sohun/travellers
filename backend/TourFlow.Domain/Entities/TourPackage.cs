@@ -11,17 +11,27 @@ public class TourPackage : BaseEntity
     public string Description { get; set; } = string.Empty;
     public string Destination { get; set; } = string.Empty;
     public string Country { get; set; } = string.Empty;
+    public string Region { get; set; } = string.Empty; // Europe, Americas, Asia, Africa, Oceania
+    public string StartCity { get; set; } = string.Empty;
+    public string EndCity { get; set; } = string.Empty;
+    public string IdealSeason { get; set; } = string.Empty;
+
     public int DurationDays { get; set; }
     public int DurationNights { get; set; }
     public decimal BasePrice { get; set; }
     public decimal? DiscountPrice { get; set; }
+    public decimal DepositAmount { get; set; } = 400.00m;
     public int MaxGroupSize { get; set; }
     public DifficultyLevel Difficulty { get; set; } = DifficultyLevel.Easy;
     public TourCategory Category { get; set; } = TourCategory.Adventure;
+
     public string CoverImageUrl { get; set; } = string.Empty;
     public List<string> GalleryImages { get; set; } = [];
+    public List<string> Highlights { get; set; } = [];
     public List<string> Inclusions { get; set; } = [];
     public List<string> Exclusions { get; set; } = [];
+    public List<string> PackingTips { get; set; } = [];
+
     public bool IsActive { get; set; } = true;
     public bool IsFeatured { get; set; } = false;
 
