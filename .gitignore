@@ -1,0 +1,23 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+appsettings.Production.json
+
+# Node & Next.js
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env*.local
+
+# Visual Studio / VS Code / JetBrains
+.vs/
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store

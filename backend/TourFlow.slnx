@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="TourFlow.Api/TourFlow.Api.csproj" />
+  <Project Path="TourFlow.Application/TourFlow.Application.csproj" />
+  <Project Path="TourFlow.Domain/TourFlow.Domain.csproj" />
+  <Project Path="TourFlow.Infrastructure/TourFlow.Infrastructure.csproj" />
+</Solution>
