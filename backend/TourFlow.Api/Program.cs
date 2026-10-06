@@ -1,5 +1,9 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+using TourFlow.Api.Services;
 using TourFlow.Application;
 using TourFlow.Infrastructure;
 using TourFlow.Infrastructure.Data;
@@ -9,6 +13,40 @@ var builder = WebApplication.CreateBuilder(args);
 // Register Clean Architecture layers
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
+
+// Register Auth Services
+builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+
+// Configure JWT Authentication
+var jwtSecret = builder.Configuration["Jwt:Secret"] ?? "TourFlow_Super_Secret_Jwt_Security_Key_2026_Bangladesh_Tourism_Special_Key_12345!";
+var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "TourFlowApi";
+var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "TourFlowApp";
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+        ValidateIssuer = true,
+        ValidIssuer = jwtIssuer,
+        ValidateAudience = true,
+        ValidAudience = jwtAudience,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+});
 
 // Add Controllers & JSON Options
 builder.Services.AddControllers()
@@ -67,6 +105,7 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowFrontend");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

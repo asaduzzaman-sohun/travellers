@@ -107,3 +107,22 @@ export interface DashboardStats {
   totalRevenue: number;
   upcomingDepartures: number;
 }
+
+export interface UserProfile {
+  id: string;
+  fullName: string;
+  email: string;
+  role: "User" | "Admin";
+  phoneNumber?: string;
+  homeCity?: string;
+  nidOrPassport?: string;
+  bio?: string;
+  isVerified: boolean;
+  createdAt: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: UserProfile;
+}
+

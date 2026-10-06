@@ -628,5 +628,54 @@ public static class DbInitializer
 
         context.TourPackages.AddRange(bangladeshTours);
         await context.SaveChangesAsync();
+
+        // Seed Users if not present
+        if (!await context.Users.AnyAsync())
+        {
+            var adminUser = new User
+            {
+                Id = Guid.NewGuid(),
+                FullName = "TourFlow BD Operator",
+                Email = "admin@tourflow.com.bd",
+                PasswordHash = HashPassword("Admin@123456"),
+                Role = "Admin",
+                PhoneNumber = "+880 1320-222222",
+                HomeCity = "Dhaka",
+                NidOrPassport = "19902692810001111",
+                Bio = "Certified Bangladesh Tourism Board operator & expedition coordinator.",
+                IsVerified = true,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var travelerUser = new User
+            {
+                Id = Guid.NewGuid(),
+                FullName = "Tanvir Ahmed",
+                Email = "tanvir@tourflow.com.bd",
+                PasswordHash = HashPassword("Tanvir@123456"),
+                Role = "User",
+                PhoneNumber = "+880 1711-234567",
+                HomeCity = "Dhaka",
+                NidOrPassport = "19952692810003412",
+                Bio = "Explorer of hill tracts and haors across Bangladesh. Dedicated to clean ecotourism.",
+                IsVerified = true,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            context.Users.AddRange(adminUser, travelerUser);
+            await context.SaveChangesAsync();
+        }
+    }
+
+    private static string HashPassword(string password)
+    {
+        byte[] salt = System.Security.Cryptography.RandomNumberGenerator.GetBytes(16);
+        byte[] key = System.Security.Cryptography.Rfc2898DeriveBytes.Pbkdf2(
+            password,
+            salt,
+            100_000,
+            System.Security.Cryptography.HashAlgorithmName.SHA256,
+            32);
+        return $"100000.{Convert.ToBase64String(salt)}.{Convert.ToBase64String(key)}";
     }
 }

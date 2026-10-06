@@ -15,6 +15,7 @@ public class TourFlowDbContext : DbContext
     public DbSet<Booking> Bookings => Set<Booking>();
     public DbSet<Traveler> Travelers => Set<Traveler>();
     public DbSet<Review> Reviews => Set<Review>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -101,6 +102,20 @@ public class TourFlowDbContext : DbContext
             entity.Property(e => e.ReviewerEmail).HasMaxLength(150).IsRequired();
             entity.Property(e => e.Title).HasMaxLength(200);
             entity.Property(e => e.TripDateFormatted).HasMaxLength(100);
+        });
+
+        // User
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.Email).IsUnique();
+            entity.Property(e => e.FullName).HasMaxLength(150).IsRequired();
+            entity.Property(e => e.Email).HasMaxLength(150).IsRequired();
+            entity.Property(e => e.PasswordHash).HasMaxLength(256).IsRequired();
+            entity.Property(e => e.Role).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.PhoneNumber).HasMaxLength(50);
+            entity.Property(e => e.HomeCity).HasMaxLength(100);
+            entity.Property(e => e.NidOrPassport).HasMaxLength(100);
         });
     }
 }

@@ -265,7 +265,7 @@ function ManageBookingContent() {
 
 export default function ManageBookingPage() {
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+    <div className="w-full max-w-[1536px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-12 space-y-10">
       <div className="space-y-3 text-center sm:text-left">
         <div className="text-xs font-bold uppercase tracking-widest text-teal-400">
           Traveler Portal

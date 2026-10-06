@@ -139,7 +139,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
   return (
     <div className="pb-24">
       {/* Breadcrumb Navigation */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="w-full max-w-[1536px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-4">
         <div className="flex items-center gap-2 text-xs text-slate-400">
           <Link href="/" className="hover:text-white transition-colors">Home</Link>
           <span>/</span>
@@ -150,7 +150,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
       </div>
 
       {/* Hero Header & Gallery */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <div className="w-full max-w-[1536px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 space-y-6">
         <div className="space-y-3">
           <div className="flex flex-wrap items-center gap-2">
             <span className="px-3 py-1 rounded-full text-xs font-semibold bg-teal-600/90 text-white">
@@ -230,7 +230,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
       </div>
 
       {/* Main Content & Sticky Booking Card */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
+      <div className="w-full max-w-[1536px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 pt-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* Left Column: Itinerary, Dates, Inclusions, Reviews */}
         <div className="lg:col-span-2 space-y-10">
           {/* Navigation Tabs */}

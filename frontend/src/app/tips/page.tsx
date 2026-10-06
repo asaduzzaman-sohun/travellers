@@ -61,65 +61,49 @@ export default function TravelTipsPage() {
     }
   ];
 
+  const packingEssentials = [
+    "Lightweight rain poncho or umbrella (mandatory during monsoon trips)",
+    "Comfortable water sandals with strap and anti-skid grip",
+    "High-capacity power bank (20,000mAh) – frequent power cuts in hill cottages",
+    "Mosquito repellent cream (Odomos) & personal first-aid kit",
+    "Dry bag for smartphones & cameras during boat journeys",
+    "Reusable water bottle to prevent single-use plastic waste"
+  ];
+
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+    <div className="w-full max-w-[1536px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-12 space-y-12">
       {/* Header */}
-      <div className="space-y-2">
-        <span className="text-xs font-bold text-teal-400 uppercase tracking-wider">
-          Traveler Handbook
-        </span>
-        <h1 className="text-2xl sm:text-4xl font-extrabold text-white">
+      <div className="space-y-3">
+        <div className="text-xs font-bold uppercase tracking-widest text-teal-400">
+          Field Manual &amp; Guidance
+        </div>
+        <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
           Practical Travel Tips for Bangladesh
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400 max-w-2xl">
-          Essential advice, checkpoint instructions, safety precautions, and packing guidelines to ensure a smooth, peaceful journey across Bangladesh.
+        <p className="text-sm text-slate-300 max-w-3xl leading-relaxed">
+          Ground-truth advice verified by domestic travelers and licensed guides. Plan smoothly for hill tract convoys, haor weather shifts, and forest safety regulations.
         </p>
       </div>
 
-      {/* Emergency Contact Bar */}
-      <div className="bg-[#0b1120] border border-slate-800 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center shrink-0">
-            <PhoneCall className="h-5 w-5" />
-          </div>
-          <div className="text-xs">
-            <h4 className="font-bold text-white">Tourist Police Bangladesh (24/7 Helpline)</h4>
-            <p className="text-slate-400">Immediate assistance for local and foreign travelers in any division</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 text-xs">
-          <span className="font-mono bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-700 text-teal-300 font-bold">
-            +880 1320-222222
-          </span>
-          <span className="font-mono bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-700 text-slate-200 font-bold">
-            Emergency: 999
-          </span>
-        </div>
-      </div>
-
-      {/* Tips Cards */}
-      <div className="space-y-6">
-        {tips.map((item, idx) => (
+      {/* Main Tips Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {tips.map((item, index) => (
           <div
-            key={idx}
-            className="bg-[#0b1120] border border-slate-800 rounded-2xl p-6 sm:p-7 space-y-4 shadow-sm"
+            key={index}
+            className="bg-[#080d1d] border border-white/[0.08] rounded-3xl p-6 sm:p-8 space-y-5 shadow-lg hover:border-teal-500/30 transition-all"
           >
-            <div className="flex items-center justify-between">
-              <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-md border ${item.badgeColor}`}>
+            <div className="space-y-1">
+              <span className={`inline-block px-3 py-1 rounded-full text-[11px] font-semibold border ${item.badgeColor}`}>
                 {item.category}
               </span>
+              <h2 className="text-lg font-bold text-white pt-1">{item.title}</h2>
             </div>
 
-            <h3 className="text-base sm:text-lg font-bold text-white">
-              {item.title}
-            </h3>
-
-            <ul className="space-y-2.5 text-xs text-slate-300">
+            <ul className="space-y-3 text-xs text-slate-300">
               {item.content.map((point, i) => (
-                <li key={i} className="flex items-start gap-2.5">
+                <li key={i} className="flex items-start gap-2.5 leading-relaxed">
                   <CheckCircle2 className="h-4 w-4 text-teal-400 shrink-0 mt-0.5" />
-                  <span className="leading-relaxed">{point}</span>
+                  <span>{point}</span>
                 </li>
               ))}
             </ul>
@@ -127,13 +111,40 @@ export default function TravelTipsPage() {
         ))}
       </div>
 
-      {/* Responsible Tourism Pledge */}
-      <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 text-center space-y-3">
-        <Heart className="h-6 w-6 text-teal-400 mx-auto" />
-        <h4 className="text-sm font-bold text-white">Let’s Keep Our Country Clean</h4>
-        <p className="text-xs text-slate-400 max-w-xl mx-auto leading-relaxed">
-          Please avoid leaving non-biodegradable plastics in Sajek Valley, Tanguar Haor, Saint Martin's Island, and Sundarbans. Always bring your personal trash back to the nearest city waste collection points.
-        </p>
+      {/* Packing Checklist Strip */}
+      <div className="bg-[#080d1d] border border-white/[0.08] rounded-3xl p-8 space-y-6 shadow-lg">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-2xl bg-teal-500/10 text-teal-400 flex items-center justify-center">
+            <Luggage className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-white">Recommended Domestic Packing List</h3>
+            <p className="text-xs text-slate-400">Essential items every traveler in Bangladesh should pack in their backpack.</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+          {packingEssentials.map((item, i) => (
+            <div key={i} className="p-3.5 rounded-2xl bg-black/40 border border-white/[0.06] text-slate-300 flex items-center gap-2.5">
+              <span className="h-2 w-2 rounded-full bg-teal-400 shrink-0" />
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Helpline Contact Card */}
+      <div className="p-6 rounded-3xl bg-gradient-to-r from-teal-950/40 to-sky-950/40 border border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+        <div className="flex items-center gap-3">
+          <PhoneCall className="h-6 w-6 text-teal-400 shrink-0" />
+          <div>
+            <div className="font-bold text-white text-sm">Need On-The-Ground Assistance?</div>
+            <div className="text-slate-400">Bangladesh Tourist Police 24/7 National Operations Center</div>
+          </div>
+        </div>
+        <div className="font-mono text-sm font-bold text-teal-300 bg-black/40 px-4 py-2 rounded-xl border border-white/[0.08]">
+          Dial 999 / +880 1320-222222
+        </div>
       </div>
     </div>
   );
