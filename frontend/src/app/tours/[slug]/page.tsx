@@ -13,13 +13,14 @@ import {
   XCircle,
   ShieldCheck,
   Luggage,
-  Sparkles,
   ChevronRight,
-  ChevronDown,
   ArrowLeft,
   X,
   CreditCard,
-  Check
+  Check,
+  Phone,
+  UserCheck,
+  FileText
 } from "lucide-react";
 import { TourDetail, API_BASE } from "@/lib/api";
 
@@ -38,10 +39,11 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [nidOrPassport, setNidOrPassport] = useState("");
   const [dietaryRequirements, setDietaryRequirements] = useState("");
-  const [specialRequests, setSpecialRequests] = useState("");
   const [emergencyContactName, setEmergencyContactName] = useState("");
   const [emergencyContactPhone, setEmergencyContactPhone] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<"bkash" | "nagad" | "bank" | "card">("bkash");
   const [payDepositOnly, setPayDepositOnly] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [confirmedBookingRef, setConfirmedBookingRef] = useState<string | null>(null);
@@ -80,8 +82,8 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
         customerEmail,
         customerPhone,
         numberOfTravelers: travelersCount,
-        dietaryRequirements,
-        specialRequests,
+        dietaryRequirements: dietaryRequirements ? `${dietaryRequirements} (NID: ${nidOrPassport})` : `NID: ${nidOrPassport}`,
+        specialRequests: `Payment Method: ${paymentMethod.toUpperCase()}`,
         emergencyContactName,
         emergencyContactPhone,
         payDepositOnly
@@ -98,7 +100,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
         setConfirmedBookingRef(result.bookingReference);
       } else {
         const errorData = await res.json();
-        alert(errorData.message || "Failed to secure booking. Please check availability.");
+        alert(errorData.message || "Failed to secure booking. Please check available seats.");
       }
     } catch (err) {
       console.error(err);
@@ -110,8 +112,8 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center text-slate-500">
-        Loading expedition details from live database...
+      <div className="min-h-[60vh] flex items-center justify-center text-slate-500 text-sm">
+        Loading tour details and departure dates...
       </div>
     );
   }
@@ -119,10 +121,10 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
   if (!tour) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-4">
-        <h2 className="text-2xl font-bold text-white">Expedition Not Found</h2>
-        <p className="text-slate-400">The requested itinerary does not exist or has been archived.</p>
-        <Link href="/tours" className="inline-block px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold">
-          Browse All Expeditions
+        <h2 className="text-2xl font-bold text-white">Tour Package Not Found</h2>
+        <p className="text-slate-400 text-sm">The requested tour itinerary is either inactive or does not exist.</p>
+        <Link href="/destinations" className="inline-block px-5 py-2.5 rounded-xl bg-teal-600 text-white text-xs font-bold">
+          Explore All Destinations
         </Link>
       </div>
     );
@@ -131,16 +133,17 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
   const selectedSchedule = tour.schedules?.find((s) => s.id === selectedScheduleId) || tour.schedules?.[0];
   const unitPrice = selectedSchedule?.pricePerPerson || (tour.discountPrice ?? tour.basePrice);
   const totalTripPrice = unitPrice * travelersCount;
-  const totalDepositAmount = (tour.depositAmount || unitPrice * 0.20) * travelersCount;
+  const depositPerPerson = tour.depositAmount || Math.round(unitPrice * 0.25);
+  const totalDepositAmount = depositPerPerson * travelersCount;
 
   return (
     <div className="pb-24">
-      {/* Breadcrumbs */}
+      {/* Breadcrumb Navigation */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center gap-2 text-xs text-slate-400">
-          <Link href="/" className="hover:text-white">Home</Link>
+          <Link href="/" className="hover:text-white transition-colors">Home</Link>
           <span>/</span>
-          <Link href="/tours" className="hover:text-white">Expeditions</Link>
+          <Link href="/destinations" className="hover:text-white transition-colors">Destinations</Link>
           <span>/</span>
           <span className="text-slate-200 truncate">{tour.title}</span>
         </div>
@@ -150,41 +153,41 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <div className="space-y-3">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-600/90 text-white">
+            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-teal-600/90 text-white">
               {tour.category}
             </span>
             <span className="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">
               {tour.region}
             </span>
             <span className="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">
-              Physical Rating: {tour.difficulty}
+              Grade: {tour.difficulty}
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+          <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
             {tour.title}
           </h1>
 
           <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400">
             <span className="flex items-center gap-1.5 text-slate-200">
-              <MapPin className="h-4 w-4 text-indigo-400" />
-              {tour.destination}, {tour.country}
+              <MapPin className="h-4 w-4 text-sky-400" />
+              {tour.destination}, Bangladesh
             </span>
             <span>•</span>
             <span className="flex items-center gap-1.5">
               <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
-              <strong className="text-white">{tour.averageRating.toFixed(1)}</strong> ({tour.totalReviews} verified reviews)
+              <strong className="text-white">{tour.averageRating.toFixed(1)}</strong> ({tour.totalReviews} traveler reviews)
             </span>
             <span>•</span>
-            <span className="text-emerald-400 font-semibold flex items-center gap-1">
+            <span className="text-teal-400 font-semibold flex items-center gap-1">
               <ShieldCheck className="h-4 w-4" />
-              100% Guaranteed Departures
+              Verified Local Guide & Safety Protocol
             </span>
           </div>
         </div>
 
         {/* Gallery */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[400px] sm:h-[480px] rounded-3xl overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[360px] sm:h-[440px] rounded-3xl overflow-hidden">
           <div className="md:col-span-2 relative h-full bg-slate-900">
             <img
               src={tour.coverImageUrl}
@@ -201,74 +204,74 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
           </div>
         </div>
 
-        {/* Quick Facts Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 bg-slate-900/80 border border-slate-800 rounded-2xl p-4 text-xs">
+        {/* Key Quick Facts */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 bg-[#090f1d] border border-slate-800/80 rounded-2xl p-4 text-xs">
           <div>
             <span className="text-slate-500 uppercase font-semibold text-[10px]">Duration</span>
             <div className="font-bold text-white text-sm">{tour.durationDays} Days / {tour.durationNights} Nights</div>
           </div>
           <div>
             <span className="text-slate-500 uppercase font-semibold text-[10px]">Group Size</span>
-            <div className="font-bold text-white text-sm">Max {tour.maxGroupSize} Guests</div>
+            <div className="font-bold text-white text-sm">Max {tour.maxGroupSize} Travelers</div>
           </div>
           <div>
-            <span className="text-slate-500 uppercase font-semibold text-[10px]">Start & End</span>
+            <span className="text-slate-500 uppercase font-semibold text-[10px]">Departure Hub</span>
             <div className="font-bold text-white text-sm truncate">{tour.startCity}</div>
           </div>
           <div>
-            <span className="text-slate-500 uppercase font-semibold text-[10px]">Ideal Season</span>
+            <span className="text-slate-500 uppercase font-semibold text-[10px]">Best Season</span>
             <div className="font-bold text-white text-sm">{tour.idealSeason}</div>
           </div>
           <div>
-            <span className="text-slate-500 uppercase font-semibold text-[10px]">Deposit to Book</span>
-            <div className="font-bold text-emerald-400 text-sm">${tour.depositAmount} / person</div>
+            <span className="text-slate-500 uppercase font-semibold text-[10px]">Booking Deposit</span>
+            <div className="font-bold text-teal-400 text-sm">৳{depositPerPerson.toLocaleString()} / person</div>
           </div>
         </div>
       </div>
 
-      {/* Main Content Layout with Sticky Booking Box */}
+      {/* Main Content & Sticky Booking Card */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
-        {/* Left Column: Itinerary, Highlights, Inclusions */}
+        {/* Left Column: Itinerary, Dates, Inclusions, Reviews */}
         <div className="lg:col-span-2 space-y-10">
           {/* Navigation Tabs */}
           <div className="flex items-center gap-2 border-b border-slate-800 pb-2 text-xs font-bold uppercase tracking-wider">
             <button
               onClick={() => setActiveTab("itinerary")}
               className={`px-4 py-2 rounded-xl transition-all ${
-                activeTab === "itinerary" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"
+                activeTab === "itinerary" ? "bg-teal-600 text-white" : "text-slate-400 hover:text-white"
               }`}
             >
-              Day-by-Day Itinerary
+              Tour Itinerary
             </button>
             <button
               onClick={() => setActiveTab("dates")}
               className={`px-4 py-2 rounded-xl transition-all ${
-                activeTab === "dates" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"
+                activeTab === "dates" ? "bg-teal-600 text-white" : "text-slate-400 hover:text-white"
               }`}
             >
-              Dates & Pricing ({tour.schedules?.length || 0})
+              Dates & Seats ({tour.schedules?.length || 0})
             </button>
             <button
               onClick={() => setActiveTab("inclusions")}
               className={`px-4 py-2 rounded-xl transition-all ${
-                activeTab === "inclusions" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"
+                activeTab === "inclusions" ? "bg-teal-600 text-white" : "text-slate-400 hover:text-white"
               }`}
             >
-              Inclusions & Gear
+              Inclusions & Packing
             </button>
             <button
               onClick={() => setActiveTab("reviews")}
               className={`px-4 py-2 rounded-xl transition-all ${
-                activeTab === "reviews" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"
+                activeTab === "reviews" ? "bg-teal-600 text-white" : "text-slate-400 hover:text-white"
               }`}
             >
-              Verified Reviews ({tour.reviews?.length || 0})
+              Traveler Reviews ({tour.reviews?.length || 0})
             </button>
           </div>
 
-          {/* Overview */}
+          {/* Description Narrative */}
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-white">Expedition Narrative</h3>
+            <h3 className="text-lg font-bold text-white">Tour Overview & Experience</h3>
             <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">
               {tour.description}
             </p>
@@ -276,11 +279,11 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
             {/* Highlights */}
             {tour.highlights && tour.highlights.length > 0 && (
               <div className="space-y-3 pt-4">
-                <h4 className="text-xs uppercase tracking-wider font-bold text-indigo-400">Expedition Highlights</h4>
+                <h4 className="text-xs uppercase tracking-wider font-bold text-teal-400">Trip Highlights</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {tour.highlights.map((hl, i) => (
-                    <div key={i} className="flex items-start gap-2 text-xs text-slate-200 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-                      <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <div key={i} className="flex items-start gap-2 text-xs text-slate-200 bg-[#090f1d] p-3 rounded-xl border border-slate-800/80">
+                      <CheckCircle2 className="h-4 w-4 text-teal-400 shrink-0 mt-0.5" />
                       <span>{hl}</span>
                     </div>
                   ))}
@@ -289,18 +292,17 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
             )}
           </div>
 
-          {/* Tab 1: Itinerary */}
+          {/* Tab 1: Daily Itinerary */}
           {activeTab === "itinerary" && (
             <div className="space-y-6">
-              <h3 className="text-xl font-bold text-white">Detailed Daily Schedule</h3>
-              <div className="relative border-l-2 border-indigo-500/30 ml-4 space-y-8 pl-6">
+              <h3 className="text-lg font-bold text-white">Day-by-Day Travel Schedule</h3>
+              <div className="relative border-l-2 border-teal-500/30 ml-4 space-y-8 pl-6">
                 {tour.itineraryDays?.map((day) => (
                   <div key={day.id} className="relative space-y-2">
-                    {/* Timeline Node */}
-                    <div className="absolute -left-[33px] top-1 h-4 w-4 rounded-full bg-indigo-600 border-2 border-slate-950" />
+                    <div className="absolute -left-[33px] top-1 h-4 w-4 rounded-full bg-teal-600 border-2 border-slate-950" />
 
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span className="text-xs font-bold uppercase tracking-wider text-indigo-400">
+                      <span className="text-xs font-bold uppercase tracking-wider text-teal-400">
                         Day {day.dayNumber} • {day.location || "En Route"}
                       </span>
                       {day.activityMetrics && (
@@ -334,14 +336,14 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
           {/* Tab 2: Dates & Pricing */}
           {activeTab === "dates" && (
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-white">Upcoming Guaranteed Departures</h3>
-              <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900/60">
+              <h3 className="text-lg font-bold text-white">Upcoming Guaranteed Batch Dates</h3>
+              <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-[#090f1d]">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-slate-950 text-slate-400 uppercase font-semibold border-b border-slate-800">
                     <tr>
-                      <th className="py-3 px-4">Dates</th>
+                      <th className="py-3 px-4">Departure Dates</th>
                       <th className="py-3 px-4">Status</th>
-                      <th className="py-3 px-4">Seats Left</th>
+                      <th className="py-3 px-4">Available Seats</th>
                       <th className="py-3 px-4">Price / Person</th>
                       <th className="py-3 px-4 text-right">Action</th>
                     </tr>
@@ -350,25 +352,25 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                     {tour.schedules?.map((s) => (
                       <tr key={s.id} className="hover:bg-slate-800/40 transition-colors">
                         <td className="py-3.5 px-4 font-bold text-white">
-                          {new Date(s.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} –{" "}
-                          {new Date(s.endDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                          {new Date(s.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })} –{" "}
+                          {new Date(s.endDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                         </td>
                         <td className="py-3.5 px-4">
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-teal-500/10 text-teal-400 border border-teal-500/20">
                             {s.status}
                           </span>
                         </td>
                         <td className="py-3.5 px-4 font-medium text-slate-300">
                           {s.totalSeats - s.bookedSeats} of {s.totalSeats} seats
                         </td>
-                        <td className="py-3.5 px-4 font-bold text-white">${s.pricePerPerson.toLocaleString()}</td>
+                        <td className="py-3.5 px-4 font-bold text-white">৳{s.pricePerPerson.toLocaleString()}</td>
                         <td className="py-3.5 px-4 text-right">
                           <button
                             onClick={() => {
                               setSelectedScheduleId(s.id);
                               setBookingModalOpen(true);
                             }}
-                            className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs"
+                            className="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs"
                           >
                             Select Date
                           </button>
@@ -385,22 +387,22 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
           {activeTab === "inclusions" && (
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 space-y-3">
+                <div className="bg-[#090f1d] border border-slate-800/80 rounded-2xl p-5 space-y-3">
                   <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                    <CheckCircle2 className="h-4 w-4 text-teal-400" />
                     What Is Included
                   </h4>
                   <ul className="space-y-2 text-xs text-slate-300">
                     {tour.inclusions?.map((inc, i) => (
                       <li key={i} className="flex items-start gap-2">
-                        <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                        <Check className="h-3.5 w-3.5 text-teal-400 shrink-0 mt-0.5" />
                         <span>{inc}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 space-y-3">
+                <div className="bg-[#090f1d] border border-slate-800/80 rounded-2xl p-5 space-y-3">
                   <h4 className="text-sm font-bold text-white flex items-center gap-2">
                     <XCircle className="h-4 w-4 text-rose-400" />
                     What Is Excluded
@@ -417,7 +419,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
               </div>
 
               {tour.packingTips && tour.packingTips.length > 0 && (
-                <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-5 space-y-3">
+                <div className="bg-[#090f1d] border border-slate-800/80 rounded-2xl p-5 space-y-3">
                   <h4 className="text-sm font-bold text-white flex items-center gap-2">
                     <Luggage className="h-4 w-4 text-sky-400" />
                     Recommended Gear & Packing Tips
@@ -425,7 +427,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-300">
                     {tour.packingTips.map((tip, i) => (
                       <li key={i} className="flex items-start gap-2">
-                        <span className="text-indigo-400">•</span>
+                        <span className="text-teal-400">•</span>
                         <span>{tip}</span>
                       </li>
                     ))}
@@ -438,10 +440,10 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
           {/* Tab 4: Reviews */}
           {activeTab === "reviews" && (
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-white">Verified Traveler Testimonials</h3>
+              <h3 className="text-lg font-bold text-white">Verified Traveler Testimonials</h3>
               <div className="space-y-4">
                 {tour.reviews?.map((rev) => (
-                  <div key={rev.id} className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+                  <div key={rev.id} className="bg-[#090f1d] border border-slate-800/80 rounded-2xl p-6 space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1 text-amber-400">
                         {[...Array(rev.rating)].map((_, i) => (
@@ -464,23 +466,23 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
           )}
         </div>
 
-        {/* Right Column: Sticky Booking Widget */}
+        {/* Right Column: Sticky Reservation Box */}
         <div className="lg:col-span-1">
-          <div className="sticky top-28 bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-6 shadow-2xl">
+          <div className="sticky top-28 bg-[#090f1d] border border-slate-800 rounded-3xl p-6 space-y-6 shadow-2xl">
             <div className="space-y-1">
-              <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Per Traveler</span>
+              <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Per Person Fare</span>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-black text-white">
-                  ${unitPrice.toLocaleString()}
+                <span className="text-3xl font-extrabold text-white">
+                  ৳{unitPrice.toLocaleString()}
                 </span>
                 {tour.discountPrice && (
                   <span className="text-sm text-slate-500 line-through">
-                    ${tour.basePrice.toLocaleString()}
+                    ৳{tour.basePrice.toLocaleString()}
                   </span>
                 )}
               </div>
-              <div className="text-xs text-emerald-400 font-semibold">
-                Secure today with a ${tour.depositAmount} deposit
+              <div className="text-xs text-teal-400 font-semibold">
+                Lock seats with ৳{depositPerPerson.toLocaleString()} deposit
               </div>
             </div>
 
@@ -490,23 +492,23 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                 <select
                   value={selectedScheduleId}
                   onChange={(e) => setSelectedScheduleId(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
                 >
                   {tour.schedules?.map((s) => (
                     <option key={s.id} value={s.id}>
-                      {new Date(s.startDate).toLocaleDateString()} – {new Date(s.endDate).toLocaleDateString()} ({s.totalSeats - s.bookedSeats} seats left)
+                      {new Date(s.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "short" })} – {new Date(s.endDate).toLocaleDateString("en-GB", { day: "numeric", month: "short" })} ({s.totalSeats - s.bookedSeats} seats left)
                     </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1 font-medium">Number of Guests</label>
+                <label className="block text-slate-400 mb-1 font-medium">Number of Travelers</label>
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
                     onClick={() => setTravelersCount(Math.max(1, travelersCount - 1))}
-                    className="h-10 w-10 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold hover:bg-slate-800"
+                    className="h-10 w-10 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold hover:bg-slate-800 transition-colors"
                   >
                     -
                   </button>
@@ -514,7 +516,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                   <button
                     type="button"
                     onClick={() => setTravelersCount(Math.min(tour.maxGroupSize, travelersCount + 1))}
-                    className="h-10 w-10 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold hover:bg-slate-800"
+                    className="h-10 w-10 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold hover:bg-slate-800 transition-colors"
                   >
                     +
                   </button>
@@ -524,70 +526,70 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
 
             <div className="border-t border-slate-800 pt-4 space-y-2 text-xs">
               <div className="flex justify-between text-slate-400">
-                <span>Trip Subtotal</span>
-                <span className="text-white font-semibold">${totalTripPrice.toLocaleString()}</span>
+                <span>Total Fare ({travelersCount} guest{travelersCount > 1 ? "s" : ""})</span>
+                <span className="text-white font-semibold">৳{totalTripPrice.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-slate-400">
-                <span>Deposit Due Now</span>
-                <span className="text-emerald-400 font-bold">${totalDepositAmount.toLocaleString()}</span>
+                <span>Deposit Payable Now</span>
+                <span className="text-teal-400 font-bold">৳{totalDepositAmount.toLocaleString()}</span>
               </div>
             </div>
 
             <button
               onClick={() => setBookingModalOpen(true)}
-              className="w-full py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-lg shadow-teal-600/20 transition-all flex items-center justify-center gap-2"
             >
-              <span>Reserve This Expedition</span>
+              <span>Book This Tour</span>
               <ChevronRight className="h-4 w-4" />
             </button>
 
-            <div className="text-[11px] text-slate-500 text-center space-y-1">
-              <div>✓ Instant Booking Confirmation</div>
-              <div>✓ Flexible Cancellation up to 60 Days Prior</div>
+            <div className="text-[11px] text-slate-400 text-center space-y-1">
+              <div>✓ Instant booking confirmation & reference</div>
+              <div>✓ Support via bKash, Nagad & Bank Transfer</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Interactive Booking Modal */}
+      {/* Booking Form Modal */}
       {bookingModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative my-8">
+          <div className="bg-[#0b1120] border border-slate-800 rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative my-8">
             <button
               onClick={() => {
                 setBookingModalOpen(false);
                 setConfirmedBookingRef(null);
               }}
-              className="absolute top-5 right-5 h-8 w-8 rounded-full bg-slate-950 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white"
+              className="absolute top-5 right-5 h-8 w-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white"
             >
               <X className="h-4 w-4" />
             </button>
 
             {confirmedBookingRef ? (
               <div className="py-8 text-center space-y-5">
-                <div className="h-16 w-16 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                <div className="h-16 w-16 mx-auto rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center">
                   <CheckCircle2 className="h-8 w-8" />
                 </div>
-                <h3 className="text-2xl font-black text-white">Expedition Confirmed!</h3>
-                <p className="text-xs text-slate-400 max-w-md mx-auto">
-                  Your official reservation reference code has been recorded in the TourFlow reservation manifest.
+                <h3 className="text-2xl font-bold text-white">Booking Confirmed!</h3>
+                <p className="text-xs text-slate-300 max-w-md mx-auto">
+                  Your official reservation voucher has been created. Keep your booking reference handy for checkposts.
                 </p>
-                <div className="inline-block px-5 py-2.5 bg-slate-950 border border-indigo-500/30 rounded-2xl font-mono text-lg font-black text-indigo-400">
+                <div className="inline-block px-5 py-2.5 bg-slate-950 border border-teal-500/40 rounded-2xl font-mono text-xl font-bold text-teal-400">
                   {confirmedBookingRef}
                 </div>
                 <div className="pt-4 flex flex-col sm:flex-row gap-3">
                   <Link
                     href={`/manage?ref=${confirmedBookingRef}&email=${encodeURIComponent(customerEmail)}`}
-                    className="flex-1 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all text-center"
+                    className="flex-1 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold transition-all text-center"
                   >
-                    View In Manage Booking
+                    View Official Voucher
                   </Link>
                   <button
                     onClick={() => {
                       setBookingModalOpen(false);
                       setConfirmedBookingRef(null);
                     }}
-                    className="px-5 py-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 text-xs font-semibold hover:bg-slate-800"
+                    className="px-5 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs font-semibold hover:bg-slate-800"
                   >
                     Close
                   </button>
@@ -596,20 +598,20 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
             ) : (
               <form onSubmit={handleBookingSubmit} className="space-y-4">
                 <div>
-                  <span className="text-[10px] text-indigo-400 uppercase font-bold tracking-wider">
-                    Step 1 of 1 • Reservation Form
+                  <span className="text-[10px] text-teal-400 uppercase font-bold tracking-wider">
+                    Reservation Form
                   </span>
                   <h3 className="text-lg font-bold text-white line-clamp-1">{tour.title}</h3>
                 </div>
 
                 <div className="space-y-3 text-xs">
                   <div>
-                    <label className="block text-slate-400 mb-1 font-medium">Selected Departure</label>
+                    <label className="block text-slate-400 mb-1 font-medium">Selected Batch Schedule</label>
                     <div className="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white font-medium">
                       {selectedSchedule && (
                         <span>
-                          {new Date(selectedSchedule.startDate).toLocaleDateString()} –{" "}
-                          {new Date(selectedSchedule.endDate).toLocaleDateString()} (${unitPrice} / guest)
+                          {new Date(selectedSchedule.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })} –{" "}
+                          {new Date(selectedSchedule.endDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })} (৳{unitPrice.toLocaleString()} / person)
                         </span>
                       )}
                     </div>
@@ -620,10 +622,10 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                       <label className="block text-slate-400 mb-1 font-medium">Primary Traveler Name</label>
                       <input
                         type="text"
-                        placeholder="e.g. Eleanor Vance"
+                        placeholder="e.g. Tanvir Ahmed"
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
                         required
                       />
                     </div>
@@ -631,10 +633,10 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                       <label className="block text-slate-400 mb-1 font-medium">Email Address</label>
                       <input
                         type="email"
-                        placeholder="eleanor@example.com"
+                        placeholder="tanvir@example.com"
                         value={customerEmail}
                         onChange={(e) => setCustomerEmail(e.target.value)}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
                         required
                       />
                     </div>
@@ -642,38 +644,39 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-slate-400 mb-1 font-medium">Phone / WhatsApp</label>
+                      <label className="block text-slate-400 mb-1 font-medium">Phone Number (bKash / WhatsApp)</label>
                       <input
                         type="tel"
-                        placeholder="+1 (555) 392-1082"
+                        placeholder="+880 1712-345678"
                         value={customerPhone}
                         onChange={(e) => setCustomerPhone(e.target.value)}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-400 mb-1 font-medium">Guests Count</label>
+                      <label className="block text-slate-400 mb-1 font-medium">Number of Guests</label>
                       <input
                         type="number"
                         min={1}
                         max={tour.maxGroupSize}
                         value={travelersCount}
                         onChange={(e) => setTravelersCount(parseInt(e.target.value) || 1)}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
                         required
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-slate-400 mb-1 font-medium">Dietary & Medical Requirements</label>
+                    <label className="block text-slate-400 mb-1 font-medium">NID / Passport Number (for checkposts)</label>
                     <input
                       type="text"
-                      placeholder="e.g. Vegetarian, Gluten-free, Asthmatic"
-                      value={dietaryRequirements}
-                      onChange={(e) => setDietaryRequirements(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      placeholder="e.g. 19921234567890"
+                      value={nidOrPassport}
+                      onChange={(e) => setNidOrPassport(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:ring-1 focus:ring-teal-500"
+                      required
                     />
                   </div>
 
@@ -682,25 +685,78 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                       <label className="block text-slate-400 mb-1 font-medium">Emergency Contact Name</label>
                       <input
                         type="text"
-                        placeholder="Full contact name"
+                        placeholder="Family contact name"
                         value={emergencyContactName}
                         onChange={(e) => setEmergencyContactName(e.target.value)}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
+                        required
                       />
                     </div>
                     <div>
                       <label className="block text-slate-400 mb-1 font-medium">Emergency Contact Phone</label>
                       <input
                         type="tel"
-                        placeholder="Emergency phone"
+                        placeholder="+880 1819-001122"
                         value={emergencyContactPhone}
                         onChange={(e) => setEmergencyContactPhone(e.target.value)}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
+                        required
                       />
                     </div>
                   </div>
 
-                  {/* Payment Selection */}
+                  {/* Payment Method in Bangladesh */}
+                  <div className="pt-2">
+                    <label className="block text-slate-400 mb-2 font-medium">Select Payment Channel</label>
+                    <div className="grid grid-cols-4 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("bkash")}
+                        className={`p-2 rounded-xl border text-center transition-all ${
+                          paymentMethod === "bkash"
+                            ? "bg-pink-950/60 border-pink-500 text-white font-bold"
+                            : "bg-slate-950 border-slate-800 text-slate-400"
+                        }`}
+                      >
+                        bKash
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("nagad")}
+                        className={`p-2 rounded-xl border text-center transition-all ${
+                          paymentMethod === "nagad"
+                            ? "bg-orange-950/60 border-orange-500 text-white font-bold"
+                            : "bg-slate-950 border-slate-800 text-slate-400"
+                        }`}
+                      >
+                        Nagad
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("bank")}
+                        className={`p-2 rounded-xl border text-center transition-all ${
+                          paymentMethod === "bank"
+                            ? "bg-sky-950/60 border-sky-500 text-white font-bold"
+                            : "bg-slate-950 border-slate-800 text-slate-400"
+                        }`}
+                      >
+                        Bank
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("card")}
+                        className={`p-2 rounded-xl border text-center transition-all ${
+                          paymentMethod === "card"
+                            ? "bg-teal-950/60 border-teal-500 text-white font-bold"
+                            : "bg-slate-950 border-slate-800 text-slate-400"
+                        }`}
+                      >
+                        Card
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Payment Amount Option */}
                   <div className="pt-2">
                     <label className="block text-slate-400 mb-2 font-medium">Payment Option</label>
                     <div className="grid grid-cols-2 gap-3">
@@ -709,12 +765,12 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                         onClick={() => setPayDepositOnly(true)}
                         className={`p-3 rounded-xl border text-left transition-all ${
                           payDepositOnly
-                            ? "bg-indigo-600/10 border-indigo-500 text-white"
+                            ? "bg-teal-600/10 border-teal-500 text-white"
                             : "bg-slate-950 border-slate-800 text-slate-400"
                         }`}
                       >
                         <div className="font-bold">Pay Deposit Only</div>
-                        <div className="text-[11px] text-emerald-400 font-semibold">${totalDepositAmount.toLocaleString()} today</div>
+                        <div className="text-[11px] text-teal-400 font-semibold">৳{totalDepositAmount.toLocaleString()} today</div>
                       </button>
 
                       <button
@@ -722,12 +778,12 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                         onClick={() => setPayDepositOnly(false)}
                         className={`p-3 rounded-xl border text-left transition-all ${
                           !payDepositOnly
-                            ? "bg-indigo-600/10 border-indigo-500 text-white"
+                            ? "bg-teal-600/10 border-teal-500 text-white"
                             : "bg-slate-950 border-slate-800 text-slate-400"
                         }`}
                       >
-                        <div className="font-bold">Pay In Full</div>
-                        <div className="text-[11px] text-slate-300 font-semibold">${totalTripPrice.toLocaleString()} today</div>
+                        <div className="font-bold">Pay Full Amount</div>
+                        <div className="text-[11px] text-slate-300 font-semibold">৳{totalTripPrice.toLocaleString()} today</div>
                       </button>
                     </div>
                   </div>
@@ -735,18 +791,18 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
 
                 <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] text-slate-500 uppercase font-semibold">Total to Charge</span>
-                    <div className="text-xl font-black text-emerald-400">
-                      ${(payDepositOnly ? totalDepositAmount : totalTripPrice).toLocaleString()}
+                    <span className="text-[10px] text-slate-500 uppercase font-semibold">Payable Now</span>
+                    <div className="text-xl font-extrabold text-teal-400">
+                      ৳{(payDepositOnly ? totalDepositAmount : totalTripPrice).toLocaleString()}
                     </div>
                   </div>
 
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all disabled:opacity-50"
+                    className="px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-lg shadow-teal-600/20 transition-all disabled:opacity-50"
                   >
-                    {submitting ? "Securing Reservation..." : "Confirm & Authorize"}
+                    {submitting ? "Processing..." : "Confirm Reservation"}
                   </button>
                 </div>
               </form>

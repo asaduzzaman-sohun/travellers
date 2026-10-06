@@ -35,10 +35,10 @@ export default function AdminDashboardPage() {
   const [newTourModalOpen, setNewTourModalOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDestination, setNewDestination] = useState("");
-  const [newCountry, setNewCountry] = useState("");
-  const [newRegion, setNewRegion] = useState("Europe");
-  const [newDurationDays, setNewDurationDays] = useState(7);
-  const [newBasePrice, setNewBasePrice] = useState(2500);
+  const [newCountry, setNewCountry] = useState("Bangladesh");
+  const [newRegion, setNewRegion] = useState("Chittagong");
+  const [newDurationDays, setNewDurationDays] = useState(3);
+  const [newBasePrice, setNewBasePrice] = useState(7500);
   const [newSummary, setNewSummary] = useState("");
   const [newCoverImage, setNewCoverImage] = useState("");
   const [creatingTour, setCreatingTour] = useState(false);
@@ -91,16 +91,16 @@ export default function AdminDashboardPage() {
       "Customer Name",
       "Email",
       "Phone",
-      "Expedition Title",
+      "Tour Title",
       "Destination",
       "Departure Date",
       "Guests",
-      "Total Fare",
-      "Deposit Paid",
-      "Balance Due",
+      "Total Fare (BDT)",
+      "Deposit Paid (BDT)",
+      "Balance Due (BDT)",
       "Status",
       "Payment Status",
-      "Dietary Notes"
+      "Dietary / NID Notes"
     ];
 
     const rows = bookings.map((b) => [
@@ -124,7 +124,7 @@ export default function AdminDashboardPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `tourflow_manifest_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute("download", `tourflow_bd_manifest_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -141,14 +141,14 @@ export default function AdminDashboardPage() {
         country: newCountry,
         region: newRegion,
         durationDays: newDurationDays,
-        durationNights: newDurationDays - 1,
+        durationNights: Math.max(1, newDurationDays - 1),
         basePrice: newBasePrice,
-        summary: newSummary || "Authentic expedition crafted by TourFlow field experts.",
-        description: newSummary || "Detailed daily expedition narrative.",
-        coverImageUrl: newCoverImage || "https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?auto=format&fit=crop&w=1200&q=80",
+        summary: newSummary || "Authentic Bangladesh tour itinerary.",
+        description: newSummary || "Detailed daily tour narrative for domestic travelers.",
+        coverImageUrl: newCoverImage || "https://images.unsplash.com/photo-1628172906059-839088ff7b6c?auto=format&fit=crop&w=1200&q=80",
         maxGroupSize: 12,
         difficulty: "Moderate",
-        category: "Adventure",
+        category: "Hill Tracts",
         isActive: true,
         isFeatured: false
       };
@@ -162,7 +162,7 @@ export default function AdminDashboardPage() {
       if (res.ok) {
         setNewTourModalOpen(false);
         fetchDashboardData();
-        alert("New tour package successfully added to inventory!");
+        alert("New Bangladesh tour package successfully added!");
       }
     } catch (err) {
       console.error(err);
@@ -177,14 +177,14 @@ export default function AdminDashboardPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
         <div>
-          <div className="text-xs font-bold uppercase tracking-widest text-indigo-400">
-            Operations & Field Manifest
+          <div className="text-xs font-bold uppercase tracking-widest text-teal-400">
+            Operations Console
           </div>
-          <h1 className="text-3xl font-black text-white tracking-tight">
-            TourFlow Operator Console
+          <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+            TourFlow Bangladesh Operator Dashboard
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Real-time reservation tracking, capacity control, and passenger manifests
+            Real-time domestic bookings, capacity management, and traveler manifests
           </p>
         </div>
 
@@ -201,13 +201,13 @@ export default function AdminDashboardPage() {
             onClick={handleExportCSV}
             className="px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs font-bold transition-all flex items-center gap-2"
           >
-            <Download className="h-4 w-4 text-emerald-400" />
+            <Download className="h-4 w-4 text-teal-400" />
             <span>Export Manifest (CSV)</span>
           </button>
 
           <button
             onClick={() => setNewTourModalOpen(true)}
-            className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition-all flex items-center gap-1.5"
+            className="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-md transition-all flex items-center gap-1.5"
           >
             <Plus className="h-4 w-4" />
             <span>New Tour Package</span>
@@ -217,40 +217,40 @@ export default function AdminDashboardPage() {
 
       {/* KPI Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5">
+        <div className="bg-[#090f1d] border border-slate-800/80 rounded-2xl p-5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-400 uppercase">Active Itineraries</span>
-            <Luggage className="h-4 w-4 text-indigo-400" />
+            <span className="text-xs font-semibold text-slate-400 uppercase">Active Packages</span>
+            <Luggage className="h-4 w-4 text-teal-400" />
           </div>
-          <div className="text-3xl font-black text-white">{stats.totalTours}</div>
-          <div className="text-[11px] text-slate-500 mt-1">In global rotation</div>
+          <div className="text-3xl font-extrabold text-white">{stats.totalTours}</div>
+          <div className="text-[11px] text-slate-500 mt-1">Across 8 divisions</div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5">
+        <div className="bg-[#090f1d] border border-slate-800/80 rounded-2xl p-5">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-semibold text-slate-400 uppercase">Total Reservations</span>
             <CheckCircle2 className="h-4 w-4 text-emerald-400" />
           </div>
-          <div className="text-3xl font-black text-white">{stats.activeBookings}</div>
+          <div className="text-3xl font-extrabold text-white">{stats.activeBookings}</div>
           <div className="text-[11px] text-slate-500 mt-1">Confirmed & in process</div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5">
+        <div className="bg-[#090f1d] border border-slate-800/80 rounded-2xl p-5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-400 uppercase">Departures Ahead</span>
+            <span className="text-xs font-semibold text-slate-400 uppercase">Upcoming Batches</span>
             <Calendar className="h-4 w-4 text-sky-400" />
           </div>
-          <div className="text-3xl font-black text-white">{stats.upcomingDepartures}</div>
-          <div className="text-[11px] text-slate-500 mt-1">Scheduled for 2026/27</div>
+          <div className="text-3xl font-extrabold text-white">{stats.upcomingDepartures}</div>
+          <div className="text-[11px] text-slate-500 mt-1">Scheduled departures</div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5">
+        <div className="bg-[#090f1d] border border-slate-800/80 rounded-2xl p-5">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-semibold text-slate-400 uppercase">Secured Revenue</span>
-            <DollarSign className="h-4 w-4 text-amber-400" />
+            <span className="text-amber-400 font-bold text-sm">BDT ৳</span>
           </div>
-          <div className="text-3xl font-black text-white">
-            ${stats.totalRevenue.toLocaleString()}
+          <div className="text-3xl font-extrabold text-white">
+            ৳{stats.totalRevenue.toLocaleString()}
           </div>
           <div className="text-[11px] text-slate-500 mt-1">From confirmed passengers</div>
         </div>
@@ -259,22 +259,22 @@ export default function AdminDashboardPage() {
       {/* Bookings Manifest Table */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-white">Passenger Manifest & Reservations</h2>
+          <h2 className="text-base font-bold text-white">Passenger Manifest & Reservations</h2>
           <span className="text-xs text-slate-400">{bookings.length} reservations total</span>
         </div>
 
         {bookings.length === 0 ? (
-          <div className="py-16 text-center text-slate-500 bg-slate-900/40 rounded-3xl border border-slate-800">
-            No bookings recorded in this environment yet.
+          <div className="py-16 text-center text-slate-500 bg-[#090f1d] rounded-3xl border border-slate-800">
+            No bookings recorded yet.
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900/60">
+          <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-[#090f1d]">
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-950 text-slate-400 uppercase font-semibold border-b border-slate-800">
                 <tr>
                   <th className="py-3 px-4">Ref #</th>
                   <th className="py-3 px-4">Passenger</th>
-                  <th className="py-3 px-4">Expedition</th>
+                  <th className="py-3 px-4">Tour Title</th>
                   <th className="py-3 px-4">Departure</th>
                   <th className="py-3 px-4">Guests</th>
                   <th className="py-3 px-4">Total</th>
@@ -286,7 +286,7 @@ export default function AdminDashboardPage() {
               <tbody className="divide-y divide-slate-800/60 text-slate-300">
                 {bookings.map((b) => (
                   <tr key={b.id} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="py-3.5 px-4 font-mono font-bold text-indigo-400">
+                    <td className="py-3.5 px-4 font-mono font-bold text-teal-400">
                       <Link href={`/manage?ref=${b.bookingReference}`} className="hover:underline">
                         {b.bookingReference}
                       </Link>
@@ -295,7 +295,9 @@ export default function AdminDashboardPage() {
                       <div className="font-bold text-white">{b.customerName}</div>
                       <div className="text-[10px] text-slate-500">{b.customerEmail}</div>
                       {b.dietaryRequirements && (
-                        <div className="text-[10px] text-amber-400">Diet: {b.dietaryRequirements}</div>
+                        <div className="text-[10px] text-amber-400 truncate max-w-[160px]">
+                          {b.dietaryRequirements}
+                        </div>
                       )}
                     </td>
                     <td className="py-3.5 px-4 max-w-[200px] truncate text-white">{b.tourTitle}</td>
@@ -303,12 +305,12 @@ export default function AdminDashboardPage() {
                       {new Date(b.departureDate).toLocaleDateString()}
                     </td>
                     <td className="py-3.5 px-4 font-bold">{b.numberOfTravelers}</td>
-                    <td className="py-3.5 px-4 font-bold text-white">${b.totalAmount.toLocaleString()}</td>
+                    <td className="py-3.5 px-4 font-bold text-white">৳{b.totalAmount.toLocaleString()}</td>
                     <td className="py-3.5 px-4 text-slate-400">
                       {b.balanceRemaining > 0 ? (
-                        <span className="text-amber-400">${b.balanceRemaining.toLocaleString()}</span>
+                        <span className="text-amber-400">৳{b.balanceRemaining.toLocaleString()}</span>
                       ) : (
-                        <span className="text-emerald-400">Paid</span>
+                        <span className="text-emerald-400">Paid in Full</span>
                       )}
                     </td>
                     <td className="py-3.5 px-4">
@@ -344,25 +346,25 @@ export default function AdminDashboardPage() {
 
       {/* Tour Inventory Table */}
       <div className="space-y-4 pt-6 border-t border-slate-800">
-        <h2 className="text-lg font-bold text-white">Expedition Inventory & Catalog</h2>
+        <h2 className="text-base font-bold text-white">Tour Inventory & Active Packages</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {tours.map((t) => (
-            <div key={t.id} className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3">
+            <div key={t.id} className="bg-[#090f1d] border border-slate-800/80 rounded-2xl p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 px-2 py-0.5 rounded bg-indigo-500/10">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-teal-400 px-2 py-0.5 rounded bg-teal-500/10">
                   {t.region}
                 </span>
                 <span className="text-xs text-slate-400">{t.durationDays} Days</span>
               </div>
               <h3 className="text-sm font-bold text-white line-clamp-1">{t.title}</h3>
               <div className="text-xs text-slate-400 flex items-center gap-1.5">
-                <MapPin className="h-3 w-3 text-indigo-400" />
+                <MapPin className="h-3 w-3 text-teal-400" />
                 <span>{t.destination}</span>
               </div>
               <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                <span className="font-black text-white">${(t.discountPrice ?? t.basePrice).toLocaleString()}</span>
-                <Link href={`/tours/${t.slug}`} className="text-indigo-400 hover:underline font-semibold flex items-center gap-1">
-                  <span>View Public Page</span>
+                <span className="font-extrabold text-white">৳{(t.discountPrice ?? t.basePrice).toLocaleString()}</span>
+                <Link href={`/tours/${t.slug}`} className="text-teal-400 hover:underline font-semibold flex items-center gap-1">
+                  <span>Public View</span>
                   <ExternalLink className="h-3 w-3" />
                 </Link>
               </div>
@@ -374,22 +376,22 @@ export default function AdminDashboardPage() {
       {/* Add Tour Modal */}
       {newTourModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative">
+          <div className="bg-[#0b1120] border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative">
             <button
               onClick={() => setNewTourModalOpen(false)}
-              className="absolute top-4 right-4 h-8 w-8 rounded-full bg-slate-950 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white"
+              className="absolute top-4 right-4 h-8 w-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white"
             >
               <X className="h-4 w-4" />
             </button>
 
-            <h3 className="text-lg font-bold text-white mb-4">Add New Expedition</h3>
+            <h3 className="text-lg font-bold text-white mb-4">Add New Bangladesh Tour Package</h3>
 
             <form onSubmit={handleCreateTour} className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-400 mb-1">Title</label>
+                <label className="block text-slate-400 mb-1">Package Title</label>
                 <input
                   type="text"
-                  placeholder="e.g. New Zealand Milford Track & Southern Fjords"
+                  placeholder="e.g. Sajek Valley: Kingdom of Clouds Retreat"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white"
@@ -402,7 +404,7 @@ export default function AdminDashboardPage() {
                   <label className="block text-slate-400 mb-1">Destination</label>
                   <input
                     type="text"
-                    placeholder="Queenstown & Fiordland"
+                    placeholder="e.g. Sajek, Rangamati"
                     value={newDestination}
                     onChange={(e) => setNewDestination(e.target.value)}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white"
@@ -410,33 +412,25 @@ export default function AdminDashboardPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 mb-1">Country</label>
-                  <input
-                    type="text"
-                    placeholder="New Zealand"
-                    value={newCountry}
-                    onChange={(e) => setNewCountry(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-slate-400 mb-1">Region</label>
+                  <label className="block text-slate-400 mb-1">Division</label>
                   <select
                     value={newRegion}
                     onChange={(e) => setNewRegion(e.target.value)}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white"
                   >
-                    <option value="Americas">Americas</option>
-                    <option value="Europe">Europe</option>
-                    <option value="Asia">Asia</option>
-                    <option value="Africa">Africa</option>
-                    <option value="Oceania">Oceania</option>
+                    <option value="Chittagong">Chittagong</option>
+                    <option value="Sylhet">Sylhet</option>
+                    <option value="Khulna">Khulna</option>
+                    <option value="Dhaka">Dhaka</option>
+                    <option value="Rajshahi">Rajshahi</option>
+                    <option value="Barisal">Barisal</option>
+                    <option value="Rangpur">Rangpur</option>
+                    <option value="Mymensingh">Mymensingh</option>
                   </select>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-slate-400 mb-1">Duration (Days)</label>
                   <input
@@ -449,12 +443,12 @@ export default function AdminDashboardPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 mb-1">Base Price ($)</label>
+                  <label className="block text-slate-400 mb-1">Base Fare (৳ BDT)</label>
                   <input
                     type="number"
-                    min={100}
+                    min={500}
                     value={newBasePrice}
-                    onChange={(e) => setNewBasePrice(parseInt(e.target.value) || 100)}
+                    onChange={(e) => setNewBasePrice(parseInt(e.target.value) || 500)}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white"
                     required
                   />
@@ -476,7 +470,7 @@ export default function AdminDashboardPage() {
                 <label className="block text-slate-400 mb-1">Summary Overview</label>
                 <textarea
                   rows={2}
-                  placeholder="Summary of this journey..."
+                  placeholder="Summary of this domestic journey..."
                   value={newSummary}
                   onChange={(e) => setNewSummary(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white"
@@ -494,9 +488,9 @@ export default function AdminDashboardPage() {
                 <button
                   type="submit"
                   disabled={creatingTour}
-                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold"
+                  className="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold"
                 >
-                  {creatingTour ? "Publishing..." : "Publish Expedition"}
+                  {creatingTour ? "Publishing..." : "Publish Package"}
                 </button>
               </div>
             </form>

@@ -1,128 +1,97 @@
 import Link from "next/link";
-import { Compass, ShieldCheck, Award, HeartHandshake, Phone, Mail, MapPin } from "lucide-react";
+import { Compass, PhoneCall, ShieldCheck, Heart, MapPin } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-950 border-t border-slate-900 text-slate-400 text-xs">
-      {/* Trust & Guarantee Banner */}
-      <div className="border-b border-slate-900 py-10 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="flex items-start gap-3.5">
-            <div className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
-              <ShieldCheck className="h-5 w-5" />
-            </div>
-            <div>
-              <h4 className="text-white text-sm font-bold mb-1">100% Guaranteed Departures</h4>
-              <p className="text-slate-400 text-xs leading-relaxed">
-                Once booked, your expedition will never be canceled due to low passenger numbers.
-              </p>
-            </div>
+    <footer className="bg-[#050812] border-t border-slate-900 text-slate-400 text-xs">
+      {/* Bangladesh Emergency & Tourism Helpline Strip */}
+      <div className="border-b border-slate-900/80 py-6 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-[12px]">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-slate-300">
+            <span className="flex items-center gap-1.5 text-teal-400 font-semibold">
+              <ShieldCheck className="h-4 w-4" />
+              Tourist Police Bangladesh Helpline:
+            </span>
+            <span className="font-mono text-white bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+              +880 1320-222222
+            </span>
+            <span className="text-slate-600 hidden sm:inline">•</span>
+            <span className="text-slate-400">
+              National Emergency Service: <strong className="text-white">999</strong>
+            </span>
           </div>
 
-          <div className="flex items-start gap-3.5">
-            <div className="h-10 w-10 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center shrink-0">
-              <Award className="h-5 w-5" />
-            </div>
-            <div>
-              <h4 className="text-white text-sm font-bold mb-1">Expert Local Leaders</h4>
-              <p className="text-slate-400 text-xs leading-relaxed">
-                Led by certified UIAGM mountain guides, marine biologists, and native cultural historians.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3.5">
-            <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-              <HeartHandshake className="h-5 w-5" />
-            </div>
-            <div>
-              <h4 className="text-white text-sm font-bold mb-1">Certified Carbon Neutral</h4>
-              <p className="text-slate-400 text-xs leading-relaxed">
-                We offset 100% of emissions from ground transit, lodging, and expedition operations.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3.5">
-            <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-              <Phone className="h-5 w-5" />
-            </div>
-            <div>
-              <h4 className="text-white text-sm font-bold mb-1">24/7 Global Concierge</h4>
-              <p className="text-slate-400 text-xs leading-relaxed">
-                Dedicated round-the-clock operations team on standby while you are in the field.
-              </p>
-            </div>
+          <div className="text-slate-500 text-[11px] text-center md:text-right">
+            <span>Travel responsibly • Protect our rivers, haors & mangrove forests</span>
           </div>
         </div>
       </div>
 
       {/* Main Footer Links */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {/* Brand Col */}
-          <div className="md:col-span-2 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
-                <Compass className="h-5 w-5" />
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-white font-bold text-sm">
+              <div className="h-7 w-7 rounded-lg bg-teal-600 flex items-center justify-center text-white">
+                <Compass className="h-4 w-4" />
               </div>
-              <span className="text-lg font-black tracking-tight text-white">TOURFLOW EXPEDITIONS</span>
+              <span>TourFlow Bangladesh</span>
             </div>
-            <p className="text-slate-400 text-xs leading-relaxed max-w-sm">
-              We design transformative journeys and small-group expeditions across the world’s most pristine wilderness and storied heritage corridors. Registered member of the Adventure Travel Trade Association (ATTA).
+            <p className="text-xs text-slate-400 leading-relaxed">
+              A serene travel guide and community dedicated to uncovering the peaceful natural wonders, green hill tracts, and heritage of Bangladesh.
             </p>
-            <div className="pt-2 text-slate-500 text-[11px] space-y-1">
-              <div>Global HQ: 450 Lexington Avenue, Suite 1900, New York, NY 10017</div>
-              <div>UK Concierge: 25 St James's Square, London SW1Y 4JH</div>
+            <div className="text-[11px] text-slate-500 pt-1">
+              Dhaka, Chittagong, Sylhet & Cox's Bazar Support Hubs
             </div>
           </div>
 
-          {/* Col 1 */}
-          <div>
-            <h5 className="text-white text-xs font-bold uppercase tracking-wider mb-4">Destinations</h5>
-            <ul className="space-y-2.5">
-              <li><Link href="/tours?region=Americas" className="hover:text-white transition-colors">Patagonia & Andes</Link></li>
-              <li><Link href="/tours?region=Africa" className="hover:text-white transition-colors">Serengeti & Tanzania</Link></li>
-              <li><Link href="/tours?region=Europe" className="hover:text-white transition-colors">Amalfi & Swiss Alps</Link></li>
-              <li><Link href="/tours?region=Asia" className="hover:text-white transition-colors">Japan & Kumano Kodo</Link></li>
-              <li><Link href="/tours?region=Europe" className="hover:text-white transition-colors">Icelandic Arctic</Link></li>
-              <li><Link href="/tours?region=Africa" className="hover:text-white transition-colors">Morocco & Sahara</Link></li>
+          {/* Divisions */}
+          <div className="space-y-2.5">
+            <h4 className="text-white text-xs font-bold uppercase tracking-wider">Top Destinations</h4>
+            <ul className="space-y-1.5">
+              <li><Link href="/destinations" className="hover:text-teal-300 transition-colors">Sajek Valley (Rangamati)</Link></li>
+              <li><Link href="/destinations" className="hover:text-teal-300 transition-colors">Tanguar Haor (Sunamganj)</Link></li>
+              <li><Link href="/destinations" className="hover:text-teal-300 transition-colors">Sreemangal Tea Estates</Link></li>
+              <li><Link href="/destinations" className="hover:text-teal-300 transition-colors">Cox's Bazar & Marine Drive</Link></li>
+              <li><Link href="/destinations" className="hover:text-teal-300 transition-colors">Sundarbans Mangrove</Link></li>
+              <li><Link href="/destinations" className="hover:text-teal-300 transition-colors">Bandarban Nilgiri</Link></li>
             </ul>
           </div>
 
-          {/* Col 2 */}
-          <div>
-            <h5 className="text-white text-xs font-bold uppercase tracking-wider mb-4">Expedition Styles</h5>
-            <ul className="space-y-2.5">
-              <li><Link href="/tours" className="hover:text-white transition-colors">High-Altitude Trekking</Link></li>
-              <li><Link href="/tours" className="hover:text-white transition-colors">Wildlife & Big Five Safaris</Link></li>
-              <li><Link href="/tours" className="hover:text-white transition-colors">Pilgrimages & Spiritual</Link></li>
-              <li><Link href="/tours" className="hover:text-white transition-colors">Private Yacht Expeditions</Link></li>
-              <li><Link href="/tours" className="hover:text-white transition-colors">Arctic & Northern Lights</Link></li>
+          {/* Quick Guides */}
+          <div className="space-y-2.5">
+            <h4 className="text-white text-xs font-bold uppercase tracking-wider">Traveler Resources</h4>
+            <ul className="space-y-1.5">
+              <li><Link href="/tips" className="hover:text-teal-300 transition-colors">Travel Tips & Packing Guides</Link></li>
+              <li><Link href="/hotels" className="hover:text-teal-300 transition-colors">Verified Hotel & Resort Reviews</Link></li>
+              <li><Link href="/community" className="hover:text-teal-300 transition-colors">Community Forum & Q&A</Link></li>
+              <li><Link href="/about" className="hover:text-teal-300 transition-colors">About TourFlow BD</Link></li>
+              <li><Link href="/contact" className="hover:text-teal-300 transition-colors">Contact & Support</Link></li>
             </ul>
           </div>
 
-          {/* Col 3 */}
-          <div>
-            <h5 className="text-white text-xs font-bold uppercase tracking-wider mb-4">Traveler Care</h5>
-            <ul className="space-y-2.5">
-              <li><Link href="/manage" className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">Manage My Booking</Link></li>
-              <li><Link href="/admin" className="hover:text-white transition-colors">Operator Dashboard</Link></li>
-              <li><a href="http://localhost:5000/scalar/v1" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Developer API Docs</a></li>
-              <li><span className="hover:text-white cursor-pointer transition-colors">Travel Insurance Guide</span></li>
-              <li><span className="hover:text-white cursor-pointer transition-colors">Terms & Booking Conditions</span></li>
-            </ul>
+          {/* Eco Principles */}
+          <div className="space-y-2.5">
+            <h4 className="text-white text-xs font-bold uppercase tracking-wider">Responsible Travel</h4>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Help preserve Bangladesh’s fragile natural ecosystems. Please bring all non-biodegradable waste back from Saint Martin's, haors, and hill summits.
+            </p>
+            <div className="pt-2 text-[11px] text-teal-400 flex items-center gap-1">
+              <Heart className="h-3.5 w-3.5 fill-teal-400" />
+              <span>Leave nothing but footprints, take nothing but memories.</span>
+            </div>
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-4">
+        <div className="mt-10 pt-6 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-2">
           <div>
-            © {new Date().getFullYear()} TourFlow Expeditions Inc. All rights reserved. Registered Tour Operator #48291.
+            © {new Date().getFullYear()} TourFlow Bangladesh. All rights reserved.
           </div>
-          <div className="flex items-center gap-6">
-            <span>ASTA Member</span>
-            <span>ATOL Protected</span>
-            <span>Leave No Trace Partner</span>
+          <div className="flex items-center gap-4">
+            <Link href="/about" className="hover:text-slate-400">About</Link>
+            <Link href="/contact" className="hover:text-slate-400">Contact</Link>
+            <Link href="/tips" className="hover:text-slate-400">Guidelines</Link>
           </div>
         </div>
       </div>

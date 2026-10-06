@@ -8,77 +8,66 @@ public static class DbInitializer
 {
     public static async Task SeedAsync(TourFlowDbContext context)
     {
-        // If we only had the earlier minimal seed or old schema, let's clear and re-seed to provide rich authentic data
-        var existingCount = await context.TourPackages.CountAsync();
-        if (existingCount >= 6)
-        {
-            return;
-        }
+        // Re-seed with pure Bangladesh Tourism data
+        context.Bookings.RemoveRange(context.Bookings);
+        context.TourSchedules.RemoveRange(context.TourSchedules);
+        context.ItineraryDays.RemoveRange(context.ItineraryDays);
+        context.Reviews.RemoveRange(context.Reviews);
+        context.TourPackages.RemoveRange(context.TourPackages);
+        await context.SaveChangesAsync();
 
-        if (existingCount > 0)
+        var bangladeshTours = new List<TourPackage>
         {
-            // Clean up previous test seed so we have the full production catalog
-            context.Bookings.RemoveRange(context.Bookings);
-            context.TourSchedules.RemoveRange(context.TourSchedules);
-            context.ItineraryDays.RemoveRange(context.ItineraryDays);
-            context.Reviews.RemoveRange(context.Reviews);
-            context.TourPackages.RemoveRange(context.TourPackages);
-            await context.SaveChangesAsync();
-        }
-
-        var tours = new List<TourPackage>
-        {
-            // 1. Patagonia Expedition
+            // 1. Sajek Valley
             new()
             {
-                Title = "Patagonia Frontier: W-Trek & Glaciers of Torres del Paine",
-                Slug = "patagonia-frontier-w-trek",
-                Summary = "Trek through granite spires, blue icebergs, and golden grasslands across Chilean and Argentine Patagonia.",
-                Description = "A masterfully curated 10-day expedition into one of the wildest wilderness frontiers on Earth. Hike the world-renowned W-Trek in Torres del Paine National Park, stand before the thunderous calving ice wall of Perito Moreno Glacier, and witness Mount Fitz Roy glow at sunrise. Nights are spent in sustainable eco-camp geodesic domes and historic Patagonian estancias enjoying traditional wood-fired Asado barbecues and fine Carmenere wine.",
-                Destination = "Torres del Paine & Los Glaciares",
-                Country = "Chile & Argentina",
-                Region = "Americas",
-                StartCity = "Punta Arenas, Chile",
-                EndCity = "El Calafate, Argentina",
-                IdealSeason = "October – April",
-                DurationDays = 10,
-                DurationNights = 9,
-                BasePrice = 3450.00m,
-                DiscountPrice = 3190.00m,
-                DepositAmount = 600.00m,
+                Title = "Sajek Valley: Kingdom of Clouds & Hill Tracts",
+                Slug = "sajek-valley-clouds-hill-tracts",
+                Summary = "Wake up above a sea of white clouds, ride classic Chander Gari mountain jeeps, and hike to Konglak Para.",
+                Description = "A peaceful escape to the highest elevated valley in Bangladesh. Experience sunrise over rolling green hills enveloped in mist, walk through indigenous Lusai and Tripura villages at Ruilui Para, trek to the peak of Konglak Para, and enjoy fresh bamboo-cooked chicken beside a cozy wooden cottage in the cool mountain breeze.",
+                Destination = "Sajek Valley, Rangamati",
+                Country = "Bangladesh",
+                Region = "Chittagong Division",
+                StartCity = "Dhaka / Khagrachhari",
+                EndCity = "Dhaka",
+                IdealSeason = "September – March (Best for Clouds)",
+                DurationDays = 3,
+                DurationNights = 2,
+                BasePrice = 8500.00m,
+                DiscountPrice = 7500.00m,
+                DepositAmount = 2500.00m,
                 MaxGroupSize = 12,
-                Difficulty = DifficultyLevel.Challenging,
+                Difficulty = DifficultyLevel.Easy,
                 Category = TourCategory.MountainTrekking,
-                CoverImageUrl = "https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?auto=format&fit=crop&w=1600&q=80",
+                CoverImageUrl = "https://images.unsplash.com/photo-1628085971946-b673e4492bf9?auto=format&fit=crop&w=1200&q=80",
                 GalleryImages = [
-                    "https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1527004013197-933c4bb611b3?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80"
+                    "https://images.unsplash.com/photo-1628085971946-b673e4492bf9?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1596895111956-bf1cf0599ce5?auto=format&fit=crop&w=1200&q=80"
                 ],
                 Highlights = [
-                    "Full guided traverse of the iconic W-Trek in Torres del Paine",
-                    "Boat navigation across Grey Lake amongst cobalt blue icebergs",
-                    "Exclusive catwalk vantage of Perito Moreno Glacier in Argentina",
-                    "Private estancia barbecue with local Baqueano horsemen",
-                    "Sunrise hike to the base of granite towers (Mirador Las Torres)"
+                    "Sunrise & sunset viewpoints overlooking endless sea of clouds",
+                    "Hike to Konglak Para (highest point of Sajek Valley)",
+                    "Traditional Chander Gari jeep convoy from Dighinala Army Escort",
+                    "Authentic bamboo-cooked chicken and hill forest herbs dinner",
+                    "Stay in hill-facing wooden cottages with balcony views"
                 ],
                 Inclusions = [
-                    "9 Nights in Boutique Mountain Refugios & Eco-Lodge Domes",
-                    "All meals on trek: 9 hearty breakfasts, 8 trail lunches, 7 chef-prepared dinners",
-                    "Certified bilingual UIAGM / Wilderness First Responder mountain guides",
-                    "All National Park permits, border transit permits, and lake catamaran fares",
-                    "Luggage transfer service between main base lodges and trailheads"
+                    "2 Nights accommodation in hill-view cottage (Ruilui Para)",
+                    "Round-trip AC coach from Dhaka to Khagrachhari & reserved Chander Gari",
+                    "All meals: 3 breakfasts, 3 lunches, 2 dinners (including bamboo chicken night)",
+                    "Experienced local tour coordinator and army escort management",
+                    "All entry fees and indigenous community contribution passes"
                 ],
                 Exclusions = [
-                    "International flights into Punta Arenas (PUQ) and out of El Calafate (FTE)",
-                    "Mandatory international medical and mountain evacuation insurance",
-                    "Personal trekking gear (boots, poles, sleeping gear upgrades)"
+                    "Personal shopping and extra snacks",
+                    "Optional zip-lining or quad bike rides",
+                    "Personal travel insurance"
                 ],
                 PackingTips = [
-                    "Layered thermal base layers (Merino wool recommended)",
-                    "GORE-TEX waterproof shell jacket and pants for Patagonian wind",
-                    "Sturdy, broken-in waterproof hiking boots with Vibram soles",
-                    "Trekking poles with rubber tips"
+                    "Light warm jacket or shawl for cool mornings and nights",
+                    "Comfortable sneakers or grip sandals for stone trails",
+                    "Power bank (occasional load-shedding on hills)",
+                    "National ID card or photocopy (mandatory for security checkpoints)"
                 ],
                 IsActive = true,
                 IsFeatured = true,
@@ -86,460 +75,50 @@ public static class DbInitializer
                     new()
                     {
                         DayNumber = 1,
-                        Title = "Arrival in Punta Arenas & Transfer to Puerto Natales",
-                        Description = "Meet your expedition director at Punta Arenas Airport. Scenic private drive along the Strait of Magellan to the seaside town of Puerto Natales. Evening trip orientation followed by a welcome dinner featuring King Crab and Chilean wines.",
-                        Accommodation = "The Singular Patagonia / Hotel Indigo",
-                        MealsIncluded = "Dinner",
-                        Location = "Puerto Natales",
-                        ActivityMetrics = "Scenic drive 3 hrs • Elevation: Sea Level"
+                        Title = "Dhaka to Khagrachhari & Chander Gari Escort to Sajek",
+                        Description = "Arrive in Khagrachhari early morning. Traditional paratha and egg breakfast. Board reserved open-hood 4x4 Chander Gari to join the morning Bangladesh Army security convoy through the scenic winding green hill passes. Check-in to hilltop cottage in Ruilui Para, followed by sunset from Helipad.",
+                        Accommodation = "Megh Kabbo / Sajek Resort",
+                        MealsIncluded = "Breakfast, Lunch, Bamboo Chicken Dinner",
+                        Location = "Ruilui Para, Sajek",
+                        ActivityMetrics = "Jeep ride 3.5 hrs • Leisure walk"
                     },
                     new()
                     {
                         DayNumber = 2,
-                        Title = "Into Torres del Paine & Mirador Base Las Torres",
-                        Description = "Early morning transfer into Torres del Paine National Park. Begin the challenging ascent through the Ascencio Valley, crossing ancient Lenga beech forests before navigating the final moraine to witness the monumental granite horn towers reflected in the turquoise glacial tarn.",
-                        Accommodation = "EcoCamp Patagonia Geodesic Domes",
-                        MealsIncluded = "Breakfast, Trail Lunch, Dinner",
-                        Location = "Torres del Paine",
-                        ActivityMetrics = "19 km hiking • 8-9 hours • +900m elevation gain"
+                        Title = "Konglak Para Sunrise & Tribal Village Stroll",
+                        Description = "Early wake-up at 5:30 AM to witness clouds floating directly into your balcony. Morning hike to Konglak Para, meet local indigenous Lusai families, and taste fresh mountain papayas. Afternoon visit to Stone Garden and evening musical gathering under starry skies.",
+                        Accommodation = "Megh Kabbo / Sajek Resort",
+                        MealsIncluded = "Breakfast, Lunch, Barbecue Dinner",
+                        Location = "Konglak Para",
+                        ActivityMetrics = "Gentle hill climb 1 hr • Cultural walk"
                     },
                     new()
                     {
                         DayNumber = 3,
-                        Title = "French Valley Hanging Glaciers",
-                        Description = "Hike into the dramatic French Valley, a natural amphitheater framed by granite walls and hanging glaciers. Hear the frequent roar of glacial ice calving across the valley basin while looking out over Lake Nordenskjöld.",
-                        Accommodation = "Refugio Paine Grande",
-                        MealsIncluded = "Breakfast, Trail Lunch, Dinner",
-                        Location = "French Valley",
-                        ActivityMetrics = "15 km hiking • 6-7 hours • +600m / -600m"
-                    },
-                    new()
-                    {
-                        DayNumber = 4,
-                        Title = "Grey Glacier Trek & Lake Navigation",
-                        Description = "Follow the lake trail to Grey Glacier, part of the Southern Patagonian Ice Field. In the afternoon, board the Grey III vessel for a close-up navigation beside the sheer 30-meter high turquoise ice cliffs.",
-                        Accommodation = "EcoCamp Patagonia",
-                        MealsIncluded = "Breakfast, Trail Lunch, Dinner",
-                        Location = "Grey Glacier",
-                        ActivityMetrics = "11 km hiking • 4-5 hours • Boat navigation 2 hrs"
-                    },
-                    new()
-                    {
-                        DayNumber = 5,
-                        Title = "Cross the Border to El Chaltén, Argentina",
-                        Description = "Bid farewell to Chile and cross the pampas into Argentina. Arrive in El Chaltén, Argentina's trekking capital nestled beneath the dramatic sawtooth silhouette of Mount Fitz Roy.",
-                        Accommodation = "Destino Sur Hotel de Montaña & Spa",
-                        MealsIncluded = "Breakfast, Dinner",
-                        Location = "El Chaltén",
-                        ActivityMetrics = "Border crossing & drive 5 hrs"
+                        Title = "Alutila Cave & Return Journey to Dhaka",
+                        Description = "Depart Sajek with morning escort. Stop at Khagrachhari to explore mystical Alutila Cave with flaming bamboo torches and visit Risang Waterfall. Evening dinner and board return AC coach to Dhaka.",
+                        Accommodation = "Overnight Coach to Dhaka",
+                        MealsIncluded = "Breakfast, Lunch, Dinner",
+                        Location = "Alutila & Khagrachhari",
+                        ActivityMetrics = "Cave exploration • Return transit"
                     }
                 ],
                 Schedules = [
                     new()
                     {
-                        StartDate = DateTime.UtcNow.AddDays(25),
-                        EndDate = DateTime.UtcNow.AddDays(35),
-                        PricePerPerson = 3190.00m,
+                        StartDate = DateTime.UtcNow.AddDays(7),
+                        EndDate = DateTime.UtcNow.AddDays(10),
+                        PricePerPerson = 7500.00m,
                         TotalSeats = 12,
-                        BookedSeats = 8,
-                        Status = ScheduleStatus.Guaranteed
-                    },
-                    new()
-                    {
-                        StartDate = DateTime.UtcNow.AddDays(55),
-                        EndDate = DateTime.UtcNow.AddDays(65),
-                        PricePerPerson = 3450.00m,
-                        TotalSeats = 12,
-                        BookedSeats = 3,
-                        Status = ScheduleStatus.Scheduled
-                    },
-                    new()
-                    {
-                        StartDate = DateTime.UtcNow.AddDays(90),
-                        EndDate = DateTime.UtcNow.AddDays(100),
-                        PricePerPerson = 3450.00m,
-                        TotalSeats = 12,
-                        BookedSeats = 0,
-                        Status = ScheduleStatus.Scheduled
-                    }
-                ],
-                Reviews = [
-                    new()
-                    {
-                        ReviewerName = "Harrison Croft",
-                        ReviewerLocation = "Denver, Colorado",
-                        ReviewerEmail = "harrison.c@example.com",
-                        Rating = 5,
-                        Title = "Life-changing wilderness experience",
-                        Comment = "The logistics were completely flawless. Walking up to the Base of the Towers at sunrise was a bucket-list moment I will never forget. Our guide Lucas was extraordinarily knowledgeable about local geology and weather patterns.",
-                        TripDateFormatted = "Traveled March 2026",
-                        IsVerifiedBooking = true
-                    },
-                    new()
-                    {
-                        ReviewerName = "Camilla Lindqvist",
-                        ReviewerLocation = "Stockholm, Sweden",
-                        ReviewerEmail = "camilla.l@example.com",
-                        Rating = 5,
-                        Title = "EcoCamp was out of this world",
-                        Comment = "Sleeping in the geodesic domes with views of the stars after strenuous days on the trail made this feel like true luxury adventure travel.",
-                        TripDateFormatted = "Traveled February 2026",
-                        IsVerifiedBooking = true
-                    }
-                ]
-            },
-
-            // 2. Tanzania Great Migration
-            new()
-            {
-                Title = "Serengeti Migration & Ngorongoro Crater Safari",
-                Slug = "serengeti-great-migration-safari",
-                Summary = "Witness the raw power of the Great Migration and tracking the Big Five across the golden savannah of East Africa.",
-                Description = "An extraordinary 8-day wildlife journey traversing the cradle of human history and Africa's greatest game reserves. Experience thrilling sunrise game drives in customized open-roof 4x4 Land Cruisers, descend 600 meters into the volcanic caldera of Ngorongoro Crater, and stay in authentic luxury canvas tented camps that move with the herds under the vast African night sky.",
-                Destination = "Serengeti & Ngorongoro Caldera",
-                Country = "Tanzania",
-                Region = "Africa",
-                StartCity = "Kilimanjaro (JRO), Tanzania",
-                EndCity = "Arusha, Tanzania",
-                IdealSeason = "June – October & December – March",
-                DurationDays = 8,
-                DurationNights = 7,
-                BasePrice = 4200.00m,
-                DiscountPrice = 3890.00m,
-                DepositAmount = 750.00m,
-                MaxGroupSize = 8,
-                Difficulty = DifficultyLevel.Easy,
-                Category = TourCategory.WildlifeAndSafari,
-                CoverImageUrl = "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1600&q=80",
-                GalleryImages = [
-                    "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1534177616072-ef7dc120449d?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=1200&q=80"
-                ],
-                Highlights = [
-                    "Guaranteed window seats in custom safari 4x4 Land Cruisers with pop-top roof",
-                    "Full-day game drive in the UNESCO-listed Ngorongoro Crater floor",
-                    "Tracking lion prides, cheetahs, leopards, and elephant herds in Central & Northern Serengeti",
-                    "Intimate luxury tented camps with butler service, bush showers, and campfire sundowners",
-                    "Authentic cultural encounter with respectful Maasai community elders"
-                ],
-                Inclusions = [
-                    "7 Nights in Handpicked Luxury Safari Lodges & Semi-Permanent Canvas Camps",
-                    "All meals on safari: gourmet bush breakfasts, hot lunches, and 3-course dinners",
-                    "Unlimited game drives with professional certified KPSGA Bronze/Silver naturalist guides",
-                    "All Tanzania National Park conservation fees, crater entry fees, and concessions",
-                    "AMREF Flying Doctors emergency medical evacuation cover"
-                ],
-                Exclusions = [
-                    "International roundtrip flights to Kilimanjaro International Airport (JRO)",
-                    "Tanzania tourist visa ($50-$100 depending on nationality)",
-                    "Hot air balloon safari over the Serengeti plains (optional add-on $599)"
-                ],
-                PackingTips = [
-                    "Neutral khaki and olive cotton/linen apparel (avoid dark blue and black)",
-                    "Quality pair of 8x42 or 10x42 binoculars",
-                    "Wide-brim safari sun hat and polarized sunglasses",
-                    "High-zoom camera lens (100-400mm recommended)"
-                ],
-                IsActive = true,
-                IsFeatured = true,
-                ItineraryDays = [
-                    new()
-                    {
-                        DayNumber = 1,
-                        Title = "Arrival in Arusha & Coffee Plantation Retreat",
-                        Description = "Arrive at Kilimanjaro International Airport (JRO). Private chauffeured transfer to an idyllic colonial-era organic coffee plantation at the foothills of Mount Meru. Relax by the pool and enjoy farm-to-table dinner.",
-                        Accommodation = "Arusha Coffee Lodge by Elewana",
-                        MealsIncluded = "Dinner",
-                        Location = "Arusha",
-                        ActivityMetrics = "Transfer 1 hr • Gentle walk"
-                    },
-                    new()
-                    {
-                        DayNumber = 2,
-                        Title = "Tarangire National Park: Giants & Baobabs",
-                        Description = "Drive into Tarangire, famous for its dense concentration of majestic African elephants and ancient giant baobab trees. Spot tree-climbing lions and vast herds of zebras watering along the Tarangire River.",
-                        Accommodation = "Tarangire Treetops Lodge",
-                        MealsIncluded = "Breakfast, Picnic Lunch, Dinner",
-                        Location = "Tarangire",
-                        ActivityMetrics = "Game drive 6 hrs • Abundant wildlife"
-                    },
-                    new()
-                    {
-                        DayNumber = 3,
-                        Title = "The Lost World of Ngorongoro Crater",
-                        Description = "Descend the steep volcanic walls into the world's largest unbroken caldera. The crater floor is an Eden of wildlife where you have the highest probability in Africa of observing black rhinos, hippos, and lion prides in a single morning.",
-                        Accommodation = "Ngorongoro Crater Lodge",
-                        MealsIncluded = "Breakfast, Picnic Lunch, Dinner",
-                        Location = "Ngorongoro",
-                        ActivityMetrics = "Crater floor game drive 7 hrs"
-                    },
-                    new()
-                    {
-                        DayNumber = 4,
-                        Title = "Into the Endless Plains of the Serengeti",
-                        Description = "Fly by bush aircraft or drive across Olduvai Gorge into the Serengeti. The name originates from Maasai 'Siringit'—where the land runs forever. Afternoon game drive tracking big cats hunting in the golden grass.",
-                        Accommodation = "Serengeti Pioneer Camp",
-                        MealsIncluded = "Breakfast, Lunch, Gourmet Dinner",
-                        Location = "Serengeti",
-                        ActivityMetrics = "Game drive 4 hrs • Sundowner drinks"
-                    }
-                ],
-                Schedules = [
-                    new()
-                    {
-                        StartDate = DateTime.UtcNow.AddDays(18),
-                        EndDate = DateTime.UtcNow.AddDays(26),
-                        PricePerPerson = 3890.00m,
-                        TotalSeats = 8,
-                        BookedSeats = 6,
-                        Status = ScheduleStatus.Guaranteed
-                    },
-                    new()
-                    {
-                        StartDate = DateTime.UtcNow.AddDays(45),
-                        EndDate = DateTime.UtcNow.AddDays(53),
-                        PricePerPerson = 4200.00m,
-                        TotalSeats = 8,
-                        BookedSeats = 2,
-                        Status = ScheduleStatus.Scheduled
-                    }
-                ],
-                Reviews = [
-                    new()
-                    {
-                        ReviewerName = "Dr. Elena Rostova",
-                        ReviewerLocation = "Zurich, Switzerland",
-                        ReviewerEmail = "elena.r@example.com",
-                        Rating = 5,
-                        Title = "Witnessed a river crossing on day three!",
-                        Comment = "Words cannot describe the feeling of waking up to the sound of lions calling in the distance. The staff at the camp treated us like royalty. Our guide Moses spotted leopards hidden in acacia trees that nobody else could see.",
-                        TripDateFormatted = "Traveled August 2026",
-                        IsVerifiedBooking = true
-                    }
-                ]
-            },
-
-            // 3. Amalfi & Capri Private Sailing
-            new()
-            {
-                Title = "Amalfi Coast & Isle of Capri: Private Riva Yacht & Cliffside Trails",
-                Slug = "amalfi-coast-capri-private-yacht",
-                Summary = "Bespoke Italian coastal escape combining cliffside luxury villas, private boat charters to Capri, and the scenic Path of the Gods.",
-                Description = "Savor the dolce vita along Italy's most celebrated coastline. Stay in historic cliff-perched 5-star properties in Positano and Ravello. Charter a private wooden Riva yacht to swim in secluded emerald grottoes of Capri, hike high above the Mediterranean along the ancient Path of the Gods, and dine at Michelin-starred seaside terraces with local vintners.",
-                Destination = "Positano, Capri & Ravello",
-                Country = "Italy",
-                Region = "Europe",
-                StartCity = "Naples (NAP), Italy",
-                EndCity = "Naples, Italy",
-                IdealSeason = "May – October",
-                DurationDays = 7,
-                DurationNights = 6,
-                BasePrice = 3600.00m,
-                DiscountPrice = 3350.00m,
-                DepositAmount = 500.00m,
-                MaxGroupSize = 10,
-                Difficulty = DifficultyLevel.Easy,
-                Category = TourCategory.BeachAndResort,
-                CoverImageUrl = "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1600&q=80",
-                GalleryImages = [
-                    "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80"
-                ],
-                Highlights = [
-                    "Full-day private Riva yacht charter around Capri and Faraglioni rocks",
-                    "Hike the legendary Path of the Gods (Sentiero degli Dei) with coastal geologist",
-                    "Private lemon grove tour and artisanal Limoncello masterclass in Amalfi",
-                    "Sunset classical concert at the cliffside gardens of Villa Rufolo in Ravello",
-                    "VIP fast-track hydrofoil and Mercedes Maybach coastal transfers"
-                ],
-                Inclusions = [
-                    "6 Nights in 5-Star Cliffside Luxury Hotels (Positano & Ravello)",
-                    "Daily Champagne Breakfasts & 3 Curated Seaside Tasting Dinners",
-                    "Private Mercedes Van and chauffeur for all mainland travel",
-                    "Private yacht charter with skipper, towels, and onboard Italian aperitivo",
-                    "All guided tours with licensed private Italian art and nature historians"
-                ],
-                Exclusions = [
-                    "Airfare to/from Naples International Airport",
-                    "City tourist taxes (payable directly at hotels, €7/night)",
-                    "Personal shopping and spa treatments"
-                ],
-                PackingTips = [
-                    "Light linen shirts, sundresses, and smart-casual evening wear",
-                    "Comfortable walking shoes with good tread for stone stairways",
-                    "Designer sunglasses and reef-safe sunscreen",
-                    "Swimwear and dry-bag for yacht excursions"
-                ],
-                IsActive = true,
-                IsFeatured = true,
-                ItineraryDays = [
-                    new()
-                    {
-                        DayNumber = 1,
-                        Title = "Arrival in Naples & Private Transfer to Positano",
-                        Description = "Meet your private chauffeur at Naples Airport or Train Station. Scenic drive along the cliff roads with dramatic sea views. Check-in to your balcony suite overlooking the pastel-hued village of Positano.",
-                        Accommodation = "Le Sirenuse / Villa Franca Positano",
-                        MealsIncluded = "Welcome Aperitivo & Dinner",
-                        Location = "Positano",
-                        ActivityMetrics = "Scenic drive 1.5 hrs"
-                    },
-                    new()
-                    {
-                        DayNumber = 2,
-                        Title = "The Path of the Gods Hike to Nocelle",
-                        Description = "Traverse the historic mountain pathway suspended between sea and sky. Walk past shepherd cottages, wild rosemary bushes, and limestone crags with breathtaking panoramic vistas of the entire Sorrentine Peninsula.",
-                        Accommodation = "Villa Franca Positano",
-                        MealsIncluded = "Breakfast, Rustic Mountain Lunch",
-                        Location = "Nocelle",
-                        ActivityMetrics = "8 km hike • 4 hours • Moderate stone paths"
-                    },
-                    new()
-                    {
-                        DayNumber = 3,
-                        Title = "Private Capri Yacht Cruise & Blue Grotto",
-                        Description = "Step aboard your private Riva yacht at Positano pier. Cruise past the siren islands of Li Galli, swim in crystal turquoise sea coves, navigate through the arch of the Faraglioni, and explore the boutiques of Capri town.",
-                        Accommodation = "Villa Franca Positano",
-                        MealsIncluded = "Breakfast, Onboard Prosecco & Lunch",
-                        Location = "Capri",
-                        ActivityMetrics = "Full day sailing & swimming"
-                    }
-                ],
-                Schedules = [
-                    new()
-                    {
-                        StartDate = DateTime.UtcNow.AddDays(30),
-                        EndDate = DateTime.UtcNow.AddDays(37),
-                        PricePerPerson = 3350.00m,
-                        TotalSeats = 10,
                         BookedSeats = 4,
                         Status = ScheduleStatus.Guaranteed
                     },
                     new()
                     {
-                        StartDate = DateTime.UtcNow.AddDays(60),
-                        EndDate = DateTime.UtcNow.AddDays(67),
-                        PricePerPerson = 3600.00m,
-                        TotalSeats = 10,
-                        BookedSeats = 1,
-                        Status = ScheduleStatus.Scheduled
-                    }
-                ],
-                Reviews = [
-                    new()
-                    {
-                        ReviewerName = "Victoria Sterling",
-                        ReviewerLocation = "London, United Kingdom",
-                        ReviewerEmail = "victoria.s@example.com",
-                        Rating = 5,
-                        Title = "The most romantic trip of our lives",
-                        Comment = "Every detail was executed with utter perfection. The private boat around Capri and our dinner reservation in Ravello overlooking the Mediterranean felt like something straight out of a classic movie.",
-                        TripDateFormatted = "Traveled July 2026",
-                        IsVerifiedBooking = true
-                    }
-                ]
-            },
-
-            // 4. Japan Kumano Kodo & Kyoto
-            new()
-            {
-                Title = "Sacred Japan: Kumano Kodo Ancient Trails & Kyoto Zen",
-                Slug = "sacred-japan-kumano-kodo-kyoto",
-                Summary = "Walk thousand-year-old pilgrimage paths, stay in mountain temple lodgings, and experience authentic tea ceremonies in Kyoto.",
-                Description = "A deeply meditative 9-day cultural pilgrimage through the spiritual heart of Japan. Trek UNESCO-listed stone paths through misty cedar forests on the Kii Peninsula, bathe in natural geothermal onsens that have healed pilgrims for a millennium, and experience an overnight shukubo stay in Mount Koya with Shingon Buddhist monks chanting at dawn.",
-                Destination = "Kyoto, Kumano Kodo & Mount Koya",
-                Country = "Japan",
-                Region = "Asia",
-                StartCity = "Osaka (KIX), Japan",
-                EndCity = "Kyoto, Japan",
-                IdealSeason = "March – May & October – November",
-                DurationDays = 9,
-                DurationNights = 8,
-                BasePrice = 3150.00m,
-                DiscountPrice = 2890.00m,
-                DepositAmount = 500.00m,
-                MaxGroupSize = 10,
-                Difficulty = DifficultyLevel.Moderate,
-                Category = TourCategory.Cultural,
-                CoverImageUrl = "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1600&q=80",
-                GalleryImages = [
-                    "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=80"
-                ],
-                Highlights = [
-                    "Hike sacred cobblestone sections of the UNESCO Kumano Kodo trail",
-                    "Traditional Ryokan stays with multi-course Kaiseki seasonal banquets",
-                    "Temple lodging (Shukubo) on Mount Koya with vegetarian Shojin Ryori dining",
-                    "Morning meditation and Goma fire ritual with Buddhist monks",
-                    "Private after-hours tea ceremony in a historic Kyoto teahouse"
-                ],
-                Inclusions = [
-                    "8 Nights in Handpicked Traditional Ryokans, Temple Lodgings & Heritage Hotels",
-                    "All breakfasts, 6 elaborate multi-course Kaiseki dinners, 4 trail lunches",
-                    "Full baggage forward service between trail segments so you hike with a daypack",
-                    "All regional train passes, express Shinkansen bullet trains, and private shuttles",
-                    "English-speaking licensed Japanese cultural and mountain guide throughout"
-                ],
-                Exclusions = [
-                    "International roundtrip flights to Osaka Kansai (KIX) / Tokyo (HND/NRT)",
-                    "Personal onsen towels and discretionary temple donations",
-                    "Alcoholic drinks during meals"
-                ],
-                PackingTips = [
-                    "Slip-on shoes or boots with easy lacing (for frequent ryokan entries)",
-                    "Merino wool socks and lightweight trekking gear",
-                    "Compact daypack (20-25L) with rain cover"
-                ],
-                IsActive = true,
-                IsFeatured = true,
-                ItineraryDays = [
-                    new()
-                    {
-                        DayNumber = 1,
-                        Title = "Arrival in Osaka & Coastal Train to Tanabe",
-                        Description = "Meet in Osaka and board the coastal Kuroshio train south to Tanabe, the historic gateway to the Kumano Kodo. Enjoy an introductory welcome banquet of fresh Pacific sashimi.",
-                        Accommodation = "JR Hotel Clement Wakayama / Tanabe Ryokan",
-                        MealsIncluded = "Dinner",
-                        Location = "Tanabe",
-                        ActivityMetrics = "Train travel 2 hrs"
-                    },
-                    new()
-                    {
-                        DayNumber = 2,
-                        Title = "Trek Takijiri-oji to Takahara 'Village in the Mist'",
-                        Description = "Begin the Kumano pilgrimage at sacred Takijiri shrine. Climb through ancient mossy roots and towering Japanese cedar forests to reach the scenic ridge village of Takahara overlooking mountain valleys.",
-                        Accommodation = "Kiri-no-Sato Takahara Lodge",
-                        MealsIncluded = "Breakfast, Lunch, Kaiseki Dinner",
-                        Location = "Takahara",
-                        ActivityMetrics = "4 km hiking • 2.5-3 hours • Steep stone climb +370m"
-                    },
-                    new()
-                    {
-                        DayNumber = 3,
-                        Title = "Kumano Hongu Taisha & River Onsen of Yunomine",
-                        Description = "Hike to the grand shrine of Hongu Taisha and stand beneath the world's largest torii gate at Oyunohara. Conclude the day by soaking in Yunomine Onsen, Japan's oldest hot spring retreat.",
-                        Accommodation = "Ryokan Adumaya Yunomine",
-                        MealsIncluded = "Breakfast, Bento Lunch, Dinner",
-                        Location = "Yunomine Onsen",
-                        ActivityMetrics = "13 km trail • 5 hours • Hot spring soak"
-                    }
-                ],
-                Schedules = [
-                    new()
-                    {
-                        StartDate = DateTime.UtcNow.AddDays(20),
-                        EndDate = DateTime.UtcNow.AddDays(29),
-                        PricePerPerson = 2890.00m,
-                        TotalSeats = 10,
-                        BookedSeats = 7,
-                        Status = ScheduleStatus.Guaranteed
-                    },
-                    new()
-                    {
-                        StartDate = DateTime.UtcNow.AddDays(70),
-                        EndDate = DateTime.UtcNow.AddDays(79),
-                        PricePerPerson = 3150.00m,
-                        TotalSeats = 10,
+                        StartDate = DateTime.UtcNow.AddDays(21),
+                        EndDate = DateTime.UtcNow.AddDays(24),
+                        PricePerPerson = 7500.00m,
+                        TotalSeats = 12,
                         BookedSeats = 2,
                         Status = ScheduleStatus.Scheduled
                     }
@@ -547,67 +126,65 @@ public static class DbInitializer
                 Reviews = [
                     new()
                     {
-                        ReviewerName = "Nathaniel Cross",
-                        ReviewerLocation = "Melbourne, Australia",
-                        ReviewerEmail = "nathaniel.c@example.com",
+                        ReviewerName = "Tanvir Ahmed",
+                        ReviewerLocation = "Dhanmondi, Dhaka",
+                        ReviewerEmail = "tanvir@example.com",
                         Rating = 5,
-                        Title = "Pure peace and serenity in the mountains",
-                        Comment = "Walking beneath 800-year-old cedars in the mountain rain was spiritual. The luggage transfer system worked like clockwork. Every night the hot springs and multi-course meals recharged us completely.",
-                        TripDateFormatted = "Traveled November 2025",
+                        Title = "The clouds felt within arm's reach",
+                        Comment = "Extremely well organized. The Chander Gari driver was skilled and our cottage in Ruilui had an unblocked 180-degree view of the valley. Best trip of the year.",
+                        TripDateFormatted = "October 2026",
                         IsVerifiedBooking = true
                     }
                 ]
             },
 
-            // 5. Iceland Aurora & Glaciers
+            // 2. Tanguar Haor Luxury Houseboat
             new()
             {
-                Title = "Iceland Volcanic Highlands: Ice Caves, Glaciers & Aurora Borealis",
-                Slug = "iceland-volcanic-highlands-aurora",
-                Summary = "Traverse supernatural volcanic landscapes, explore natural sapphire ice caves, and chase the Northern Lights in modified Super Jeeps.",
-                Description = "A 7-day Arctic journey into Iceland's most remote southern wilderness. Journey across black volcanic sand beaches, walk across ancient glacier tongues wearing crampons, crawl into crystalline blue ice caves beneath Vatnajökull, and soak in geothermal mineral lagoons while watching the Aurora dance across midnight skies.",
-                Destination = "Vatnajökull, Vik & Golden Circle",
-                Country = "Iceland",
-                Region = "Europe",
-                StartCity = "Reykjavik (KEF), Iceland",
-                EndCity = "Reykjavik, Iceland",
-                IdealSeason = "September – April",
-                DurationDays = 7,
-                DurationNights = 6,
-                BasePrice = 2950.00m,
-                DiscountPrice = 2750.00m,
-                DepositAmount = 450.00m,
-                MaxGroupSize = 10,
-                Difficulty = DifficultyLevel.Moderate,
-                Category = TourCategory.Adventure,
-                CoverImageUrl = "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1600&q=80",
+                Title = "Tanguar Haor & Shimul Bagan: Premium Houseboat Bajra",
+                Slug = "tanguar-haor-premium-houseboat",
+                Summary = "Drift along crystal wetlands in Sunamganj aboard a handcrafted wooden houseboat with fresh haor fish and folk music.",
+                Description = "A deeply soothing 3-day journey across the emerald freshwater wetlands of Sunamganj. Float past migrating waterfowl beneath the Meghalaya hill borders, swim in the turquoise waters of Tekerghat limestone lake, stroll through the vibrant Shimul Bagan tree grove, and spend serene nights on the open wooden roof of your boat listening to acoustic Baul music under a moonlit sky.",
+                Destination = "Tanguar Haor & Tekerghat, Sunamganj",
+                Country = "Bangladesh",
+                Region = "Sylhet Division",
+                StartCity = "Dhaka / Sunamganj",
+                EndCity = "Dhaka",
+                IdealSeason = "July – November (Monsoon & Post-Monsoon)",
+                DurationDays = 3,
+                DurationNights = 2,
+                BasePrice = 9800.00m,
+                DiscountPrice = 8900.00m,
+                DepositAmount = 3000.00m,
+                MaxGroupSize = 14,
+                Difficulty = DifficultyLevel.Easy,
+                Category = TourCategory.BeachAndResort,
+                CoverImageUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
                 GalleryImages = [
-                    "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1529963183134-61a90db47eaf?auto=format&fit=crop&w=1200&q=80"
+                    "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80"
                 ],
                 Highlights = [
-                    "Expedition into natural Vatnajökull crystalline blue ice caves",
-                    "Northern Lights hunting in dark-sky coastal locations with photography guide",
-                    "Crampon glacier walk across Falljökull outlet glacier",
-                    "Black sand coast of Reynisfjara and sea basalt columns",
-                    "Relaxation pass to the geothermal Retreat Lagoon at Blue Lagoon"
+                    "2 Full days cruising on a luxury wooden houseboat with AC & attached washrooms",
+                    "Swim in Niladri Lake (Shahid Siraj Lake / Limestone Quarry)",
+                    "Watch sunset across the Meghalaya mountain borderline from Barikka Tila",
+                    "Fresh wild haor catch (Boal, Rui, Pabda, Shrimp) cooked live on board",
+                    "Evening live folk Baul flute and dotara performance on the open roof deck"
                 ],
                 Inclusions = [
-                    "6 Nights in Design Boutique Hotels and Northern Lights Rural Lodges",
-                    "All breakfasts and 4 Arctic tasting dinners with fresh local seafood & lamb",
-                    "Private 4x4 Mercedes Sprinter / Super Jeep with onboard Wi-Fi and USB charging",
-                    "All glacier equipment: crampons, helmets, harnesses, and ice axes",
-                    "Professional Northern Lights forecast monitoring and photo portraits"
+                    "2 Days / 1 Night onboard luxury wooden houseboat (AC cabin with attached washroom)",
+                    "All gourmet haor meals: 5 meals featuring duck curry, fresh fish & local desserts",
+                    "Life jackets and safety swim assistance",
+                    "Reserved transport from Sunamganj Ghat and back",
+                    "Tanguar Haor sanctuary entry and boat permits"
                 ],
                 Exclusions = [
-                    "International flights into Keflavik (KEF)",
-                    "Lunches and beverages outside dinners",
-                    "Personal outdoor cold-weather boots"
+                    "Dhaka to Sunamganj bus tickets (can be arranged on request)",
+                    "Personal tips for boat crew and musician"
                 ],
                 PackingTips = [
-                    "Windproof and waterproof shell jacket (10,000mm+ rating)",
-                    "Thermal base layers and insulated down jacket",
-                    "Thermal glove liners, waterproof mitts, and wool beanie"
+                    "Extra cotton clothes and swimwear",
+                    "Waterproof dry pouch for phones and cameras",
+                    "Sun hat, sunglasses, and mosquito repellent cream"
                 ],
                 IsActive = true,
                 IsFeatured = true,
@@ -615,118 +192,388 @@ public static class DbInitializer
                     new()
                     {
                         DayNumber = 1,
-                        Title = "Arrival & The Blue Lagoon Geothermal Retreat",
-                        Description = "Arrive at Keflavik Airport. Immediate VIP transfer to the secluded Silica Lagoon for a relaxing soak in mineral-rich milky blue waters surrounded by moss-covered lava fields.",
-                        Accommodation = "ION Adventure Hotel",
-                        MealsIncluded = "Welcome Dinner",
-                        Location = "Reykjavik / Grindavik",
-                        ActivityMetrics = "Lagoon soak • Scenic drive 1 hr"
+                        Title = "Boarding Houseboat at Sunamganj & Watchtower Cruise",
+                        Description = "Arrive in Sunamganj in the morning. Board your premium wooden bajra at Shaheb Bari Ghat with welcome coconut water. Cruise through the heart of Tanguar Haor, observe local fishermen in wooden dinghies, anchor near the central Watchtower, and take a refreshing dip in clean haor water.",
+                        Accommodation = "Private Cabin aboard 'Joltorongo' Houseboat",
+                        MealsIncluded = "Breakfast, Fresh Haor Fish Lunch, Duck Curry Dinner",
+                        Location = "Central Tanguar Haor",
+                        ActivityMetrics = "Smooth boat cruise • Swimming with lifejackets"
                     },
                     new()
                     {
                         DayNumber = 2,
-                        Title = "Golden Circle & Thingvellir Rift Valley",
-                        Description = "Stand between the North American and Eurasian tectonic plates at Thingvellir. Marvel at the powerful Gullfoss waterfall and witness the erupting Strokkur geyser throwing boiling steam into the crisp Arctic air.",
-                        Accommodation = "ION Adventure Hotel",
-                        MealsIncluded = "Breakfast, Dinner",
-                        Location = "Golden Circle",
-                        ActivityMetrics = "Walking 5 km • Tectonic rift tour"
+                        Title = "Tekerghat Niladri Lake & Shimul Bagan",
+                        Description = "Wake up to misty waters. Cruise towards Tekerghat. Ride local bikes to Niladri Lake (former limestone quarry) with stunning emerald water backed by Indian mountain ranges. Visit the Jadukata riverbank and Barikka Tila in the late afternoon.",
+                        Accommodation = "Private Cabin aboard Houseboat",
+                        MealsIncluded = "Breakfast, Lunch, Rooftop BBQ Dinner",
+                        Location = "Tekerghat & Jadukata River",
+                        ActivityMetrics = "Bike ride 1 hr • Scenic walks"
+                    }
+                ],
+                Schedules = [
+                    new()
+                    {
+                        StartDate = DateTime.UtcNow.AddDays(10),
+                        EndDate = DateTime.UtcNow.AddDays(13),
+                        PricePerPerson = 8900.00m,
+                        TotalSeats = 14,
+                        BookedSeats = 6,
+                        Status = ScheduleStatus.Guaranteed
+                    }
+                ],
+                Reviews = [
+                    new()
+                    {
+                        ReviewerName = "Farhana Islam",
+                        ReviewerLocation = "Uttara, Dhaka",
+                        ReviewerEmail = "farhana@example.com",
+                        Rating = 5,
+                        Title = "Peaceful beyond words",
+                        Comment = "Sitting on the upper deck at night with cool wind blowing and hearing acoustic Baul flute songs was the most peaceful experience I've had in years. Highly recommended for couples and families.",
+                        TripDateFormatted = "September 2026",
+                        IsVerifiedBooking = true
+                    }
+                ]
+            },
+
+            // 3. Sreemangal Tea Estates
+            new()
+            {
+                Title = "Sreemangal & Lawachara: Tea Gardens & Rainforest Retreat",
+                Slug = "sreemangal-tea-gardens-lawachara",
+                Summary = "Pedal along tranquil rolling emerald tea estates, explore Lawachara National Park, and taste seven-layer tea.",
+                Description = "Immerse yourself in the calming green capital of Bangladesh. Wander through manicured tea hills that stretch as far as the eye can see, encounter endangered Hoolock gibbons in Lawachara Rainforest, visit indigenous Khasia betel-leaf villages, and unwind in luxurious boutique tea resort cottages surrounded by silence and fresh air.",
+                Destination = "Sreemangal, Moulvibazar",
+                Country = "Bangladesh",
+                Region = "Sylhet Division",
+                StartCity = "Dhaka / Sreemangal",
+                EndCity = "Dhaka",
+                IdealSeason = "All Year (Monsoon for Lush Greenery, Winter for Fog)",
+                DurationDays = 3,
+                DurationNights = 2,
+                BasePrice = 7200.00m,
+                DiscountPrice = 6400.00m,
+                DepositAmount = 2000.00m,
+                MaxGroupSize = 10,
+                Difficulty = DifficultyLevel.Easy,
+                Category = TourCategory.EcoTour,
+                CoverImageUrl = "https://images.unsplash.com/photo-1582650625119-3a31f8418b7d?auto=format&fit=crop&w=1200&q=80",
+                GalleryImages = [
+                    "https://images.unsplash.com/photo-1582650625119-3a31f8418b7d?auto=format&fit=crop&w=1200&q=80"
+                ],
+                Highlights = [
+                    "Bicycle or open jeep ride through Finlay & Madhabpur Tea Estates",
+                    "Wildlife trail in Lawachara National Park with certified naturalist",
+                    "Sunset reflection over water lilies at Madhabpur Lake",
+                    "Visit to Baikka Beel wetland bird sanctuary",
+                    "Tasting authentic 7-layer tea at Nilkantha Tea Cabin"
+                ],
+                Inclusions = [
+                    "2 Nights in Deluxe Eco-Resort Cottage (Grand Selim / Swiss Valley)",
+                    "Dhaka to Sreemangal round-trip Parabat/Jayantika Express train or AC bus",
+                    "Daily breakfast and traditional Sylheti dinners featuring Shatkora beef/chicken",
+                    "Reserved private auto/jeep for all local sightseeing",
+                    "Forest entry fees and registered nature guide"
+                ],
+                Exclusions = [
+                    "Personal tea packet purchases",
+                    "Lunches during independent tea stall explorations"
+                ],
+                PackingTips = [
+                    "Light cotton shirts, walking shoes, binoculars for birdwatching",
+                    "Eco-friendly water bottle (refills available at resort)"
+                ],
+                IsActive = true,
+                IsFeatured = true,
+                ItineraryDays = [
+                    new()
+                    {
+                        DayNumber = 1,
+                        Title = "Scenic Train to Sreemangal & Madhabpur Lake Sunset",
+                        Description = "Morning train from Kamalapur Railway Station through green countryside. Arrive in Sreemangal by noon. Check into serene eco-resort. Afternoon drive through Finlay tea gardens to Madhabpur Lake to see wild pink lotus flowers.",
+                        Accommodation = "Grand Selim Eco Resort",
+                        MealsIncluded = "Dinner",
+                        Location = "Madhabpur Lake",
+                        ActivityMetrics = "Train travel 4 hrs • Gentle lake stroll"
                     },
                     new()
                     {
-                        DayNumber = 3,
-                        Title = "Glacier Hike & Jökulsárlón Glacier Lagoon",
-                        Description = "Drive along the South Coast past Seljalandsfoss. Reach Jökulsárlón lagoon where floating icebergs drift out to the Atlantic and wash ashore on the black sand of Diamond Beach.",
-                        Accommodation = "Fosshotel Glacier Lagoon",
-                        MealsIncluded = "Breakfast, Dinner",
-                        Location = "Vatnajökull",
-                        ActivityMetrics = "Glacier hike 3 hrs • Crampons provided"
+                        DayNumber = 2,
+                        Title = "Lawachara Canopy Trek & Khasia Village",
+                        Description = "Morning guided forest trek under the dense canopy of Lawachara National Park. Listen for the calls of wild Hoolock gibbons. Visit Khasiapunji betel-leaf farming village. Afternoon tea-testing session at Nilkantha.",
+                        Accommodation = "Grand Selim Eco Resort",
+                        MealsIncluded = "Breakfast, Traditional Shatkora Dinner",
+                        Location = "Lawachara Forest",
+                        ActivityMetrics = "3 hours easy nature walk"
                     }
                 ],
                 Schedules = [
                     new()
                     {
                         StartDate = DateTime.UtcNow.AddDays(14),
-                        EndDate = DateTime.UtcNow.AddDays(21),
-                        PricePerPerson = 2750.00m,
+                        EndDate = DateTime.UtcNow.AddDays(17),
+                        PricePerPerson = 6400.00m,
                         TotalSeats = 10,
-                        BookedSeats = 5,
+                        BookedSeats = 3,
                         Status = ScheduleStatus.Guaranteed
-                    },
-                    new()
-                    {
-                        StartDate = DateTime.UtcNow.AddDays(40),
-                        EndDate = DateTime.UtcNow.AddDays(47),
-                        PricePerPerson = 2950.00m,
-                        TotalSeats = 10,
-                        BookedSeats = 2,
-                        Status = ScheduleStatus.Scheduled
                     }
                 ],
                 Reviews = [
                     new()
                     {
-                        ReviewerName = "Astrid Larsson",
-                        ReviewerLocation = "Copenhagen, Denmark",
-                        ReviewerEmail = "astrid.l@example.com",
+                        ReviewerName = "Mahmudul Hasan",
+                        ReviewerLocation = "Chittagong",
+                        ReviewerEmail = "mahmudul@example.com",
                         Rating = 5,
-                        Title = "The ice caves left me speechless",
-                        Comment = "Walking deep inside a blue glacier was like being on another planet. We also saw aurora borealis three nights in a row right outside our hotel windows.",
-                        TripDateFormatted = "Traveled January 2026",
+                        Title = "Total greenery and peace of mind",
+                        Comment = "Walking through Lawachara in the early morning fog was magical. The resort was super quiet, clean, and the food cooked with local shatkora was unforgettable.",
+                        TripDateFormatted = "August 2026",
                         IsVerifiedBooking = true
                     }
                 ]
             },
 
-            // 6. Morocco Sahara & Imperial Cities
+            // 4. Cox's Bazar Marine Drive & Inani
             new()
             {
-                Title = "Moroccan Imperial Odyssey: High Atlas Trails to Luxury Sahara Dunes",
-                Slug = "morocco-imperial-sahara-luxury",
-                Summary = "Wander labyrinthine medinas, trek past High Atlas Berber settlements, and sleep beneath Saharan stars in a luxury tented camp.",
-                Description = "An immersive 8-day sensory journey through the colors, scents, and history of North Africa. Traverse ancient caravan routes through the High Atlas Mountains, explore the UNESCO fortified clay village of Ait Benhaddou, and ride camels into the golden Erg Chebbi dunes for an unforgettable private luxury desert camp experience with live Gnawa music under the Milky Way.",
-                Destination = "Marrakech, Dades Valley & Erg Chebbi",
-                Country = "Morocco",
-                Region = "Africa",
-                StartCity = "Marrakech (RAK), Morocco",
-                EndCity = "Marrakech, Morocco",
-                IdealSeason = "October – May",
-                DurationDays = 8,
-                DurationNights = 7,
-                BasePrice = 2250.00m,
-                DiscountPrice = 1990.00m,
-                DepositAmount = 350.00m,
-                MaxGroupSize = 12,
+                Title = "Cox's Bazar & Inani: Longest Beach & Marine Drive Coastal Trail",
+                Slug = "coxs-bazar-marine-drive-inani",
+                Summary = "Relax on secluded beaches along the world's longest coastline, cruise the Marine Drive, and taste fresh Kolatoli seafood.",
+                Description = "Experience the calm and relaxing side of the world's longest natural sea beach (120 km). Stay along the tranquil stretches of Inani Beach, take scenic sunset drives on the cliffside Marine Drive with the Bay of Bengal on one side and green hills on the other, explore coral rocks, and feast on fresh Rupchanda and pomfret.",
+                Destination = "Cox's Bazar & Inani Beach",
+                Country = "Bangladesh",
+                Region = "Chittagong Division",
+                StartCity = "Dhaka / Cox's Bazar",
+                EndCity = "Dhaka",
+                IdealSeason = "October – April",
+                DurationDays = 4,
+                DurationNights = 3,
+                BasePrice = 11500.00m,
+                DiscountPrice = 9900.00m,
+                DepositAmount = 3000.00m,
+                MaxGroupSize = 10,
                 Difficulty = DifficultyLevel.Easy,
-                Category = TourCategory.Cultural,
-                CoverImageUrl = "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?auto=format&fit=crop&w=1600&q=80",
+                Category = TourCategory.BeachAndResort,
+                CoverImageUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
                 GalleryImages = [
-                    "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1489749798305-4fea3ae63d43?auto=format&fit=crop&w=1200&q=80"
+                    "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80"
                 ],
                 Highlights = [
-                    "Private luxury desert camp with ensuite bathroom and king beds in Erg Chebbi",
-                    "Sunset camel trek and sandboarding on 150-meter-high dunes",
-                    "Guided architecture tour of fortified clay kasbah Ait Benhaddou",
-                    "Private cooking masterclass crafting traditional lamb and prunes tagine",
-                    "VIP exploration of Majorelle Gardens and the Yves Saint Laurent Museum"
+                    "Stay in premier seaside resort with private beach access",
+                    "Sunset open-roof jeep drive along the 80km Marine Drive road",
+                    "Explore live coral reefs and clean beaches of Inani & Himchhari",
+                    "Authentic coastal seafood dinners: Grilled Rupchanda, Koral & Lobster",
+                    "Morning walk at quiet Sugandha and Darianagar secluded spots"
                 ],
                 Inclusions = [
-                    "7 Nights in Handpicked Luxury Riads, Kasbahs & Desert Luxury Glamping",
-                    "Daily traditional Moroccan breakfasts and 6 chef-prepared dinners",
-                    "Private 4x4 Mercedes V-Class with professional English-speaking driver",
-                    "All local certified guides in Marrakech and Ait Benhaddou",
-                    "Camel trek and 4x4 dune transport in the Sahara"
+                    "3 Nights in 4-Star Beachfront Resort (Sayeman Beach Resort or Royal Tulip)",
+                    "Roundtrip AC Scania coach from Dhaka or airport transfer assistance",
+                    "Daily buffet breakfasts with sea view",
+                    "Dedicated private tourist car for Marine Drive, Himchhari & Inani",
+                    "One complimentary seafood dinner by the waves"
                 ],
                 Exclusions = [
-                    "International airfare to Marrakech (RAK)",
-                    "Lunches and gratuities for driver/guides",
-                    "Alcoholic drinks outside riads"
+                    "Airfare (can be added on request)",
+                    "Water sports (parasailing / jet ski)"
                 ],
                 PackingTips = [
-                    "Modest, breathable linen clothing covering shoulders and knees",
-                    "Warm evening fleece (Sahara nights can be crisp)",
-                    "Scarf or shemagh to protect against blowing sand"
+                    "Sunscreen, beach flip-flops, sunglasses, linen casual wear"
+                ],
+                IsActive = true,
+                IsFeatured = true,
+                ItineraryDays = [
+                    new()
+                    {
+                        DayNumber = 1,
+                        Title = "Arrival in Cox's Bazar & Sunset Beach Stroll",
+                        Description = "Arrive in Cox's Bazar. Check in to your seaside room. Spend the afternoon watching the golden sunset over the gentle waves of the Bay of Bengal. Enjoy evening fresh fish fry at Kolatoli.",
+                        Accommodation = "Sayeman Beach Resort / Long Beach Hotel",
+                        MealsIncluded = "Dinner",
+                        Location = "Kolatoli Beach",
+                        ActivityMetrics = "Beach walking • Relaxation"
+                    },
+                    new()
+                    {
+                        DayNumber = 2,
+                        Title = "Marine Drive Safari to Inani & Himchhari",
+                        Description = "After breakfast, take a private drive on the world-famous Marine Drive road. Stop at Himchhari national park for panoramic hill views of the ocean. Continue to Inani Beach to inspect unique ancient coral boulders.",
+                        Accommodation = "Sayeman Beach Resort",
+                        MealsIncluded = "Buffet Breakfast, Seafood Dinner",
+                        Location = "Marine Drive & Inani",
+                        ActivityMetrics = "Coastal drive 50 km • Coral reef exploration"
+                    }
+                ],
+                Schedules = [
+                    new()
+                    {
+                        StartDate = DateTime.UtcNow.AddDays(15),
+                        EndDate = DateTime.UtcNow.AddDays(19),
+                        PricePerPerson = 9900.00m,
+                        TotalSeats = 10,
+                        BookedSeats = 4,
+                        Status = ScheduleStatus.Guaranteed
+                    }
+                ],
+                Reviews = [
+                    new()
+                    {
+                        ReviewerName = "Abrar Chowdhury",
+                        ReviewerLocation = "Gulshan, Dhaka",
+                        ReviewerEmail = "abrar@example.com",
+                        Rating = 5,
+                        Title = "Best coastal drive in Asia",
+                        Comment = "Driving down Marine Drive at 5 PM with the cool ocean breeze was pure happiness. Highly recommend staying away from crowded points and spending time at Inani.",
+                        TripDateFormatted = "September 2026",
+                        IsVerifiedBooking = true
+                    }
+                ]
+            },
+
+            // 5. Sundarbans Mangrove
+            new()
+            {
+                Title = "Sundarbans Expedition: Mangrove Forest & Tiger Trail Cruise",
+                Slug = "sundarbans-mangrove-forest-tiger-trail",
+                Summary = "Cruise into the world's largest mangrove forest, observe spotted deer and estuarine crocodiles, and explore Kotka beach.",
+                Description = "A deep eco-wilderness voyage into the UNESCO World Heritage Sundarbans. Travel aboard a purpose-built tourist cruiser through silent creeks and misty rivers. Take quiet dawn country boat rides into narrow mangrove channels, climb watchtowers overlooking tiger grounds at Kotka, and walk along the untouched virgin shores of Jamtola sea beach.",
+                Destination = "Sundarbans, Khulna & Bagerhat",
+                Country = "Bangladesh",
+                Region = "Khulna Division",
+                StartCity = "Khulna / Mongla",
+                EndCity = "Khulna",
+                IdealSeason = "November – March",
+                DurationDays = 3,
+                DurationNights = 3,
+                BasePrice = 14500.00m,
+                DiscountPrice = 13200.00m,
+                DepositAmount = 4000.00m,
+                MaxGroupSize = 16,
+                Difficulty = DifficultyLevel.Moderate,
+                Category = TourCategory.WildlifeAndSafari,
+                CoverImageUrl = "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=1200&q=80",
+                GalleryImages = [
+                    "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=1200&q=80"
+                ],
+                Highlights = [
+                    "Full cruising inside reserved deep forest zones (Harbaria, Kotka, Kochikhali)",
+                    "Silent paddle boat canal cruise at dawn to spot kingfishers, deer & otters",
+                    "Walk on Jamtola isolated white sand beach surrounded by mangroves",
+                    "Armed forest department security guards accompanying all shore excursions",
+                    "Visit historical Sixty Dome Mosque (Shat Gombuj Masjid) in Bagerhat"
+                ],
+                Inclusions = [
+                    "3 Days & 3 Nights cabin accommodation on registered tourist ship (M.V. The Wave / Silverwave)",
+                    "All meals on ship (buffet breakfast, lunches, and traditional dinners)",
+                    "Forest Department revenue fees, permissions, and armed guard escort",
+                    "Licensed expert mangrove naturalist guide",
+                    "Small wooden non-motorized boat canal excursions"
+                ],
+                Exclusions = [
+                    "Transport to Mongla/Khulna ghat (can be arranged via coach/train)",
+                    "Personal camera fees (if commercial)"
+                ],
+                PackingTips = [
+                    "Dull colored clothes (earthy green, khaki, brown; avoid red and bright yellow)",
+                    "Full-sleeved shirts to protect against sun and insects",
+                    "Comfortable closed walking shoes or rubber boots for mud trails"
+                ],
+                IsActive = true,
+                IsFeatured = true,
+                ItineraryDays = [
+                    new()
+                    {
+                        DayNumber = 1,
+                        Title = "Boarding at Mongla & Harbaria Eco Center",
+                        Description = "Board the cruise vessel at Mongla Ghat by 7:30 AM. Fresh breakfast as the ship sails into the Sundarbans. First shore excursion along the wooden walkway of Harbaria Eco Tourism Center. Watch for spotted deer, wild boars, and fresh tiger pugmarks.",
+                        Accommodation = "Private Twin Cabin on Ship",
+                        MealsIncluded = "Breakfast, Lunch, Dinner",
+                        Location = "Harbaria",
+                        ActivityMetrics = "Mangrove walkway 2 km • River cruise"
+                    },
+                    new()
+                    {
+                        DayNumber = 2,
+                        Title = "Silent Canal Cruise & Jamtola Tiger Beach",
+                        Description = "Dawn canal cruise on country rowboats with engine off, listening to bird calls in absolute silence. Post-breakfast trek through Kotka forest trail leading to the remote Jamtola sea beach on the Bay of Bengal.",
+                        Accommodation = "Private Twin Cabin on Ship",
+                        MealsIncluded = "Breakfast, Lunch, BBQ Night",
+                        Location = "Kotka & Jamtola Beach",
+                        ActivityMetrics = "Forest walking 4 km • Quiet rowboat trip"
+                    }
+                ],
+                Schedules = [
+                    new()
+                    {
+                        StartDate = DateTime.UtcNow.AddDays(25),
+                        EndDate = DateTime.UtcNow.AddDays(28),
+                        PricePerPerson = 13200.00m,
+                        TotalSeats = 16,
+                        BookedSeats = 8,
+                        Status = ScheduleStatus.Guaranteed
+                    }
+                ],
+                Reviews = [
+                    new()
+                    {
+                        ReviewerName = "Sadman Sakib",
+                        ReviewerLocation = "Mirpur, Dhaka",
+                        ReviewerEmail = "sadman@example.com",
+                        Rating = 5,
+                        Title = "A true national treasure",
+                        Comment = "The silence of the Sundarbans cannot be described. We saw spotted deer grazing right by our boat and saw fresh tiger tracks at Kotka. The boat staff took care of every detail.",
+                        TripDateFormatted = "January 2026",
+                        IsVerifiedBooking = true
+                    }
+                ]
+            },
+
+            // 6. Bandarban Nilgiri & Boga Lake
+            new()
+            {
+                Title = "Bandarban Mountain Trails: Nilgiri Cloud Resort & Boga Lake",
+                Slug = "bandarban-nilgiri-boga-lake",
+                Summary = "Climb scenic mountain passes, experience Nilgiri cloud peak, and visit volcanic Boga Lake with indigenous Bawm guides.",
+                Description = "An adventurous yet serene journey through the highest peaks of southeastern Bangladesh. Ride through dramatic serpentine mountain roads, witness cloud formations from the cliff edge of Nilgiri, visit indigenous Bawm and Marma hill communities, and stay near mystical Boga Lake nestled at 1,200 feet above sea level.",
+                Destination = "Bandarban & Ruma",
+                Country = "Bangladesh",
+                Region = "Chittagong Division",
+                StartCity = "Dhaka / Bandarban",
+                EndCity = "Dhaka",
+                IdealSeason = "October – March",
+                DurationDays = 3,
+                DurationNights = 2,
+                BasePrice = 8800.00m,
+                DiscountPrice = 7800.00m,
+                DepositAmount = 2500.00m,
+                MaxGroupSize = 10,
+                Difficulty = DifficultyLevel.Moderate,
+                Category = TourCategory.MountainTrekking,
+                CoverImageUrl = "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
+                GalleryImages = [
+                    "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80"
+                ],
+                Highlights = [
+                    "Visit Nilgiri Resort (2,200 feet above sea level, touching the clouds)",
+                    "Scenic drive through Chimbuk Hill and Shoilo Propat waterfall",
+                    "Excursion to mystical freshwater Boga Lake (crater lake)",
+                    "Experience local indigenous hill cuisine and wild mountain tea",
+                    "Golden Temple (Buddha Dhatu Jadi) architectural visit"
+                ],
+                Inclusions = [
+                    "2 Nights accommodation in hill-view eco resort / wooden cottage",
+                    "Reserved 4x4 Chander Gari for all mountain transfers",
+                    "All meals during the expedition",
+                    "Registered local indigenous guide and security paperwork clearances",
+                    "All community passes and waterfall entry permits"
+                ],
+                Exclusions = [
+                    "Dhaka to Bandarban bus fare (can be booked on request)",
+                    "Personal tips"
+                ],
+                PackingTips = [
+                    "Warm jacket for cool mountain breezes",
+                    "Grippy hiking shoes",
+                    "Photocopies of National ID card (4 sets for army checkposts)"
                 ],
                 IsActive = true,
                 IsFeatured = false,
@@ -734,62 +581,52 @@ public static class DbInitializer
                     new()
                     {
                         DayNumber = 1,
-                        Title = "Arrival in Marrakech & Riad Welcome",
-                        Description = "Private airport greeting and escort to a peaceful restored 18th-century riad in the heart of the medina. Evening welcome banquet featuring slow-cooked tagine and fresh mint tea.",
-                        Accommodation = "Riad Kniza / Villa des Orangers",
-                        MealsIncluded = "Dinner",
-                        Location = "Marrakech",
-                        ActivityMetrics = "Transfer 30 min • Medina walk"
+                        Title = "Arrival in Bandarban & Nilgiri Cloud Highway",
+                        Description = "Arrive early morning in Bandarban town. Traditional breakfast. Board reserved Chander Gari for the drive up the mountain highway to Nilgiri. Cloud views from the helipad and coffee at the military hilltop cafe. Return via Chimbuk Hill and Shoilo Propat.",
+                        Accommodation = "Hill View Resort / Sairu Hill Resort",
+                        MealsIncluded = "Breakfast, Lunch, Dinner",
+                        Location = "Nilgiri & Chimbuk",
+                        ActivityMetrics = "Mountain drive 4 hrs • Sightseeing"
                     },
                     new()
                     {
                         DayNumber = 2,
-                        Title = "Over the Tizi n'Tichka Pass to Ait Benhaddou",
-                        Description = "Wind through the dramatic High Atlas Mountains over the 2,260m Tizi n'Tichka pass. Arrive at the red clay towers of Ait Benhaddou where Gladiator and Lawrence of Arabia were filmed.",
-                        Accommodation = "Ksar Ighnda",
-                        MealsIncluded = "Breakfast, Dinner",
-                        Location = "Ait Benhaddou",
-                        ActivityMetrics = "Scenic mountain drive 4 hrs • Kasbah exploration"
-                    },
-                    new()
-                    {
-                        DayNumber = 3,
-                        Title = "Dades Gorges to Erg Chebbi Sahara Luxury Camp",
-                        Description = "Journey through the Valley of a Thousand Kasbahs. As afternoon shadows lengthen, switch to dromedary camels or 4x4s to ride into the golden Erg Chebbi dunes. Dine by candlelight around the desert bonfire.",
-                        Accommodation = "Merzouga Luxury Desert Camp",
-                        MealsIncluded = "Breakfast, Sunset Camp Dinner",
-                        Location = "Merzouga / Sahara",
-                        ActivityMetrics = "Camel ride 1.5 hrs • Stargazing"
+                        Title = "Journey to Ruma & Boga Lake",
+                        Description = "Scenic ride along the Sangu River to Ruma Bazar. Complete security registration and proceed up the mountain track to picturesque Boga Lake. Relax beside the calm volcanic water and meet Bawm villagers.",
+                        Accommodation = "Boga Lake Wooden Cottage",
+                        MealsIncluded = "Breakfast, Indigenous Hill Lunch, Dinner",
+                        Location = "Boga Lake",
+                        ActivityMetrics = "Off-road ride 2.5 hrs • Lake walk"
                     }
                 ],
                 Schedules = [
                     new()
                     {
-                        StartDate = DateTime.UtcNow.AddDays(35),
-                        EndDate = DateTime.UtcNow.AddDays(43),
-                        PricePerPerson = 1990.00m,
-                        TotalSeats = 12,
-                        BookedSeats = 4,
+                        StartDate = DateTime.UtcNow.AddDays(18),
+                        EndDate = DateTime.UtcNow.AddDays(21),
+                        PricePerPerson = 7800.00m,
+                        TotalSeats = 10,
+                        BookedSeats = 3,
                         Status = ScheduleStatus.Guaranteed
                     }
                 ],
                 Reviews = [
                     new()
                     {
-                        ReviewerName = "Fiona Gallagher",
-                        ReviewerLocation = "Dublin, Ireland",
-                        ReviewerEmail = "fiona.g@example.com",
+                        ReviewerName = "Nafis Imtiaz",
+                        ReviewerLocation = "Sylhet",
+                        ReviewerEmail = "nafis@example.com",
                         Rating = 5,
-                        Title = "The desert camp surpassed all expectations",
-                        Comment = "I was hesitant about camping in the Sahara, but this was five-star luxury. Hot showers, plush carpets, delicious food, and the stars at night were miraculous.",
-                        TripDateFormatted = "Traveled March 2026",
+                        Title = "Breathtaking landscapes inside Bangladesh",
+                        Comment = "Many people don't realize how majestic the Bandarban hills are. Nilgiri was above the clouds and the fresh mountain air was completely rejuvenating.",
+                        TripDateFormatted = "September 2026",
                         IsVerifiedBooking = true
                     }
                 ]
             }
         };
 
-        context.TourPackages.AddRange(tours);
+        context.TourPackages.AddRange(bangladeshTours);
         await context.SaveChangesAsync();
     }
 }
