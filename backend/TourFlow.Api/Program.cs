@@ -1,6 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using TourFlow.Application;
 using TourFlow.Infrastructure;
+using TourFlow.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,7 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 
 // Configure CORS for Next.js Frontend
@@ -21,17 +24,33 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins(frontendUrl)
+        policy.WithOrigins(frontendUrl, "http://localhost:3001")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
     });
 });
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+// OpenAPI configuration
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+// Seed database on startup
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<TourFlowDbContext>();
+        await DbInitializer.SeedAsync(context);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding the database.");
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
