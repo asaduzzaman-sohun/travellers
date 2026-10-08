@@ -7,10 +7,13 @@ using TourFlow.Api.Services;
 using TourFlow.Domain.Entities;
 using TourFlow.Infrastructure.Data;
 
+using Microsoft.AspNetCore.RateLimiting;
+
 namespace TourFlow.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[EnableRateLimiting("auth")]
 public class AuthController : ControllerBase
 {
     private readonly TourFlowDbContext _context;
@@ -46,15 +49,19 @@ public class AuthController : ControllerBase
             return Conflict(new { message = "An account with this email address already exists." });
         }
 
+        // Enforce safe default role "User" - prevent privilege escalation
+        var refreshToken = _jwtTokenService.GenerateRefreshToken();
         var user = new User
         {
             Id = Guid.NewGuid(),
             FullName = dto.FullName.Trim(),
             Email = normalizedEmail,
             PasswordHash = _passwordHasher.HashPassword(dto.Password),
-            Role = (dto.Role?.Equals("Admin", StringComparison.OrdinalIgnoreCase) ?? false) ? "Admin" : "User",
+            Role = "User",
             PhoneNumber = dto.PhoneNumber?.Trim(),
             HomeCity = string.IsNullOrWhiteSpace(dto.HomeCity) ? "Dhaka" : dto.HomeCity.Trim(),
+            RefreshToken = refreshToken,
+            RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7),
             IsVerified = true,
             CreatedAt = DateTime.UtcNow
         };
@@ -65,7 +72,7 @@ public class AuthController : ControllerBase
         var token = _jwtTokenService.GenerateToken(user);
         var userDto = MapToDto(user);
 
-        return Ok(new AuthResponseDto(token, userDto));
+        return Ok(new AuthResponseDto(token, userDto, refreshToken));
     }
 
     [HttpPost("login")]
@@ -91,9 +98,69 @@ public class AuthController : ControllerBase
         }
 
         var token = _jwtTokenService.GenerateToken(user);
+        var refreshToken = _jwtTokenService.GenerateRefreshToken();
+
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        await _context.SaveChangesAsync();
+
         var userDto = MapToDto(user);
 
-        return Ok(new AuthResponseDto(token, userDto));
+        return Ok(new AuthResponseDto(token, userDto, refreshToken));
+    }
+
+    [HttpPost("refresh-token")]
+    public async Task<ActionResult<AuthResponseDto>> RefreshToken([FromBody] RefreshTokenRequestDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Token) || string.IsNullOrWhiteSpace(dto.RefreshToken))
+        {
+            return BadRequest(new { message = "Token and refresh token are required." });
+        }
+
+        var principal = _jwtTokenService.GetPrincipalFromExpiredToken(dto.Token);
+        if (principal == null)
+        {
+            return BadRequest(new { message = "Invalid access token." });
+        }
+
+        var userIdStr = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userIdStr, out var userId))
+        {
+            return Unauthorized(new { message = "Invalid user identifier in token." });
+        }
+
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null || user.RefreshToken != dto.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+        {
+            return Unauthorized(new { message = "Invalid or expired refresh token." });
+        }
+
+        var newToken = _jwtTokenService.GenerateToken(user);
+        var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
+
+        user.RefreshToken = newRefreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        await _context.SaveChangesAsync();
+
+        return Ok(new AuthResponseDto(newToken, MapToDto(user), newRefreshToken));
+    }
+
+    [Authorize]
+    [HttpPost("revoke-token")]
+    public async Task<IActionResult> RevokeToken()
+    {
+        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (Guid.TryParse(userIdStr, out var userId))
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user != null)
+            {
+                user.RefreshToken = null;
+                user.RefreshTokenExpiryTime = null;
+                await _context.SaveChangesAsync();
+            }
+        }
+        return Ok(new { message = "Token successfully revoked." });
     }
 
     [Authorize]
@@ -138,6 +205,8 @@ public class AuthController : ControllerBase
         user.HomeCity = dto.HomeCity?.Trim();
         user.NidOrPassport = dto.NidOrPassport?.Trim();
         user.Bio = dto.Bio?.Trim();
+        if (dto.AvatarUrl != null)
+            user.AvatarUrl = dto.AvatarUrl.Trim();
         user.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
@@ -173,6 +242,90 @@ public class AuthController : ControllerBase
         return Ok(new { message = "Password successfully changed." });
     }
 
+    [Authorize]
+    [HttpGet("users")]
+    public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers()
+    {
+        var role = User.FindFirstValue(ClaimTypes.Role);
+        if (role != "SuperAdmin" && role != "Admin")
+        {
+            return Forbid();
+        }
+
+        var users = await _context.Users
+            .OrderByDescending(u => u.CreatedAt)
+            .ToListAsync();
+
+        return Ok(users.Select(MapToDto));
+    }
+
+    [Authorize]
+    [HttpPatch("users/{id}/role")]
+    public async Task<IActionResult> UpdateUserRole(Guid id, [FromBody] ChangeRoleDto dto)
+    {
+        var callerRole = User.FindFirstValue(ClaimTypes.Role);
+        if (callerRole != "SuperAdmin")
+        {
+            return Forbid();
+        }
+
+        if (string.IsNullOrWhiteSpace(dto.Role) ||
+            (dto.Role != "SuperAdmin" && dto.Role != "Admin" && dto.Role != "User"))
+        {
+            return BadRequest(new { message = "Role must be 'SuperAdmin', 'Admin', or 'User'." });
+        }
+
+        var user = await _context.Users.FindAsync(id);
+        if (user == null)
+        {
+            return NotFound(new { message = "User not found." });
+        }
+
+        user.Role = dto.Role;
+        user.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = $"User role updated to {dto.Role}.", user = MapToDto(user) });
+    }
+
+    [Authorize]
+    [HttpGet("platform-stats")]
+    public async Task<IActionResult> GetPlatformStats()
+    {
+        var role = User.FindFirstValue(ClaimTypes.Role);
+        if (role != "SuperAdmin" && role != "Admin")
+        {
+            return Forbid();
+        }
+
+        var totalUsers = await _context.Users.CountAsync();
+        var superAdmins = await _context.Users.CountAsync(u => u.Role == "SuperAdmin");
+        var admins = await _context.Users.CountAsync(u => u.Role == "Admin");
+        var travelers = await _context.Users.CountAsync(u => u.Role == "User");
+
+        var totalTours = await _context.TourPackages.CountAsync();
+        var totalBookings = await _context.Bookings.CountAsync();
+        var totalRevenue = await _context.Bookings.SumAsync(b => b.TotalAmount);
+        var totalDeposit = await _context.Bookings.SumAsync(b => b.DepositPaid);
+        var totalBlogs = await _context.BlogPosts.CountAsync();
+
+        return Ok(new
+        {
+            totalUsers,
+            superAdminCount = superAdmins,
+            adminCount = admins,
+            travelerCount = travelers,
+            totalTours,
+            totalBookings,
+            totalRevenue,
+            totalDepositCollected = totalDeposit,
+            totalBlogs,
+            databaseStatus = "Operational",
+            encryptionAlgorithm = "PBKDF2-SHA256 (100,000 rounds)",
+            serverTimeUtc = DateTime.UtcNow
+        });
+    }
+
     private static UserDto MapToDto(User user)
     {
         return new UserDto(
@@ -184,6 +337,7 @@ public class AuthController : ControllerBase
             user.HomeCity,
             user.NidOrPassport,
             user.Bio,
+            user.AvatarUrl,
             user.IsVerified,
             user.CreatedAt
         );

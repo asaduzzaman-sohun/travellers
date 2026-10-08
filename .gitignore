@@ -6,6 +6,13 @@ obj/
 *.userosscache
 *.sln.docstates
 appsettings.Production.json
+appsettings.Development.json
+*.local.json
+
+# Environment variables
+.env
+.env.*
+!.env.example
 
 # Node & Next.js
 frontend/node_modules/

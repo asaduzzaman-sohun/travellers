@@ -29,6 +29,10 @@ public class Booking : BaseEntity
     public string? EmergencyContactPhone { get; set; }
     public string? PaymentTransactionId { get; set; }
 
+    // Associated User account (optional for guest bookings)
+    public Guid? UserId { get; set; }
+    public User? User { get; set; }
+
     // Navigation properties
     public TourSchedule? TourSchedule { get; set; }
     public TourPackage? TourPackage { get; set; }

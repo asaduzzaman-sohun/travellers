@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: tourflow-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: tourflow_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d tourflow_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tourflow-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: TourFlow.Api/Dockerfile
+    container_name: tourflow-backend
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=tourflow_db;Username=postgres;Password=postgres"
+      Jwt__Secret: "TourFlow_Super_Secret_Jwt_Security_Key_2026_Bangladesh_Tourism_Special_Key_12345!"
+      Jwt__Issuer: "TourFlowApi"
+      Jwt__Audience: "TourFlowApp"
+      FrontendUrl: "http://localhost:3000"
+      Cloudinary__CloudName: ${CLOUDINARY_CLOUD_NAME:-YOUR_CLOUDINARY_CLOUD_NAME}
+      Cloudinary__ApiKey: ${CLOUDINARY_API_KEY:-YOUR_CLOUDINARY_API_KEY}
+      Cloudinary__ApiSecret: ${CLOUDINARY_API_SECRET:-YOUR_CLOUDINARY_API_SECRET}
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - tourflow-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: tourflow-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: "http://localhost:5000/api"
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - tourflow-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  tourflow-network:
+    driver: bridge

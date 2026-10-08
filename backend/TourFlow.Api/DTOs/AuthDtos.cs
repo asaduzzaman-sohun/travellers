@@ -5,8 +5,7 @@ public record RegisterRequestDto(
     string Email,
     string Password,
     string? PhoneNumber,
-    string? HomeCity,
-    string? Role = "User"
+    string? HomeCity
 );
 
 public record LoginRequestDto(
@@ -23,13 +22,20 @@ public record UserDto(
     string? HomeCity,
     string? NidOrPassport,
     string? Bio,
+    string? AvatarUrl,
     bool IsVerified,
     DateTime CreatedAt
 );
 
 public record AuthResponseDto(
     string Token,
-    UserDto User
+    UserDto User,
+    string? RefreshToken = null
+);
+
+public record RefreshTokenRequestDto(
+    string Token,
+    string RefreshToken
 );
 
 public record UpdateProfileDto(
@@ -37,10 +43,15 @@ public record UpdateProfileDto(
     string? PhoneNumber,
     string? HomeCity,
     string? NidOrPassport,
-    string? Bio
+    string? Bio,
+    string? AvatarUrl
 );
 
 public record ChangePasswordDto(
     string CurrentPassword,
     string NewPassword
+);
+
+public record ChangeRoleDto(
+    string Role
 );

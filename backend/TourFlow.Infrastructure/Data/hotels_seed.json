@@ -1,0 +1,1039 @@
+[
+  {
+    "id": "sayeman",
+    "name": "Sayeman Beach Resort",
+    "location": "Marine Drive, Kolatoli, Cox's Bazar",
+    "place": "Cox's Bazar",
+    "tier": "Luxury",
+    "rating": 4.8,
+    "reviewsCount": 340,
+    "priceNumeric": 9500,
+    "pricePerNight": "BDT 7,500 – BDT 15,000",
+    "coverImage": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "Direct beachfront location with a stunning infinity pool overlooking the Bay of Bengal. Highly regarded for its clean private beach front, excellent breakfast spread at Casablanca restaurant, and quiet environment away from the crowded main beach.",
+    "pros": [
+      "Unobstructed sunset ocean view from sea-view rooms and infinity pool",
+      "Dedicated clean private beachfront with security guards",
+      "Exceptional buffet breakfast and Casablanca seafood dining"
+    ],
+    "cons": [
+      "Higher rates during long weekends, holidays, and Eid vacations",
+      "Advance booking required 2-3 weeks prior for sea-facing balconies"
+    ],
+    "amenities": [
+      "Oceanfront Infinity Pool",
+      "24/7 Generator Backup",
+      "Private Beach Access",
+      "Casablanca Multi-Cuisine Restaurant",
+      "High-Speed Wi-Fi",
+      "Fitness Center & Spa",
+      "Airport Shuttle Service"
+    ],
+    "roomTypes": [
+      {
+        "name": "Ocean View Deluxe King",
+        "capacity": "2 Adults + 1 Child",
+        "priceBDT": "BDT 9,500 / night",
+        "bedType": "1 Super King Bed",
+        "highlights": [
+          "Direct sea-facing balcony",
+          "Glass-walled shower",
+          "Complimentary breakfast"
+        ]
+      },
+      {
+        "name": "Infinity Sea Suite",
+        "capacity": "2-3 Adults",
+        "priceBDT": "BDT 14,000 / night",
+        "bedType": "1 King Bed + Living Area",
+        "highlights": [
+          "Panoramic sunset panorama",
+          "Bathtub with ocean view",
+          "VIP lounge access"
+        ]
+      },
+      {
+        "name": "Hill View Standard Twin",
+        "capacity": "2 Adults",
+        "priceBDT": "BDT 7,500 / night",
+        "bedType": "2 Queen Beds",
+        "highlights": [
+          "Green hill ridge view",
+          "Quiet acoustic insulation",
+          "Work desk"
+        ]
+      }
+    ],
+    "howToReach": "Fly into Cox's Bazar Airport (CXB), then take the resort's private shuttle or a taxi along Marine Drive (15 minutes). Alternatively, accessible via Green Line / Desh Travels AC coaches from Dhaka directly to Kolatoli.",
+    "nearbyAttractions": [
+      {
+        "name": "Inani Beach Coral Shores",
+        "distance": "22 km (via Marine Drive)"
+      },
+      {
+        "name": "Himchari National Park Waterfall",
+        "distance": "12 km"
+      },
+      {
+        "name": "Kolatoli Beach",
+        "distance": "1.2 km"
+      }
+    ],
+    "receptionPhone": "+880 1755-699999",
+    "receptionEmail": "reservation@sayemanresort.com",
+    "checkInTime": "02:00 PM",
+    "checkOutTime": "11:30 AM",
+    "relatedTourSlug": "coxs-bazar-inani-marine-drive",
+    "relatedTourTitle": "Cox’s Bazar & Inani Marine Drive: Serene Coastal Escape"
+  },
+  {
+    "id": "grand-sultan",
+    "name": "Grand Sultan Tea Resort & Golf",
+    "location": "Radhanagar, Sreemangal, Moulvibazar",
+    "place": "Sreemangal",
+    "tier": "Luxury",
+    "rating": 4.7,
+    "reviewsCount": 260,
+    "priceNumeric": 14500,
+    "pricePerNight": "BDT 10,500 – BDT 22,000",
+    "coverImage": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "Bangladesh's premier 5-star tea estate resort. Set amidst lush green trees with multiple temperature-controlled swimming pools, mini golf course, 3D theater, and world-class spa facilities. Ideal for peaceful retreats.",
+    "pros": [
+      "Surrounded by lush forest and green tea landscapes",
+      "Multiple large swimming pools and indoor recreation facilities",
+      "Courteous staff and safe environment for children"
+    ],
+    "cons": [
+      "Located 4km outside Sreemangal town center",
+      "Restaurant menu pricing is on the higher side"
+    ],
+    "amenities": [
+      "3 Temperature-Controlled Pools",
+      "9-Hole Mini Golf Course",
+      "Aroma Spa & Sauna",
+      "Kids Play Zone & 3D Cinema",
+      "24/7 Full Generator Power",
+      "Fourseasons Multi-Cuisine Dining",
+      "Tea Estate Cycling Trails"
+    ],
+    "roomTypes": [
+      {
+        "name": "King Deluxe Tea View",
+        "capacity": "2 Adults",
+        "priceBDT": "BDT 12,500 / night",
+        "bedType": "1 King Bed",
+        "highlights": [
+          "Private balcony facing tea hills",
+          "Rain shower",
+          "Buffet breakfast included"
+        ]
+      },
+      {
+        "name": "Grand Executive Suite",
+        "capacity": "3 Adults or Family",
+        "priceBDT": "BDT 21,000 / night",
+        "bedType": "1 Master King + Sofa Bed",
+        "highlights": [
+          "Separate parlor",
+          "Deep soak tub",
+          "Complimentary golf round"
+        ]
+      }
+    ],
+    "howToReach": "Take Parabat Express train from Kamalapur to Sreemangal Station (4 hours). From the station, take an auto-rickshaw or taxi to Radhanagar (15 minutes).",
+    "nearbyAttractions": [
+      {
+        "name": "Lawachara National Park",
+        "distance": "6 km"
+      },
+      {
+        "name": "Madhabpur Lake & Tea Estate",
+        "distance": "16 km"
+      },
+      {
+        "name": "Nilkantha 7-Layer Tea Cabin",
+        "distance": "3.5 km"
+      }
+    ],
+    "receptionPhone": "+880 1730-793555",
+    "receptionEmail": "info@grandsultanresort.com",
+    "checkInTime": "02:00 PM",
+    "checkOutTime": "12:00 PM",
+    "relatedTourSlug": "sreemangal-lawachara-tea-rainforest",
+    "relatedTourTitle": "Sreemangal & Lawachara: Tea Garden Trails & Rainforest Quietude"
+  },
+  {
+    "id": "megh-kabbo",
+    "name": "Megh Kabbo Cottage Sajek",
+    "location": "Ruilui Para, Sajek Valley, Rangamati",
+    "place": "Sajek Valley",
+    "tier": "Eco/Budget",
+    "rating": 4.6,
+    "reviewsCount": 195,
+    "priceNumeric": 5500,
+    "pricePerNight": "BDT 4,000 – BDT 7,000",
+    "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "Perched directly over the edge of the hill with open wooden balconies facing East. Guests can watch the dense morning white clouds roll beneath their feet. Warm local hospitality and delicious bamboo chicken dinners.",
+    "pros": [
+      "Prime eastern ridge view for morning cloud sea & sunrise",
+      "Traditional wooden architectural feel with modern bathroom fittings",
+      "Cozy environment with generator support during load shedding"
+    ],
+    "cons": [
+      "Water supply is limited (water is transported from valley below; use conservatively)",
+      "Must walk up a steep ramp to reach the cottage"
+    ],
+    "amenities": [
+      "Direct Cloud-Facing Wooden Veranda",
+      "Hot Water Geyser (solar/generator)",
+      "Traditional Bamboo Chicken Dining",
+      "Generator Support (6:00 PM - 11:00 PM)",
+      "Indigenous Local Guide Booking"
+    ],
+    "roomTypes": [
+      {
+        "name": "Cloud View Wooden Cottage",
+        "capacity": "2-4 Adults",
+        "priceBDT": "BDT 5,500 / night",
+        "bedType": "2 Double Beds",
+        "highlights": [
+          "Balcony perched directly over clouds",
+          "Western attached bath",
+          "Geyser"
+        ]
+      }
+    ],
+    "howToReach": "Travel from Khagrachhari to Dighinala Army Camp, then take the 10:30 AM or 3:30 PM Army Convoy in a 4x4 Chander Gari to Ruilui Para.",
+    "nearbyAttractions": [
+      {
+        "name": "Konglak Para Peak",
+        "distance": "2 km hike"
+      },
+      {
+        "name": "Helipad Viewpoint",
+        "distance": "800 meters"
+      },
+      {
+        "name": "Ruilui Church & Bazaar",
+        "distance": "300 meters"
+      }
+    ],
+    "receptionPhone": "+880 1827-889900",
+    "receptionEmail": "sajek.meghkabbo@gmail.com",
+    "checkInTime": "12:30 PM",
+    "checkOutTime": "10:30 AM",
+    "relatedTourSlug": "sajek-valley-clouds-hill-tracts",
+    "relatedTourTitle": "Sajek Valley: Kingdom of Clouds & Hill Tracts"
+  },
+  {
+    "id": "sairu",
+    "name": "Sairu Hill Resort",
+    "location": "Chimbuk Road, Y-Junction, Bandarban",
+    "place": "Bandarban",
+    "tier": "Luxury",
+    "rating": 4.7,
+    "reviewsCount": 210,
+    "priceNumeric": 12000,
+    "pricePerNight": "BDT 9,000 – BDT 16,000",
+    "coverImage": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "Architecturally elevated on a 1,800-foot ridge overlooking the Shangu River and continuous hill folds. Features a breathtaking horizon infinity pool and panoramic open terraces. A serene haven far from city noise.",
+    "pros": [
+      "360-degree views of morning clouds and sunset over green valleys",
+      "Infinity pool overlooking natural hill terrain",
+      "Impeccable privacy and serene ambiance"
+    ],
+    "cons": [
+      "18km away from Bandarban town; requires dedicated 4x4 vehicle or Chander Gari",
+      "Rooms with valley views get reserved weeks in advance"
+    ],
+    "amenities": [
+      "Hilltop Infinity Pool",
+      "Panoramic Terrace Cafe",
+      "24/7 Backup Generator",
+      "Private Hill Balconies",
+      "Free Wi-Fi in Lobby",
+      "Wild Hill Herbal Dining"
+    ],
+    "roomTypes": [
+      {
+        "name": "Premium Shangu Valley Suite",
+        "capacity": "2 Adults",
+        "priceBDT": "BDT 13,500 / night",
+        "bedType": "1 King Bed",
+        "highlights": [
+          "Cliff edge view",
+          "Private sun deck",
+          "Breakfast included"
+        ]
+      }
+    ],
+    "howToReach": "Drive from Chittagong to Bandarban Sadar (2.5 hours), then continue 18km along the scenic Chimbuk Road to the Y-Junction.",
+    "nearbyAttractions": [
+      {
+        "name": "Nilgiri Cloud Station",
+        "distance": "28 km"
+      },
+      {
+        "name": "Shoilo Propat Waterfall",
+        "distance": "11 km"
+      },
+      {
+        "name": "Chimbuk Hill Viewpoint",
+        "distance": "14 km"
+      }
+    ],
+    "receptionPhone": "+880 1531-411111",
+    "receptionEmail": "reservation@sairuresort.com",
+    "checkInTime": "01:00 PM",
+    "checkOutTime": "11:00 AM",
+    "relatedTourSlug": "bandarban-nilgiri-chimbuk-boga-lake",
+    "relatedTourTitle": "Bandarban: Nilgiri Cloud Station, Chimbuk & Boga Lake"
+  },
+  {
+    "id": "royal-tulip",
+    "name": "Royal Tulip Sea Pearl Beach Resort & Spa",
+    "location": "Jaliapalong, Inani, Cox's Bazar",
+    "place": "Cox's Bazar",
+    "tier": "Luxury",
+    "rating": 4.5,
+    "reviewsCount": 420,
+    "priceNumeric": 13000,
+    "pricePerNight": "BDT 8,000 – BDT 18,000",
+    "coverImage": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "Expansive luxury property located on the quiet coral coast of Inani. Features private access to clean sandy shores, a water park, multiple swimming pools, and quiet ocean breeze away from Cox's Bazar city crowds.",
+    "pros": [
+      "Direct access to peaceful Inani beach with live coral formations",
+      "Water park and huge outdoor pools suitable for families",
+      "Quiet and clean compared to central Kolatoli beach"
+    ],
+    "cons": [
+      "Approx. 25km (40-minute drive) from Cox's Bazar city center",
+      "Food prices are relatively high inside the resort"
+    ],
+    "amenities": [
+      "Private Coral Beachfront",
+      "2 Massive Lagoon Pools & Water Park",
+      "Full Service Spa & Jacuzzi",
+      "Multiple International Dining Outlets",
+      "Tennis & Badminton Courts",
+      "Airport Transport"
+    ],
+    "roomTypes": [
+      {
+        "name": "Superior Sea View Room",
+        "capacity": "2 Adults",
+        "priceBDT": "BDT 10,500 / night",
+        "bedType": "1 King or 2 Twins",
+        "highlights": [
+          "Private sea balcony",
+          "Bathtub",
+          "Buffet breakfast"
+        ]
+      }
+    ],
+    "howToReach": "Drive 40 minutes south along Marine Drive from Cox's Bazar airport or town center.",
+    "nearbyAttractions": [
+      {
+        "name": "Inani Coral Beach",
+        "distance": "Adjacent (Private Gate)"
+      },
+      {
+        "name": "Himchari National Park",
+        "distance": "14 km"
+      },
+      {
+        "name": "Teknaf Marine Drive Coast",
+        "distance": "35 km"
+      }
+    ],
+    "receptionPhone": "+880 1844-016001",
+    "receptionEmail": "reservations@seapearlcoxsbazar.com",
+    "checkInTime": "02:00 PM",
+    "checkOutTime": "11:30 AM"
+  },
+  {
+    "id": "the-palace",
+    "name": "The Palace Luxury Resort",
+    "location": "Putijuri, Bahubal, Habiganj, Sylhet",
+    "place": "Sreemangal",
+    "tier": "Luxury",
+    "rating": 4.7,
+    "reviewsCount": 310,
+    "priceNumeric": 15000,
+    "pricePerNight": "BDT 11,000 – BDT 24,000",
+    "coverImage": "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1200&q=80",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "Spanning across hundreds of acres of gentle tea hills and pristine forest canopy in Habiganj. Features luxury hilltop villas, multiple infinity pools, helipad, indoor movie theater, and buggy transport.",
+    "pros": [
+      "Immense private estate with fresh mountain air and dense forest cover",
+      "Top-level security, privacy, and kid-friendly entertainment zones",
+      "Authentic Bengali and continental banquet dining"
+    ],
+    "cons": [
+      "Need advance reservation for private hill villas",
+      "High resort-wide beverage and incidental rates"
+    ],
+    "amenities": [
+      "Private Hill Villas & Helipad",
+      "2 Infinity Swimming Pools",
+      "Indoor 3D Movie Theater",
+      "Buggy Transport Across Estate",
+      "Tennis & Basketball Courts",
+      "Forest Trekking Trails"
+    ],
+    "roomTypes": [
+      {
+        "name": "Hilltop Villa with Veranda",
+        "capacity": "2-4 Adults",
+        "priceBDT": "BDT 15,000 / night",
+        "bedType": "1 King Bed",
+        "highlights": [
+          "Panoramic forest hill view",
+          "Jacuzzi bath",
+          "Butler service"
+        ]
+      }
+    ],
+    "howToReach": "Drive 3.5 hours from Dhaka along the Dhaka-Sylhet Highway (N2) to Bahubal, Habiganj.",
+    "nearbyAttractions": [
+      {
+        "name": "Sreemangal Tea Estates",
+        "distance": "28 km"
+      },
+      {
+        "name": "Satchari National Park",
+        "distance": "22 km"
+      }
+    ],
+    "receptionPhone": "+880 1910-100100",
+    "receptionEmail": "reservation@thepalaceluxuryresort.com",
+    "checkInTime": "02:00 PM",
+    "checkOutTime": "12:00 PM"
+  },
+  {
+    "id": "swiss-valley",
+    "name": "Swiss Valley Resort Shamshernagar",
+    "location": "Shamshernagar Tea Estate, Kamalganj, Moulvibazar",
+    "place": "Sreemangal",
+    "tier": "Eco/Budget",
+    "rating": 4.4,
+    "reviewsCount": 140,
+    "priceNumeric": 4800,
+    "pricePerNight": "BDT 3,800 – BDT 6,500",
+    "coverImage": "https://images.unsplash.com/photo-1596895111956-bf1cf0599ce5?auto=format&fit=crop&w=1200&q=80",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "Cozy timber and red-brick cottages set inside the quiet tea plantation zone of Kamalganj, close to Lawachara Rainforest. Wake up to bird calls, fresh dewy tea bushes, and traditional Sylheti home cooking.",
+    "pros": [
+      "Exceptional value for budget-conscious families and couples",
+      "Located in quiet village surroundings away from highway noise",
+      "Friendly home-style cooking with local duck and shatkora curry"
+    ],
+    "cons": [
+      "Basic amenities (no swimming pool or gym)",
+      "15km drive to Sreemangal town center"
+    ],
+    "amenities": [
+      "Tea Estate Front Cottages",
+      "Traditional Home Kitchen",
+      "Complimentary Rural Breakfast",
+      "Tea Garden Walking Paths",
+      "Generator Support"
+    ],
+    "roomTypes": [
+      {
+        "name": "Standard Tea Cottage",
+        "capacity": "2 Adults",
+        "priceBDT": "BDT 4,200 / night",
+        "bedType": "1 Double Bed",
+        "highlights": [
+          "Veranda facing tea garden",
+          "Attached hot shower"
+        ]
+      }
+    ],
+    "howToReach": "From Sreemangal town, take a CNG auto-rickshaw or taxi towards Shamshernagar (30 minutes).",
+    "nearbyAttractions": [
+      {
+        "name": "Lawachara National Park",
+        "distance": "9 km"
+      },
+      {
+        "name": "Madhabpur Lake",
+        "distance": "14 km"
+      }
+    ],
+    "receptionPhone": "+880 1711-998877",
+    "receptionEmail": "swissvalleyresort@gmail.com",
+    "checkInTime": "12:00 PM",
+    "checkOutTime": "11:00 AM"
+  },
+  {
+    "id": "sikder-resort",
+    "name": "Sikder Resort & Villas Kuakata",
+    "location": "Kolapara, Kuakata Beach Road, Patuakhali",
+    "place": "Kuakata",
+    "tier": "Mid-Range",
+    "rating": 4.5,
+    "reviewsCount": 185,
+    "priceNumeric": 7500,
+    "pricePerNight": "BDT 5,500 – BDT 11,000",
+    "coverImage": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "A peaceful green villa resort located 5 minutes away from the main Kuakata beach. Surrounded by fruit trees, swimming pools, and dedicated cottages. Offers shuttle service directly to the sunrise point.",
+    "pros": [
+      "Escape from noisy crowded beachfront hotels in Kuakata",
+      "Spacious independent wooden villas with private verandas",
+      "Dedicated swimming pool and children's playground"
+    ],
+    "cons": [
+      "Requires 5-minute electric auto-rickshaw ride to beach shore",
+      "Room service can be slow during peak holiday rush"
+    ],
+    "amenities": [
+      "Outdoor Swimming Pool",
+      "Independent Wooden Villas",
+      "Free Shuttle to Beach Sunrise Point",
+      "Children's Play Zone",
+      "Full 24/7 Generator",
+      "Fresh Hilsha & Seafood Dining"
+    ],
+    "roomTypes": [
+      {
+        "name": "Deluxe Wooden Villa",
+        "capacity": "2-3 Adults",
+        "priceBDT": "BDT 7,200 / night",
+        "bedType": "1 King Bed",
+        "highlights": [
+          "Private patio",
+          "Garden view",
+          "Hilsha breakfast"
+        ]
+      }
+    ],
+    "howToReach": "Cross the Padma Bridge and Payra Bridge from Dhaka via highway coach (6 hours) directly to Kuakata.",
+    "nearbyAttractions": [
+      {
+        "name": "Kuakata Sunrise & Sunset Beach",
+        "distance": "1.5 km"
+      },
+      {
+        "name": "Fatrar Bon (Sundarbans section)",
+        "distance": "8 km (via boat)"
+      },
+      {
+        "name": "Jhaubon & Gangamati Canal",
+        "distance": "6 km"
+      }
+    ],
+    "receptionPhone": "+880 1700-708090",
+    "receptionEmail": "info@sikderresort.com",
+    "checkInTime": "01:00 PM",
+    "checkOutTime": "11:00 AM"
+  },
+  {
+    "id": "tanguar-bajra",
+    "name": "Bajra Luxury Houseboat Tanguar Haor",
+    "location": "Tahirpur Ghat, Sunamganj",
+    "place": "Sunamganj",
+    "tier": "Luxury",
+    "rating": 4.8,
+    "reviewsCount": 175,
+    "priceNumeric": 8900,
+    "pricePerNight": "BDT 7,500 – BDT 12,000",
+    "coverImage": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1518457607834-6e8d80c183c5?auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "Traditional handcrafted wooden bajra houseboat designed for serene overnight stays floating on the mirror waters of Tanguar Haor. Features private cabins with attached modern bio-toilets, open rooftop sun deck, and onboard chefs serving fresh duck curry and haor fish.",
+    "pros": [
+      "Sleep under the moonlit sky right in the heart of Tanguar Haor",
+      "Delicious freshly prepared local duck and river rui/katla fish meals",
+      "Experienced boatmen who prioritize wetland safety and life jacket compliance"
+    ],
+    "cons": [
+      "Operates primarily during monsoon months (late June to October)",
+      "Advance booking required 1 month ahead for weekends"
+    ],
+    "amenities": [
+      "Rooftop Open Lounge & Stargazing Deck",
+      "Attached Western Bio-Washrooms",
+      "Certified Life Jackets for All Guests",
+      "Onboard Chef & Cook Team",
+      "Generator Support for AC/Fans & Charging"
+    ],
+    "roomTypes": [
+      {
+        "name": "Private Master Cabin",
+        "capacity": "2 Adults",
+        "priceBDT": "BDT 9,000 / night (All-Inclusive Meals)",
+        "bedType": "1 Queen Bed",
+        "highlights": [
+          "Haor water level window view",
+          "Attached toilet",
+          "Full board meals"
+        ]
+      }
+    ],
+    "howToReach": "Travel from Dhaka to Sunamganj by overnight bus, then CNG auto-rickshaw to Tahirpur Ghat (1 hour) to board.",
+    "nearbyAttractions": [
+      {
+        "name": "Tanguar Haor Watchtower",
+        "distance": "Water route"
+      },
+      {
+        "name": "Niladri Limestone Lake",
+        "distance": "Tekerghat Dock"
+      },
+      {
+        "name": "Shimul Bagan & Jadukata River",
+        "distance": "Tekerghat road"
+      }
+    ],
+    "receptionPhone": "+880 1711-002288",
+    "receptionEmail": "booking@bajrahaor.com",
+    "checkInTime": "10:00 AM",
+    "checkOutTime": "04:00 PM next day",
+    "relatedTourSlug": "tanguar-haor-niladri-houseboat",
+    "relatedTourTitle": "Tanguar Haor & Niladri Lake: Houseboat Expedition"
+  },
+  {
+    "id": "runmoy-sajek",
+    "name": "Runmoy Resort Sajek",
+    "location": "Ruilui Para, Sajek Valley, Rangamati",
+    "place": "Sajek Valley",
+    "tier": "Mid-Range",
+    "rating": 4.7,
+    "reviewsCount": 220,
+    "priceNumeric": 6500,
+    "pricePerNight": "BDT 5,000 – BDT 8,500",
+    "coverImage": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "Prestigious hillside retreat operated under Bangladesh Army welfare trust. Positioned on the prime ridge of Ruilui Para with secure fencing, panoramic valley balconies, clean water supply, and reliable generator power.",
+    "pros": [
+      "Top safety standards and secure premises",
+      "Spectacular view of clouds rolling between mountain peaks",
+      "Well maintained clean rooms and running water"
+    ],
+    "cons": [
+      "Strict check-in / check-out times tied to army convoy arrival",
+      "Limited rooms; book at least 3 weeks prior"
+    ],
+    "amenities": [
+      "Army Welfare Managed Security",
+      "Valley View Private Balcony",
+      "Solar & Generator Power Backup",
+      "In-House Dining Hall",
+      "Hot Water Supply"
+    ],
+    "roomTypes": [
+      {
+        "name": "Valley Front Deluxe",
+        "capacity": "2 Adults",
+        "priceBDT": "BDT 6,500 / night",
+        "bedType": "1 King Bed",
+        "highlights": [
+          "Cliff edge view",
+          "Attached bath",
+          "Breakfast included"
+        ]
+      }
+    ],
+    "howToReach": "Accessible via the Dighinala Army Convoy in 4x4 Chander Gari mountain jeeps.",
+    "nearbyAttractions": [
+      {
+        "name": "Konglak Para",
+        "distance": "2 km"
+      },
+      {
+        "name": "Sajek Helipad Point",
+        "distance": "500 meters"
+      }
+    ],
+    "receptionPhone": "+880 1860-001122",
+    "receptionEmail": "runmoy.sajek@gmail.com",
+    "checkInTime": "01:00 PM",
+    "checkOutTime": "10:30 AM",
+    "relatedTourSlug": "sajek-valley-clouds-hill-tracts",
+    "relatedTourTitle": "Sajek Valley: Kingdom of Clouds & Hill Tracts"
+  },
+  {
+    "id": "mermaid-beach",
+    "name": "Mermaid Beach Resort",
+    "location": "Pechardwip, Marine Drive, Cox's Bazar",
+    "place": "Cox's Bazar",
+    "tier": "Luxury",
+    "rating": 4.7,
+    "reviewsCount": 310,
+    "priceNumeric": 14000,
+    "pricePerNight": "BDT 9,000 – BDT 20,000",
+    "coverImage": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "Bohemian eco-luxury resort built along the secluded sands of Pechardwip. Offers private thatched bungalows, open-air beach dining, organic brick-oven pizzas, and complete serenity away from commercial tourism.",
+    "pros": [
+      "Total privacy and serene bohemian atmosphere",
+      "Wood-fired artisanal pizzas and seafood barbecue on the sand",
+      "Direct secluded beach access free from vendors"
+    ],
+    "cons": [
+      "Premium dining rates",
+      "15km south of Cox's Bazar center (25-minute drive)"
+    ],
+    "amenities": [
+      "Secluded Private Beachfront",
+      "Artisanal Wood-Fired Beach Restaurant",
+      "Open-Air Bathtubs in Villas",
+      "Yoga & Meditation Spaces",
+      "Airport Transport"
+    ],
+    "roomTypes": [
+      {
+        "name": "One Bedroom Beach Bungalow",
+        "capacity": "2 Adults",
+        "priceBDT": "BDT 13,500 / night",
+        "bedType": "1 Queen Bed",
+        "highlights": [
+          "Direct sand access",
+          "Private hammock",
+          "Artistic wooden decor"
+        ]
+      }
+    ],
+    "howToReach": "Drive 25 minutes south along Marine Drive from Cox's Bazar town to Pechardwip.",
+    "nearbyAttractions": [
+      {
+        "name": "Himchari Waterfalls",
+        "distance": "4 km"
+      },
+      {
+        "name": "Inani Coral Beach",
+        "distance": "12 km"
+      }
+    ],
+    "receptionPhone": "+880 1841-416464",
+    "receptionEmail": "stay@mermaidbeachresort.net",
+    "checkInTime": "02:00 PM",
+    "checkOutTime": "12:00 PM"
+  },
+  {
+    "id": "bhomra-eco",
+    "name": "Bhomra Eco Resort Sundarbans",
+    "location": "Karamjal Canal, Mongla, Bagerhat",
+    "place": "Sundarbans",
+    "tier": "Eco/Budget",
+    "rating": 4.5,
+    "reviewsCount": 110,
+    "priceNumeric": 4200,
+    "pricePerNight": "BDT 3,200 – BDT 5,500",
+    "coverImage": "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1200&q=80",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "Community-based eco-lodge managed directly by local Sundarbans forest fringe dwellers. Stay in clean thatched cottages along tidal canals where kingfishers and spotted deer feed at dawn.",
+    "pros": [
+      "100% of income directly supports Sundarbans conservation and forest guide families",
+      "Fresh organic village meals with freshly caught river prawns and fish",
+      "Silent wooden canoe tours through inner mangrove creeks"
+    ],
+    "cons": [
+      "Solar-only power system (charge devices during daytime)",
+      "Simple rural accommodations without air conditioning"
+    ],
+    "amenities": [
+      "Canal Front Eco-Cottages",
+      "Silent Canoe Rowing Tours",
+      "Forest Certified Local Guides",
+      "Organic Village Bengali Meals"
+    ],
+    "roomTypes": [
+      {
+        "name": "Thatched Mangrove Cottage",
+        "capacity": "2 Adults",
+        "priceBDT": "BDT 3,800 / night",
+        "bedType": "1 Double Bed",
+        "highlights": [
+          "Canal balcony",
+          "Mosquito nets",
+          "All meals included"
+        ]
+      }
+    ],
+    "howToReach": "From Mongla Ghat, take a 20-minute country boat ride across the Pasur river into the Karamjal canal fringe.",
+    "nearbyAttractions": [
+      {
+        "name": "Karamjal Wildlife Center",
+        "distance": "3 km (waterway)"
+      },
+      {
+        "name": "Harbaria Eco Center",
+        "distance": "18 km"
+      }
+    ],
+    "receptionPhone": "+880 1712-887766",
+    "receptionEmail": "bhomraecoresort@gmail.com",
+    "checkInTime": "11:00 AM",
+    "checkOutTime": "10:00 AM",
+    "relatedTourSlug": "sundarbans-mangrove-kotka-cruise",
+    "relatedTourTitle": "Sundarbans: 3-Day Eco Cruise into Kotka, Kochikhali & Harbaria"
+  },
+  {
+    "id": "nazimgarh",
+    "name": "Nazimgarh Garden Resort",
+    "location": "Kolabagan, Khadimnagar, Sylhet",
+    "place": "Sreemangal",
+    "tier": "Luxury",
+    "rating": 4.6,
+    "reviewsCount": 230,
+    "priceNumeric": 8500,
+    "pricePerNight": "BDT 6,500 – BDT 12,000",
+    "coverImage": "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=1200&q=80",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "Nestled among tranquil hills and dense woodland of Khadimnagar National Park. Features an outdoor swimming pool, treehouses, open-air cafes, and panoramic terraces overlooking forest canopies.",
+    "pros": [
+      "Surrounded by quiet forest canopy, ideal for yoga and meditation",
+      "Very close to Ratargul Swamp Forest and Lalakhal boat point",
+      "Well manicured lawn and spacious family rooms"
+    ],
+    "cons": [
+      "Requires private transport to access from central Sylhet city",
+      "Mobile reception can fluctuate in valley rooms"
+    ],
+    "amenities": [
+      "Forest Canopy Swimming Pool",
+      "Outdoor Hilltop Terrace Cafe",
+      "24/7 Full Generator Power",
+      "Treehouse Accommodation Options",
+      "Airport Transport"
+    ],
+    "roomTypes": [
+      {
+        "name": "Garden Deluxe Room",
+        "capacity": "2 Adults",
+        "priceBDT": "BDT 7,800 / night",
+        "bedType": "1 King Bed",
+        "highlights": [
+          "Forest view balcony",
+          "Breakfast included"
+        ]
+      }
+    ],
+    "howToReach": "Drive 25 minutes northeast from Osmani International Airport (ZYL) or Sylhet Railway Station towards Khadimnagar.",
+    "nearbyAttractions": [
+      {
+        "name": "Ratargul Swamp Forest",
+        "distance": "18 km"
+      },
+      {
+        "name": "Lalakhal Emerald River",
+        "distance": "28 km"
+      },
+      {
+        "name": "Hazrat Shah Jalal Dargah",
+        "distance": "9 km"
+      }
+    ],
+    "receptionPhone": "+880 1713-334455",
+    "receptionEmail": "info@nazimgarh.com",
+    "checkInTime": "02:00 PM",
+    "checkOutTime": "12:00 PM"
+  },
+  {
+    "id": "chhuti-resort",
+    "name": "Chhuti Resort Sukundir",
+    "location": "Sukundir, Joydebpur, Gazipur",
+    "place": "Gazipur",
+    "tier": "Mid-Range",
+    "rating": 4.4,
+    "reviewsCount": 280,
+    "priceNumeric": 7000,
+    "pricePerNight": "BDT 5,500 – BDT 9,500",
+    "coverImage": "https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=1200&q=80",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "Peaceful rural retreat just 1.5 hours away from Dhaka. Features authentic mud houses, bamboo thatched cottages, fishing ponds, boat rides, and horse riding inside green countryside.",
+    "pros": [
+      "Closest nature getaway for busy Dhaka city professionals",
+      "Authentic village atmosphere with earthen cottages and bamboo architecture",
+      "Fresh rural breakfast with traditional rice cakes (pitha)"
+    ],
+    "cons": [
+      "Heavy weekend traffic on Tongi-Gazipur highway on Friday mornings",
+      "Advance booking required for weekend stays"
+    ],
+    "amenities": [
+      "Traditional Mud & Bamboo Cottages",
+      "Freshwater Fishing Pond & Paddle Boats",
+      "Rural Village Pitha Breakfast",
+      "Kids Playground & Green Lawns",
+      "Full Generator Power Backup"
+    ],
+    "roomTypes": [
+      {
+        "name": "Earthen Mud Cottage",
+        "capacity": "2-3 Adults",
+        "priceBDT": "BDT 6,500 / night",
+        "bedType": "1 Queen Bed",
+        "highlights": [
+          "Natural earth cooling",
+          "Attached modern bath",
+          "Lake veranda"
+        ]
+      }
+    ],
+    "howToReach": "Drive 1.5 hours north from Dhaka via Uttara and Joydebpur intersection to Sukundir village.",
+    "nearbyAttractions": [
+      {
+        "name": "Bhawal National Park",
+        "distance": "9 km"
+      }
+    ],
+    "receptionPhone": "+880 1777-114488",
+    "receptionEmail": "reservation@chhutiresort.com",
+    "checkInTime": "01:00 PM",
+    "checkOutTime": "11:00 AM"
+  },
+  {
+    "id": "sara-resort",
+    "name": "Sara Resort Rajendrapur",
+    "location": "Rajabari, Rajendrapur, Gazipur",
+    "place": "Gazipur",
+    "tier": "Luxury",
+    "rating": 4.7,
+    "reviewsCount": 350,
+    "priceNumeric": 13500,
+    "pricePerNight": "BDT 10,000 – BDT 20,000",
+    "coverImage": "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1200&q=80",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "High-end water kingdom resort surrounded by Shal forest. Boasts huge swimming lagoons, wave pool, archery, rock climbing, VR gaming lounge, and presidential lakeside suites.",
+    "pros": [
+      "State of the art recreation and swimming facilities for corporate & families",
+      "Immaculate landscaping and cleanliness across 200 bighas",
+      "Diverse international and Bengali buffet dining"
+    ],
+    "cons": [
+      "Premium price bracket",
+      "Can feel lively and bustling during large corporate weekend retreats"
+    ],
+    "amenities": [
+      "Massive Wave Pool & Water Kingdom",
+      "Archery & Adventure Zone",
+      "VR Gaming Lounge",
+      "Lakeside Luxury Suites",
+      "Multi-Cuisine Buffet Dining"
+    ],
+    "roomTypes": [
+      {
+        "name": "Premium Water Villa",
+        "capacity": "2-4 Adults",
+        "priceBDT": "BDT 14,000 / night",
+        "bedType": "1 King Bed",
+        "highlights": [
+          "Waterfront balcony",
+          "Bathtub",
+          "All meals package options"
+        ]
+      }
+    ],
+    "howToReach": "Drive 1 hour 45 minutes north from Dhaka airport via Joydebpur to Rajabari, Rajendrapur.",
+    "nearbyAttractions": [
+      {
+        "name": "Bhawal Shal Forest",
+        "distance": "5 km"
+      }
+    ],
+    "receptionPhone": "+880 1958-600000",
+    "receptionEmail": "reservation@sararesort.com.bd",
+    "checkInTime": "02:00 PM",
+    "checkOutTime": "12:00 PM"
+  },
+  {
+    "id": "momo-inn",
+    "name": "Momo Inn Hotel & Helipad",
+    "location": "Nawdapara, Rangpur Road, Bogura",
+    "place": "North Bengal",
+    "tier": "Luxury",
+    "rating": 4.6,
+    "reviewsCount": 220,
+    "priceNumeric": 9000,
+    "pricePerNight": "BDT 7,000 – BDT 14,000",
+    "coverImage": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "North Bengal's iconic 5-star standard hospitality hub. Ideal base for exploring archaeological wonders like Mahasthangarh, Paharpur UNESCO Buddhist Vihara, and Kantajew Temple. Features rooftop pool and helipad.",
+    "pros": [
+      "Best hotel comfort and hygiene in northern Bangladesh",
+      "Large swimming pool, gym, and fine dining options",
+      "Easy highway access for northern historical tours"
+    ],
+    "cons": [
+      "Located 6km north of central Bogura town",
+      "Pool timing restricted during private events"
+    ],
+    "amenities": [
+      "Rooftop Swimming Pool",
+      "Helipad & Executive Lounge",
+      "Fitness Center & Sauna",
+      "Multi-Cuisine Restaurant",
+      "Archaeological Tour Desk"
+    ],
+    "roomTypes": [
+      {
+        "name": "Deluxe King Room",
+        "capacity": "2 Adults",
+        "priceBDT": "BDT 8,500 / night",
+        "bedType": "1 King Bed",
+        "highlights": [
+          "City & pool view",
+          "Complimentary breakfast"
+        ]
+      }
+    ],
+    "howToReach": "Drive across Jamuna Bridge from Dhaka to Bogura (4.5 hours), located on the main Rangpur highway.",
+    "nearbyAttractions": [
+      {
+        "name": "Mahasthangarh Citadel & Museum",
+        "distance": "8 km"
+      },
+      {
+        "name": "Paharpur Buddhist Vihara",
+        "distance": "45 km"
+      }
+    ],
+    "receptionPhone": "+880 1755-559999",
+    "receptionEmail": "info@momoinn.com",
+    "checkInTime": "02:00 PM",
+    "checkOutTime": "12:00 PM"
+  }
+]

@@ -1,0 +1,693 @@
+[
+  {
+    "id": "hill-tracts",
+    "category": "Hill Tracts",
+    "title": "Security Checkposts, NID Photocopies & Army Escorts",
+    "badgeColor": "text-amber-900 bg-amber-50 border-amber-200/80",
+    "readingTime": "6 min read",
+    "division": "Chittagong Division",
+    "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
+    "summary": "A complete guide to navigating Bangladesh Army security convoys, Dighinala checkpost procedures, Chander Gari mountain jeeps, and entry permissions for Sajek Valley, Bandarban, and Ruma.",
+    "keyHighlights": [
+      "Carry at least 4 to 6 photocopies of your National ID (NID) card or Passport.",
+      "Sajek Valley travel is strictly guided by Bangladesh Army convoys twice a day (morning escort ~10:30 AM, afternoon escort ~3:30 PM).",
+      "Always hire registered local indigenous guides when trekking beyond Boga Lake or towards waterfalls like Nafakhum and Amiakhum.",
+      "Teletalk has the most reliable cellular signal in Sajek; Robi/Airtel works decently, while Grameenphone has intermittent hilltop spots."
+    ],
+    "overview": "The Chittagong Hill Tracts (CHT) contain some of the most dramatic mountain scenery in Bangladesh, including Sajek Valley, Nilgiri, Keokradong, and the remote valleys of Bandarban. Due to special administrative regulations and border proximity, traveling into these areas requires adherence to official security protocols managed by the Bangladesh Army and local administration.",
+    "checkpostProcedures": {
+      "location": "Dighinala (Khagrachhari) & Baghaichhari Entry Post",
+      "timings": "Morning Convoy: 10:30 AM | Afternoon Convoy: 03:30 PM",
+      "documentsRequired": [
+        "National ID Card (Original + 4 hard photocopies)",
+        "Foreign Nationals: Passport + Valid Visa + Special Ministry of Home Affairs CHT pass (applied 30 days prior)",
+        "Student ID card (if applying for student tour passes)"
+      ],
+      "fees": "Dighinala Army Camp processing is free. Sajek Union Porishod environmental fee is BDT 20-BDT 50 per visitor.",
+      "guidelines": [
+        "Arrive at Dighinala checkpost at least 45 minutes before convoy departure time to complete vehicle and passenger registration.",
+        "Ensure your Chander Gari (open 4x4 mountain jeep) driver has valid hill driving credentials and safety chains.",
+        "Never overtake the lead Bangladesh Army escort vehicle while moving in convoy on the winding mountain roads.",
+        "Foreign nationals must never travel into Sajek or Ruma without an authorized police escort or written Home Ministry clearance."
+      ]
+    },
+    "transportation": [
+      {
+        "mode": "Non-AC / AC Highway Sleeper Bus",
+        "route": "Dhaka (Sayedabad / Arambagh) → Khagrachhari Sadar",
+        "approxCostBDT": "BDT 750 – BDT 1,400 per seat",
+        "operators": "Shanti Paribahan, Saintmartin Travels, Shyamoli NR, Ena",
+        "advice": "Take the 10:00 PM overnight bus to arrive in Khagrachhari at 6:00 AM, in time for breakfast and the 10:30 AM Dighinala convoy."
+      },
+      {
+        "mode": "Chander Gari (4x4 Mountain Jeep)",
+        "route": "Khagrachhari Sadar → Dighinala → Sajek Valley",
+        "approxCostBDT": "BDT 8,500 – BDT 10,500 (Roundtrip 2 nights)",
+        "operators": "Khagrachhari District Jeep Drivers Association",
+        "advice": "One Chander Gari accommodates up to 10-12 travelers. Reserve directly from the official Jeep counter at Shapla Chattar."
+      },
+      {
+        "mode": "CNG Auto-rickshaw",
+        "route": "Khagrachhari → Dighinala (Convoy point only)",
+        "approxCostBDT": "BDT 500 – BDT 700 one-way",
+        "operators": "Local Dighinala CNG stand",
+        "advice": "CNGs are NOT permitted to ascend the steep Sajek hill roads; you must switch to a 4x4 jeep or heavy pickup."
+      }
+    ],
+    "fieldSchedule": [
+      {
+        "phase": "Phase 1 (Morning)",
+        "title": "Registration at Dighinala",
+        "description": "Submit 2 copies of NID per passenger at the army gate. Buy water and emergency medicine; no major shops exist until Sajek."
+      },
+      {
+        "phase": "Phase 2 (Mid-day)",
+        "title": "Convoy Ascent to Sajek",
+        "description": "A breathtaking 35km scenic roller-coaster mountain road through Machalong and Baghaichhari under army protection."
+      },
+      {
+        "phase": "Phase 3 (Afternoon)",
+        "title": "Ruilui Para & Konglak Para",
+        "description": "Check in to wooden hilltop cottages. Hike 20 minutes to Konglak Para (highest peak of Sajek) for sunset over the cloud blanket."
+      }
+    ],
+    "packingList": [
+      "4-6 Photocopies of NID / Passport",
+      "Power bank (minimum 20,000mAh) - electricity is generator/solar-based",
+      "Teletalk SIM card for fallback network connectivity",
+      "Motion sickness tablets (Avomin) for winding steep roads",
+      "Torch light / headlamp for night walks in Ruilui Para",
+      "Cash in BDT (no ATM booths operate in Sajek Valley)"
+    ],
+    "safetyDirectives": [
+      "Never wander outside Ruilui Para or Konglak Para after 9:30 PM.",
+      "Respect local indigenous traditions (Lusai, Tripura, Chakma). Always ask before entering residential court-yards.",
+      "Keep speed in mind on dirt tracks: during rainy season, clay slopes turn slippery.",
+      "Stay hydrated—mountain air is dry and rapid elevation gains increase water loss."
+    ],
+    "communityEtiquette": [
+      "Never pluck bamboo shoots or fruits from private indigenous orchards without permission.",
+      "Purchase organic wild hill honey, hand-woven tribal shawls, and bamboo-cooked chicken from local tribal kitchens.",
+      "Take all non-biodegradable plastics and mineral water bottles back down to Khagrachhari."
+    ],
+    "emergencyContacts": [
+      {
+        "title": "Tourist Police Khagrachhari",
+        "contact": "+880 1320-222222",
+        "details": "24/7 dedicated domestic tourist helpline"
+      },
+      {
+        "title": "Baghaichhari Upazila Health Complex",
+        "contact": "+880 1711-230987",
+        "details": "Nearest medical emergency post for Sajek"
+      },
+      {
+        "title": "Khagrachhari Jeep Drivers Association",
+        "contact": "+880 1819-445566",
+        "details": "Official dispatch desk at Shapla Chattar"
+      }
+    ],
+    "relatedTourSlug": "sajek-valley-clouds-hill-tracts",
+    "relatedTourTitle": "Sajek Valley: Kingdom of Clouds & Hill Tracts",
+    "relatedHotelId": "runmoy-sajek",
+    "relatedHotelName": "Runmoy Resort Sajek"
+  },
+  {
+    "id": "haor-wetlands",
+    "category": "Wetlands & Haors",
+    "title": "Monsoon Season, Houseboat Safety & Water Conservation",
+    "badgeColor": "text-stone-800 bg-[#F5F2EB] border-stone-200",
+    "readingTime": "5 min read",
+    "division": "Sylhet Division",
+    "coverImage": "https://images.unsplash.com/photo-1518457607834-6e8d80c183c5?auto=format&fit=crop&w=1200&q=80",
+    "summary": "Essential guide for cruising Tanguar Haor, Shimul Bagan, and Niladri Lake on traditional wooden bajras. Covers life jacket rules, flash flood warnings, and Ramsar wetland conservation.",
+    "keyHighlights": [
+      "Peak haor season is late June through early October when Meghalaya rainfall fills the wetland.",
+      "Certified life jackets are mandatory whenever swimming in deep haor basins or near the Watchtower.",
+      "Never dump plastic bottles, polythene, or synthetic soap into the water. Tanguar Haor is a protected Ramsar sanctuary.",
+      "Niladri Lake (Shahid Siraj Lake) has sudden quarry drop-offs; avoid swimming in the deep limestone center."
+    ],
+    "overview": "Tanguar Haor spans over 10,000 hectares in Sunamganj and is one of the most vital ecological wetlands in South Asia. Living on a luxury wooden houseboat (Bajra) drifting beneath the Meghalaya mountain shadow is an unforgettable domestic experience, but requires careful seasonal planning and strict environmental respect.",
+    "checkpostProcedures": {
+      "location": "Tahirpur Ghat & Tanguar Haor Watchtower Forest Camp",
+      "timings": "Boat entry permitted daylight: 06:00 AM – 06:30 PM",
+      "documentsRequired": [
+        "National ID copy of group leader",
+        "Registered houseboat permit issued by Tahirpur Upazila Administration"
+      ],
+      "fees": "Boat docking fee at Watchtower: BDT 100-BDT 200 per vessel.",
+      "guidelines": [
+        "Verify that your boat holds an active life-saving certificate and certified lifebuoys for every guest.",
+        "Sound systems and loud microphones are strictly prohibited inside the Ramsar bird sanctuary boundary."
+      ]
+    },
+    "transportation": [
+      {
+        "mode": "Highway Coach / Train",
+        "route": "Dhaka → Sunamganj Sadar",
+        "approxCostBDT": "BDT 700 – BDT 1,200 per seat",
+        "operators": "Mamun Paribahan, Shyamoli, Unique / Kalni Express Train to Sylhet",
+        "advice": "Overnight bus from Sayedabad reaches Sunamganj Bus Stand around 5:30 AM."
+      },
+      {
+        "mode": "CNG Auto-rickshaw / Bike",
+        "route": "Sunamganj Sadar → Tahirpur Ghat",
+        "approxCostBDT": "BDT 150 – BDT 250 per person",
+        "operators": "Local CNG stand at Sunamganj Bridge",
+        "advice": "Takes approximately 1 hour through scenic rural embankments."
+      },
+      {
+        "mode": "Chartered Wooden Houseboat",
+        "route": "Tahirpur → Tanguar Haor → Watchtower → Niladri → Jadukata",
+        "approxCostBDT": "BDT 7,000 – BDT 12,000 per person (2D/1N package)",
+        "operators": "Bajra, Joltorongo, Haor Bilash, Swapnotori",
+        "advice": "Always book houseboats that feature bio-toilets and onboard diesel generator backups."
+      }
+    ],
+    "fieldSchedule": [
+      {
+        "phase": "Day 1 Morning",
+        "title": "Boarding at Tahirpur",
+        "description": "Board the wooden bajra, enjoy fresh local duck curry or rui fish lunch as the boat glides towards the vast open waters of Tanguar Haor."
+      },
+      {
+        "phase": "Day 1 Afternoon",
+        "title": "Watchtower Swim & Sunset",
+        "description": "Anchor near the watchtower. Put on your life jacket for a refreshing swim in crystal haor waters surrounded by floating water lilies."
+      },
+      {
+        "phase": "Day 2 Morning",
+        "title": "Niladri Lake & Shimul Bagan",
+        "description": "Wake up at Tekerghat. Walk to the emerald limestone waters of Niladri Lake, followed by an auto-rickshaw excursion to Shimul Bagan and Jadukata River."
+      }
+    ],
+    "packingList": [
+      "Certified Life Jacket (confirm your boat provides one or carry a personal jacket)",
+      "Waterproof dry-bag for phones and camera gear",
+      "High-grip water sandals that dry quickly",
+      "Broad-brimmed sun hat and UV sunglasses",
+      "Mosquito repellent cream (Odomos) for night anchorage",
+      "Biodegradable soap and organic personal toiletries"
+    ],
+    "safetyDirectives": [
+      "Never jump into the open haor without a life jacket, even if you consider yourself a strong swimmer.",
+      "During severe monsoon storm surges (kalbaishakhi), trust the local boatman's decision to anchor immediately at the nearest bank.",
+      "Stay away from high-voltage overhead rural electric cables when walking on boat upper decks."
+    ],
+    "communityEtiquette": [
+      "All food scraps and vegetable waste may be disposed organically, but ALL plastics must be bagged and brought back to Sunamganj town.",
+      "Tip the onboard cook, engine assistant, and captain fairly—they work long shifts in unpredictable weather."
+    ],
+    "emergencyContacts": [
+      {
+        "title": "Tahirpur Police Station",
+        "contact": "+880 1713-374240",
+        "details": "24/7 haor patrol and water security post"
+      },
+      {
+        "title": "Sunamganj Tourist Police Desk",
+        "contact": "+880 1320-222222",
+        "details": "Assistance for tourist vessels and disputes"
+      }
+    ],
+    "relatedTourSlug": "tanguar-haor-niladri-houseboat",
+    "relatedTourTitle": "Tanguar Haor & Niladri Lake: Houseboat Expedition",
+    "relatedHotelId": "tanguar-bajra",
+    "relatedHotelName": "Bajra Luxury Houseboat"
+  },
+  {
+    "id": "tea-rainforest",
+    "category": "Tea & Forests",
+    "title": "Tea Garden Strolls, Rain Forest Etiquette & Train Routes",
+    "badgeColor": "text-emerald-900 bg-emerald-50 border-emerald-200/80",
+    "readingTime": "5 min read",
+    "division": "Sylhet Division",
+    "coverImage": "https://images.unsplash.com/photo-1596895111956-bf1cf0599ce5?auto=format&fit=crop&w=1200&q=80",
+    "summary": "A peaceful guide to walking through Finlay and Madhabpur tea plantations, quiet wildlife watching in Lawachara National Park, and riding the scenic Parabat Express train from Dhaka.",
+    "keyHighlights": [
+      "Take the morning Parabat Express or Kalni Express train from Kamalapur to Sreemangal to bypass highway traffic.",
+      "Lawachara National Park is home to endangered Hoolock Gibbons. Keep noise to an absolute minimum to avoid alarming wildlife.",
+      "Do not pluck fresh two-leaves-and-a-bud from private tea estates without permission.",
+      "Taste authentic Sylheti Shatkora beef or duck curry and visit Baikka Beel wetland at dawn for migratory bird watching."
+    ],
+    "overview": "Known as the Tea Capital of Bangladesh, Sreemangal is one of the most serene and green destinations in the country. With over 40 sprawling tea estates, the tropical semi-evergreen forest of Lawachara, and indigenous Khasia punjis, it offers tranquil walking and cycling opportunities.",
+    "transportation": [
+      {
+        "mode": "Intercity Train (Recommended)",
+        "route": "Dhaka (Kamalapur) → Sreemangal Railway Station",
+        "approxCostBDT": "BDT 260 – BDT 650 (Shovon Chair / Snigdha AC)",
+        "operators": "Bangladesh Railway (Parabat Express, Kalni Express, Upaban Express)",
+        "advice": "Parabat Express departs Kamalapur at 6:20 AM and arrives by 10:30 AM through lush countryside."
+      },
+      {
+        "mode": "CNG Auto-rickshaw / Rental Jeep",
+        "route": "Sreemangal Town → Lawachara → Madhabpur Lake",
+        "approxCostBDT": "BDT 1,200 – BDT 1,800 (Full day reserve)",
+        "operators": "Sreemangal Station Auto-rickshaw Stand",
+        "advice": "Reserve for the whole day to easily navigate between remote tea gardens and lakes."
+      }
+    ],
+    "fieldSchedule": [
+      {
+        "phase": "Morning (06:30 AM)",
+        "title": "Lawachara Forest Trail",
+        "description": "Walk the 1-hour or 2-hour forest canopy trail with a certified naturalist. Listen for the calls of Hoolock gibbons and hornbills."
+      },
+      {
+        "phase": "Afternoon",
+        "title": "Madhabpur Lake & Tea Slopes",
+        "description": "Walk along the stepped tea ridges overlooking Madhabpur Lake, filled with natural water lilies and framed by distant hills of Tripura."
+      },
+      {
+        "phase": "Evening",
+        "title": "7-Layer Tea & Shatkora Dinner",
+        "description": "Visit Nilkantha Tea Cabin to taste the famous multi-layer tea, followed by traditional Shatkora beef curry at Panjabi Dhaba or local restaurant."
+      }
+    ],
+    "packingList": [
+      "Walking shoes with good rubber traction for clay footpaths",
+      "Leech socks or salt/tobacco powder during monsoon months",
+      "Camera with telephoto lens (for bird and canopy wildlife watching)",
+      "Light jacket or shawl for cool, misty evenings"
+    ],
+    "safetyDirectives": [
+      "Stay strictly on marked trails in Lawachara; the forest is dense and railway tracks intersect the preserve.",
+      "Do not feed wild monkeys near the park entrance; feeding encourages aggressive behavior."
+    ],
+    "communityEtiquette": [
+      "When visiting Khasia villages, show respect to the village elders and request permission before photographing betel leaf cultivation.",
+      "Support female tea plucker cooperatives by purchasing authentic fresh whole-leaf Pekoe tea directly from verified stalls."
+    ],
+    "emergencyContacts": [
+      {
+        "title": "Lawachara Forest Range Office",
+        "contact": "+880 1712-456789",
+        "details": "Forestry department guide and wildlife rescue"
+      },
+      {
+        "title": "Sreemangal Tourist Police",
+        "contact": "+880 1320-222222",
+        "details": "Officer-in-charge desk at Radhanagar tourist area"
+      }
+    ],
+    "relatedTourSlug": "sreemangal-lawachara-tea-rainforest",
+    "relatedTourTitle": "Sreemangal & Lawachara: Tea Garden Trails & Rainforest Quietude",
+    "relatedHotelId": "grand-sultan",
+    "relatedHotelName": "Grand Sultan Tea Resort & Golf"
+  },
+  {
+    "id": "mangroves",
+    "category": "Mangroves",
+    "title": "Forest Regulations, Silent Canals & Clothing Colors",
+    "badgeColor": "text-stone-800 bg-[#F5F2EB] border-stone-200",
+    "readingTime": "6 min read",
+    "division": "Khulna Division",
+    "coverImage": "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=1200&q=80",
+    "summary": "A comprehensive field manual for exploring the Sundarbans mangrove safari. Covers armed forest guard rules, tidal charts, silent country boat canal rowing, and wildlife sighting guidelines.",
+    "keyHighlights": [
+      "Wear earthy or dull colors such as khaki, olive green, or brown. Avoid bright red, neon yellow, or bright orange.",
+      "Armed Bangladesh Forest Department security guards accompany every group during walking excursions.",
+      "During early morning rowboat canal tours, maintain absolute silence to hear bird calls and animal movement.",
+      "All cruises must hold valid Department of Forest permissions before anchoring in Kotka, Kochikhali, or Harbaria."
+    ],
+    "overview": "The Sundarbans is the world's largest contiguous tidal mangrove forest and a UNESCO World Heritage site. Home to the Royal Bengal Tiger, spotted deer, estuarine crocodiles, and rare birds, exploring it requires a disciplined expedition mindset guided by forest laws.",
+    "transportation": [
+      {
+        "mode": "AC Sleeper Bus / Train",
+        "route": "Dhaka → Khulna / Mongla Port",
+        "approxCostBDT": "BDT 900 – BDT 1,500 per seat",
+        "operators": "Sundarban Paribahan, Hanif, Ena / Sundarban Express Train",
+        "advice": "Overnight travel reaches Mongla Ghat in the early morning for vessel boarding."
+      },
+      {
+        "mode": "Licensed Eco-Cruise Ship",
+        "route": "Mongla Port → Harbaria → Kotka → Kochikhali → Jamtola Beach",
+        "approxCostBDT": "BDT 12,000 – BDT 18,000 per person (3D/3N all-inclusive)",
+        "operators": "The Wave, MV Dinghy, Silver Wave, Bonolota",
+        "advice": "Ensure the vessel has dedicated forest department guards and solar/battery night power."
+      }
+    ],
+    "fieldSchedule": [
+      {
+        "phase": "Day 1",
+        "title": "Harbaria Tiger Track & Mangrove Trail",
+        "description": "Board at Mongla. Cruise south to Harbaria Eco Tourism Center. Walk the elevated wooden boardwalk over tidal mudflats."
+      },
+      {
+        "phase": "Day 2",
+        "title": "Kotka Watchtower & Jamtola Sea Beach",
+        "description": "Early morning silent country boat canal row. Hike through the tiger corridor to Jamtola's pristine, uninhabited sandy coastline."
+      },
+      {
+        "phase": "Day 3",
+        "title": "Kochikhali Wildlife Sanctuary & Return",
+        "description": "Observe spotted deer and wild boars feeding on grasslands. Cruise northward back to Mongla with sunset over the Baleshwar river."
+      }
+    ],
+    "packingList": [
+      "Khaki / olive / earthy coloured full-sleeve shirts and trousers",
+      "Comfortable closed walking shoes or rubber boots for tidal mud",
+      "High-power binoculars (8x42 or 10x42) for wildlife spotting",
+      "Insect repellent cream (Odomos) and antihistamine tablets",
+      "Warm fleece or windbreaker (river breeze gets very cold at night in winter)"
+    ],
+    "safetyDirectives": [
+      "Never walk into the forest without the accompanying armed forest guard.",
+      "Never wander off the designated elevated wooden boardwalks or marked trails.",
+      "Smoking or lighting open fires in the forest is strictly illegal under forest preservation laws."
+    ],
+    "communityEtiquette": [
+      "Support the traditional 'Mawali' honey gatherers and local fishermen by purchasing pure wild Sundarbans flower honey from authorized forest cooperatives.",
+      "Keep all engine vibrations and loud music off inside the reserved sanctuary."
+    ],
+    "emergencyContacts": [
+      {
+        "title": "Mongla Forest Department Division Office",
+        "contact": "+880 1711-890123",
+        "details": "Forest permit and security clearance desk"
+      },
+      {
+        "title": "Bangladesh Coast Guard West Zone",
+        "contact": "+880 1769-440000",
+        "details": "Maritime riverine emergency and rescue"
+      }
+    ],
+    "relatedTourSlug": "sundarbans-mangrove-kotka-cruise",
+    "relatedTourTitle": "Sundarbans: 3-Day Eco Cruise into Kotka, Kochikhali & Harbaria",
+    "relatedHotelId": "bhomra-eco",
+    "relatedHotelName": "Bhomra Eco Resort Sundarbans"
+  },
+  {
+    "id": "islands",
+    "category": "Islands & Coastal",
+    "title": "Saint Martin's Ship Schedules, Coral Protection & Island Eco-Passes",
+    "badgeColor": "text-amber-900 bg-amber-50 border-amber-200/80",
+    "readingTime": "5 min read",
+    "division": "Chittagong Division",
+    "coverImage": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
+    "summary": "Guidelines for visiting Narikel Jinjira (Saint Martin's Island) and Chera Dwip. Covers maritime ship tickets, seasonal operational permits, generator timing, and coral reef protection rules.",
+    "keyHighlights": [
+      "Government-approved cruise ships operate from November through February from Teknaf or Cox's Bazar.",
+      "Taking living coral rocks, starfishes, or conch shells is strictly prohibited by the Department of Environment.",
+      "Night electricity relies on solar power and diesel generators, which generally shut down between 11:00 PM and dawn.",
+      "Visit Chera Dwip early in the morning at low tide for the most serene, crystal-clear coastal walk."
+    ],
+    "overview": "Saint Martin's Island is the sole coral-bearing marine island in Bangladesh. Its turquoise waters, coconut palms, and peaceful sandy beaches offer an idyllic island experience, but its fragile coral ecosystem demands responsible, low-impact tourism.",
+    "transportation": [
+      {
+        "mode": "Highway Coach + Sea Vessel",
+        "route": "Dhaka → Teknaf Ghat → Saint Martin's Island",
+        "approxCostBDT": "BDT 1,800 – BDT 3,200 (Bus + Ship roundtrip)",
+        "operators": "Keari Sindbad, Bay Cruiser, Sukanta Ship, Saintmartin Paribahan",
+        "advice": "Ships depart Teknaf / Cox's Bazar at 9:30 AM and return from Saint Martin's at 3:00 PM."
+      },
+      {
+        "mode": "Eco-Bicycle Rental",
+        "route": "East Beach → West Beach → Chera Dwip trail",
+        "approxCostBDT": "BDT 50 – BDT 80 per hour",
+        "operators": "Local island bicycle rental stands at jetty",
+        "advice": "A quiet, non-polluting way to circle the perimeter of the island at your own pace."
+      }
+    ],
+    "fieldSchedule": [
+      {
+        "phase": "Morning",
+        "title": "Sea Vessel Crossing",
+        "description": "2.5 hours cruise across the blue waters of the Bay of Bengal, surrounded by flocks of flying seagulls."
+      },
+      {
+        "phase": "Afternoon",
+        "title": "West Beach & Sunset",
+        "description": "Walk barefoot along the soft sandy western shore. Watch local fishermen haul their wooden dinghies at sunset."
+      },
+      {
+        "phase": "Night",
+        "title": "Grilled Fresh Fish & Stargazing",
+        "description": "Enjoy freshly caught Rupchanda or Coral fish barbecue under lanterns, and stargaze on the beach away from light pollution."
+      }
+    ],
+    "packingList": [
+      "Slip-resistant water shoes for walking near coral edges",
+      "High SPF biodegradable sunscreen",
+      "Power bank (minimum 20,000mAh) due to nighttime generator shutoffs",
+      "Sufficient cash in BDT—island ATM availability is inconsistent"
+    ],
+    "safetyDirectives": [
+      "Never swim in strong undertow currents on the outer reef without checking tide schedules.",
+      "Do not walk barefoot on sharp volcanic limestone and coral beds."
+    ],
+    "communityEtiquette": [
+      "Never leave plastic wrappers, cigarette butts, or bottles on the sand.",
+      "Support local boatmen and homestay families with fair payments and courteous behavior."
+    ],
+    "emergencyContacts": [
+      {
+        "title": "Coast Guard Station Saint Martin",
+        "contact": "+880 1769-443322",
+        "details": "24/7 maritime rescue and emergency assistance"
+      },
+      {
+        "title": "Saint Martin Police Outpost",
+        "contact": "+880 1713-374300",
+        "details": "Local safety and checkpost desk"
+      }
+    ],
+    "relatedTourSlug": "saint-martin-chera-dwip-coral-retreat",
+    "relatedTourTitle": "Saint Martin’s Island & Chera Dwip: Coral Haven Retreat",
+    "relatedHotelId": "mermaid-beach",
+    "relatedHotelName": "Mermaid Beach Resort"
+  },
+  {
+    "id": "rivers",
+    "category": "Rivers & Heritage",
+    "title": "Barishal Rocket Steamers & Floating Guava Market Etiquette",
+    "badgeColor": "text-stone-800 bg-[#F5F2EB] border-stone-200",
+    "readingTime": "5 min read",
+    "division": "Barishal Division",
+    "coverImage": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80",
+    "summary": "Experience the peaceful riverine soul of Bangladesh via Sadarghat overnight launches, colonial paddle steamers, canal cruising, and the Bhimruli floating guava market.",
+    "keyHighlights": [
+      "Take an overnight launch from Sadarghat or traditional paddle steamer for a calm journey down the Meghna river.",
+      "Visit Bhimruli Floating Guava Market between 7:30 AM and 10:00 AM when local farmers bring freshly harvested wooden boatloads.",
+      "Hire local wooden country trawlers with shade roofs to cruise narrow canals lined with hogla grass and betel-nut plantations.",
+      "Respect local farmers by asking permission before photographing them up close during trade."
+    ],
+    "overview": "Known as the Venice of Bengal, the southern river delta of Barishal, Jhalakathi, and Pirojpur is interlaced with hundreds of tranquil freshwater canals. Traveling here by water reveals traditional Bengali village life, floating produce bazaars, and peaceful boatmen culture.",
+    "transportation": [
+      {
+        "mode": "Overnight Passenger Launch / Paddle Steamer",
+        "route": "Dhaka (Sadarghat) → Barishal River Port / Hularhat",
+        "approxCostBDT": "BDT 1,200 – BDT 2,500 (AC Single / Double Cabin)",
+        "operators": "Sundarban, Parabat, Suravi, Manami / BIWTC Paddle Steamer",
+        "advice": "Leaves Sadarghat around 8:30 PM and glides smoothly across the river, docking in Barishal at 5:00 AM."
+      },
+      {
+        "mode": "Wooden Country Trawler (Dinghy)",
+        "route": "Banaripara / Jhalakathi → Bhimruli Floating Market → Atghar Kuriana",
+        "approxCostBDT": "BDT 1,500 – BDT 2,500 (Full day chartered boat)",
+        "operators": "Local boatmen at Banaripara or Launch Ghat",
+        "advice": "Ask for a wooden boat with a shaded canopy for comfortable canal cruising."
+      }
+    ],
+    "fieldSchedule": [
+      {
+        "phase": "Morning (07:30 AM)",
+        "title": "Bhimruli Floating Market",
+        "description": "Arrive at the canal junction where hundreds of wooden dinghies filled with fresh green guavas, hogla grass, and lemons gather for morning trade."
+      },
+      {
+        "phase": "Mid-day",
+        "title": "Canal Cruising & Guava Orchards",
+        "description": "Glide beneath shaded wooden footbridges into narrow village canals, stopping at family-owned guava and hogla plantations."
+      },
+      {
+        "phase": "Afternoon",
+        "title": "Guthia Mosque & Durga Sagar",
+        "description": "Visit the serene architecture of Baitul Aman (Guthia Mosque) and stroll around the calm bird sanctuary of Durga Sagar Dighi."
+      }
+    ],
+    "packingList": [
+      "Light, breathable cotton clothing for humid riverine weather",
+      "Water-resistant slip-on footwear for stepping onto wooden docks",
+      "Camera with wide-angle lens for capturing canal boat reflections",
+      "Umbrella or wide sun hat for shaded boat touring"
+    ],
+    "safetyDirectives": [
+      "Keep hands inside the boat when passing through narrow canal locks and congested market clusters.",
+      "Always verify the boat has lifebuoys onboard before venturing onto wide river expanses like the Kirtankhola."
+    ],
+    "communityEtiquette": [
+      "Buy fresh guavas, hogla mats, and local sweets directly from the farming families.",
+      "Never block the passage of loaded commercial produce boats while trying to take photographs."
+    ],
+    "emergencyContacts": [
+      {
+        "title": "Barishal River Police Outpost",
+        "contact": "+880 1320-222222",
+        "details": "24/7 riverine safety and emergency response"
+      },
+      {
+        "title": "Jhalakathi Sadar Hospital",
+        "contact": "+880 1711-345678",
+        "details": "Nearest medical emergency facility for Bhimruli"
+      }
+    ],
+    "relatedTourSlug": "barishal-kuakata-backwaters-beach",
+    "relatedTourTitle": "Barishal & Kuakata: Riverine Backwaters & Sunrise Coast",
+    "relatedHotelId": "kuakata-grand",
+    "relatedHotelName": "Kuakata Grand View Hotel"
+  },
+  {
+    "id": "heritage",
+    "category": "Heritage & North",
+    "title": "Northern Bengal UNESCO Heritage & Terracotta Trails",
+    "badgeColor": "text-stone-800 bg-[#F5F2EB] border-stone-200",
+    "readingTime": "5 min read",
+    "division": "Rajshahi & Rangpur",
+    "coverImage": "https://images.unsplash.com/photo-1596895111956-bf1cf0599ce5?auto=format&fit=crop&w=1200&q=80",
+    "summary": "A peaceful heritage exploration of Somapura Mahavihara in Paharpur, Kantajew Temple's intricate terracotta, Mahasthangarh fortress, and traditional winter date-palm sap trails.",
+    "keyHighlights": [
+      "Visit Somapura Mahavihara (UNESCO) and Kantajew Temple in the early morning for golden-hour lighting on ancient terracotta artwork.",
+      "Winter (November to February) is ideal due to mild sunny days, dewy mornings, and fresh date palm sap (khejur rosh).",
+      "Hire an authorized Department of Archaeology guide at the museum counter for authentic historical insights.",
+      "Taste Bogura's authentic curd (Doi) from traditional sweetshops like Asian Sweetmeat or Akboria."
+    ],
+    "overview": "Northern Bengal is the cradle of ancient civilization in the Bengal delta. From the 8th-century Buddhist monastery at Paharpur to the 18th-century Hindu terracotta jewel of Kantanagar and the fortified ramparts of Mahasthangarh, this region offers deep architectural serenity.",
+    "transportation": [
+      {
+        "mode": "Intercity Train / Highway AC Coach",
+        "route": "Dhaka (Kamalapur) → Joypurhat / Bogura / Dinajpur",
+        "approxCostBDT": "BDT 550 – BDT 1,100 per seat",
+        "operators": "Drutojan Express, Ekota Express / Shyamoli, SR Travels, Nabil Paribahan",
+        "advice": "Drutojan Express takes you directly across the Bangabandhu Jamuna Bridge into Northern Bengal."
+      },
+      {
+        "mode": "Reserved Microbus / Car",
+        "route": "Bogura → Paharpur → Kantajew Temple (Full day)",
+        "approxCostBDT": "BDT 3,500 – BDT 5,000 per day",
+        "operators": "Bogura Car Rental Stand (Satmatha)",
+        "advice": "Best option to connect multiple heritage sites spread across Joypurhat, Naogaon, and Dinajpur."
+      }
+    ],
+    "fieldSchedule": [
+      {
+        "phase": "Morning",
+        "title": "Paharpur Somapura Mahavihara",
+        "description": "Explore the vast quadrangle and central stupa of the 8th-century Pala monastery, once the largest Buddhist seat of learning south of the Himalayas."
+      },
+      {
+        "phase": "Mid-day",
+        "title": "Museum & Terracotta Panels",
+        "description": "Examine excavated bronze statues, stone inscriptions, and preserved terracotta plaques depicting contemporary 8th-century Bengali village life."
+      },
+      {
+        "phase": "Afternoon",
+        "title": "Kantajew Temple & Dhepa River",
+        "description": "Travel to Dinajpur to marvel at the thousands of terracotta panels depicting epic tales from the Ramayana and Mahabharata."
+      }
+    ],
+    "packingList": [
+      "Light sweater or fleece jacket for chilly winter mornings",
+      "Comfortable flat walking shoes for expansive archaeological grounds",
+      "Camera with prime lens for capturing intricate terracotta details",
+      "Cash in BDT for local sweetmeat and handicraft purchases"
+    ],
+    "safetyDirectives": [
+      "Do not climb or lean on ancient fragile terracotta brick walls; all sites are protected national monuments.",
+      "Verify museum weekly closing days (Paharpur & Mahasthangarh museums close on Sundays and half-day Mondays)."
+    ],
+    "communityEtiquette": [
+      "Support local terracotta craftsmen and pottery makers situated near the temple complex.",
+      "Treat local village residents with courtesy when traveling through rural farming hamlets."
+    ],
+    "emergencyContacts": [
+      {
+        "title": "Department of Archaeology Regional Office",
+        "contact": "+880 1711-234901",
+        "details": "Bogura regional archaeological heritage division"
+      },
+      {
+        "title": "Tourist Police Bogura Outpost",
+        "contact": "+880 1320-222222",
+        "details": "24/7 security assistance for heritage travelers"
+      }
+    ],
+    "relatedTourSlug": "paharpur-kantajew-ancient-heritage",
+    "relatedTourTitle": "Paharpur, Mahasthangarh & Kantajew: Ancient Bengal Heritage",
+    "relatedHotelId": "nazimgarh-garden",
+    "relatedHotelName": "Nazimgarh Garden Resort"
+  },
+  {
+    "id": "cash-tech",
+    "category": "Essentials & Cash",
+    "title": "Cash Management, Mobile Banking (bKash/Nagad) & Offline Maps",
+    "badgeColor": "text-emerald-900 bg-emerald-50 border-emerald-200/80",
+    "readingTime": "4 min read",
+    "division": "All Bangladesh",
+    "coverImage": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80",
+    "summary": "Critical practical tips for domestic payments, cash withdrawals, bKash/Nagad mobile wallets, offline map downloads, and tourist police contacts across remote Bangladesh.",
+    "keyHighlights": [
+      "Always withdraw cash before leaving regional cities like Chittagong, Sylhet, or Khagrachhari. Remote destinations have zero ATM booths.",
+      "bKash and Nagad mobile wallets are widely accepted in small tea stalls and cottages, but keep small denomination paper currency (BDT 50, BDT 100, BDT 500).",
+      "Download Google Maps offline areas for Rangamati, Bandarban, and Sunamganj ahead of time since mobile data drops in valleys.",
+      "Keep the Bangladesh Tourist Police 24/7 hotline saved: +880 1320-222222."
+    ],
+    "overview": "While digital payments and 4G connectivity have expanded rapidly across Bangladesh, domestic travel into hill valleys, deep wetland haors, and coastal islands presents unique technology hurdles. Following these simple preparation steps ensures hassle-free transactions.",
+    "transportation": [
+      {
+        "mode": "Financial Transit Tips",
+        "route": "Dhaka / Major Cities → Remote Destinations",
+        "approxCostBDT": "Budget BDT 2,000 – BDT 3,000 in physical cash per day",
+        "operators": "bKash, Nagad, Dutch-Bangla Bank (DBBL Fast Track)",
+        "advice": "Keep money distributed in two separate bags for security."
+      }
+    ],
+    "fieldSchedule": [
+      {
+        "phase": "Step 1 (Pre-departure)",
+        "title": "Download Offline Maps",
+        "description": "Open Google Maps app, search 'Rangamati' or 'Sunamganj' or 'Bandarban', select 'Download Offline Map' (typically 150-300MB)."
+      },
+      {
+        "phase": "Step 2 (En route)",
+        "title": "Cash Withdrawal at Regional Hub",
+        "description": "Stop at Shapla Chattar (Khagrachhari) or Sunamganj Bridge (Sunamganj) ATM booths before entering rural trailheads."
+      },
+      {
+        "phase": "Step 3 (Field)",
+        "title": "Small Currency & Mobile Wallets",
+        "description": "Use bKash/Nagad where signal exists; maintain a stash of BDT 20, BDT 50, BDT 100 notes for local boatmen, tea stalls, and village guides."
+      }
+    ],
+    "packingList": [
+      "Waterproof money pouch or zip-lock bag for paper notes",
+      "SIM cards from two different telecom operators (e.g. Teletalk + Robi or GP)",
+      "High-capacity power bank (20,000mAh) to keep your phone charged for maps",
+      "Emergency contact card with phone numbers written on physical paper"
+    ],
+    "safetyDirectives": [
+      "Never flash large bundles of cash at crowded ghats, bus terminals, or checkposts.",
+      "Ensure your bKash and Nagad PINs are never shared with local merchant agents."
+    ],
+    "communityEtiquette": [
+      "Pay local boatmen and indigenous homestays promptly without unnecessary haggling over small amounts.",
+      "Tip local luggage porters and helpers generously; tourism is their primary seasonal livelihood."
+    ],
+    "emergencyContacts": [
+      {
+        "title": "National Emergency Helpline",
+        "contact": "999",
+        "details": "Police, Fire, and Ambulance nationwide (toll-free)"
+      },
+      {
+        "title": "Tourist Police 24/7 Control Room",
+        "contact": "+880 1320-222222",
+        "details": "Official assistance for any traveler in distress"
+      }
+    ],
+    "relatedTourSlug": "bandarban-nilgiri-chimbuk-boga-lake",
+    "relatedTourTitle": "Bandarban: Nilgiri Cloud Station, Chimbuk & Boga Lake",
+    "relatedHotelId": "sairu",
+    "relatedHotelName": "Sairu Hill Resort"
+  }
+]

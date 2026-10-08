@@ -1,5 +1,9 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MediatR;
+using TourFlow.Application.Bookings.Commands.CreateBooking;
 using TourFlow.Domain.Entities;
 using TourFlow.Domain.Enums;
 using TourFlow.Infrastructure.Data;
@@ -11,24 +15,44 @@ namespace TourFlow.Api.Controllers;
 public class BookingsController : ControllerBase
 {
     private readonly TourFlowDbContext _context;
+    private readonly IMediator _mediator;
 
-    public BookingsController(TourFlowDbContext context)
+    public BookingsController(TourFlowDbContext context, IMediator mediator)
     {
         _context = context;
+        _mediator = mediator;
     }
 
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetBookings()
     {
-        var bookings = await _context.Bookings
+        var callerRole = User.FindFirstValue(ClaimTypes.Role);
+        var callerIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var callerEmail = User.FindFirstValue(ClaimTypes.Email);
+        Guid.TryParse(callerIdStr, out var callerId);
+
+        var query = _context.Bookings
             .Include(b => b.TourPackage)
             .Include(b => b.TourSchedule)
             .Include(b => b.Travelers)
+            .AsNoTracking()
+            .AsQueryable();
+
+        // If not Admin/SuperAdmin, strictly return only caller's own bookings
+        if (callerRole != "Admin" && callerRole != "SuperAdmin")
+        {
+            query = query.Where(b => (callerId != Guid.Empty && b.UserId == callerId) ||
+                                     (!string.IsNullOrEmpty(callerEmail) && b.CustomerEmail.ToLower() == callerEmail.ToLower()));
+        }
+
+        var bookings = await query
             .OrderByDescending(b => b.CreatedAtUtc)
             .Select(b => new
             {
                 b.Id,
                 b.BookingReference,
+                TourPackageId = b.TourPackageId,
                 TourTitle = b.TourPackage != null ? b.TourPackage.Title : "N/A",
                 Destination = b.TourPackage != null ? b.TourPackage.Destination : "N/A",
                 DepartureDate = b.TourSchedule != null ? b.TourSchedule.StartDate : DateTime.MinValue,
@@ -111,116 +135,32 @@ public class BookingsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateBooking([FromBody] CreateBookingRequest request)
     {
-        var schedule = await _context.TourSchedules
-            .Include(s => s.TourPackage)
-            .FirstOrDefaultAsync(s => s.Id == request.TourScheduleId && s.TourPackageId == request.TourPackageId);
+        var callerIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        Guid? callerId = Guid.TryParse(callerIdStr, out var id) ? id : null;
+        var callerEmail = User.FindFirstValue(ClaimTypes.Email);
 
-        if (schedule == null)
-        {
-            return NotFound(new { message = "Selected departure schedule was not found." });
-        }
+        var command = new CreateBookingCommand(
+            request.TourScheduleId,
+            request.CustomerName,
+            request.CustomerEmail,
+            request.CustomerPhone,
+            request.NumberOfTravelers,
+            request.DietaryRequirements,
+            request.SpecialRequests,
+            request.EmergencyContactName,
+            request.EmergencyContactPhone,
+            "bkash",
+            request.Travelers?.Select(t => new TravelerInputDto(t.FullName, 30, "Other", t.Email, t.PhoneNumber, t.PassportNumber, t.Nationality)).ToList(),
+            callerId,
+            callerEmail
+        );
 
-        var availableSeats = schedule.TotalSeats - schedule.BookedSeats;
-        if (availableSeats < request.NumberOfTravelers)
-        {
-            return BadRequest(new { message = $"Only {availableSeats} seat(s) remaining on this departure." });
-        }
+        var result = await _mediator.Send(command);
 
-        var tour = schedule.TourPackage!;
-        var unitPrice = schedule.PricePerPerson > 0 ? schedule.PricePerPerson : (tour.DiscountPrice ?? tour.BasePrice);
-        var totalAmount = unitPrice * request.NumberOfTravelers;
-        var depositPerPerson = tour.DepositAmount > 0 ? tour.DepositAmount : (unitPrice * 0.20m);
-        var totalDeposit = depositPerPerson * request.NumberOfTravelers;
-
-        decimal depositPaid;
-        decimal balanceRemaining;
-        PaymentStatus paymentStatus;
-
-        if (request.PayDepositOnly)
-        {
-            depositPaid = totalDeposit;
-            balanceRemaining = totalAmount - totalDeposit;
-            paymentStatus = PaymentStatus.PartiallyPaid;
-        }
-        else
-        {
-            depositPaid = totalAmount;
-            balanceRemaining = 0m;
-            paymentStatus = PaymentStatus.Paid;
-        }
-
-        var refCode = $"TF-{DateTime.UtcNow:yyyyMM}-{Random.Shared.Next(1000, 9999)}";
-
-        var booking = new Booking
-        {
-            BookingReference = refCode,
-            TourPackageId = request.TourPackageId,
-            TourScheduleId = request.TourScheduleId,
-            CustomerName = request.CustomerName,
-            CustomerEmail = request.CustomerEmail,
-            CustomerPhone = request.CustomerPhone,
-            NumberOfTravelers = request.NumberOfTravelers,
-            UnitPrice = unitPrice,
-            TotalAmount = totalAmount,
-            DepositPaid = depositPaid,
-            BalanceRemaining = balanceRemaining,
-            Status = BookingStatus.Confirmed,
-            PaymentStatus = paymentStatus,
-            DietaryRequirements = request.DietaryRequirements,
-            SpecialRequests = request.SpecialRequests,
-            EmergencyContactName = request.EmergencyContactName,
-            EmergencyContactPhone = request.EmergencyContactPhone,
-            PaymentTransactionId = $"TXN-STRIPE-{Guid.NewGuid().ToString()[..8].ToUpper()}"
-        };
-
-        if (request.Travelers != null && request.Travelers.Any())
-        {
-            foreach (var t in request.Travelers)
-            {
-                booking.Travelers.Add(new Traveler
-                {
-                    FullName = t.FullName,
-                    Email = t.Email,
-                    PhoneNumber = t.PhoneNumber,
-                    PassportNumber = t.PassportNumber,
-                    Nationality = t.Nationality
-                });
-            }
-        }
-        else
-        {
-            booking.Travelers.Add(new Traveler
-            {
-                FullName = request.CustomerName,
-                Email = request.CustomerEmail,
-                PhoneNumber = request.CustomerPhone
-            });
-        }
-
-        schedule.BookedSeats += request.NumberOfTravelers;
-
-        _context.Bookings.Add(booking);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetBookingByReference), new { refCode = booking.BookingReference }, new
-        {
-            booking.Id,
-            booking.BookingReference,
-            booking.CustomerName,
-            booking.CustomerEmail,
-            TourTitle = tour.Title,
-            DepartureDate = schedule.StartDate,
-            booking.NumberOfTravelers,
-            booking.TotalAmount,
-            booking.DepositPaid,
-            booking.BalanceRemaining,
-            booking.Status,
-            booking.PaymentStatus,
-            booking.PaymentTransactionId,
-            Message = "Reservation secured successfully."
-        });
+        return CreatedAtAction(nameof(GetBookingByReference), new { refCode = result.BookingReference }, result);
     }
 
+    [Authorize(Roles = "Admin,SuperAdmin")]
     [HttpPatch("{id}/status")]
     public async Task<IActionResult> UpdateBookingStatus(Guid id, [FromBody] UpdateStatusRequest request)
     {

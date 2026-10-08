@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using TourFlow.Domain.Entities;
@@ -9,6 +10,8 @@ namespace TourFlow.Api.Services;
 public interface IJwtTokenService
 {
     string GenerateToken(User user);
+    string GenerateRefreshToken();
+    ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
 }
 
 public class JwtTokenService : IJwtTokenService
@@ -52,5 +55,48 @@ public class JwtTokenService : IJwtTokenService
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
+    }
+
+    public string GenerateRefreshToken()
+    {
+        var randomNumber = new byte[64];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+        return Convert.ToBase64String(randomNumber);
+    }
+
+    public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
+    {
+        var secret = _configuration["Jwt:Secret"] ?? "TourFlow_Default_Super_Secret_Jwt_Security_Key_2026_Bangladesh_Tourism!";
+        var issuer = _configuration["Jwt:Issuer"] ?? "TourFlowApi";
+        var audience = _configuration["Jwt:Audience"] ?? "TourFlowApp";
+
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = true,
+            ValidAudience = audience,
+            ValidateIssuer = true,
+            ValidIssuer = issuer,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
+            ValidateLifetime = false // Needed to validate expired tokens for refresh flow
+        };
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        try
+        {
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return null;
+            }
+
+            return principal;
+        }
+        catch
+        {
+            return null;
+        }
     }
 }

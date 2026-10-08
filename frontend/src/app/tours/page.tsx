@@ -4,20 +4,19 @@ import { useEffect, useState, useMemo, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
-  Compass,
   MapPin,
-  Calendar,
-  Users,
   Clock,
+  Users,
   Star,
   CheckCircle2,
   ChevronRight,
-  Filter,
   Search,
+  X,
   SlidersHorizontal,
-  X
+  ArrowUpDown
 } from "lucide-react";
 import { TourSummary, API_BASE } from "@/lib/api";
+import ImageWithFallback from "@/components/ImageWithFallback";
 
 function ToursCatalogContent() {
   const searchParams = useSearchParams();
@@ -48,6 +47,20 @@ function ToursCatalogContent() {
     }
     fetchTours();
   }, []);
+
+  const divisions = [
+    { label: "All Regions", value: "All" },
+    { label: "Chittagong", value: "Chittagong" },
+    { label: "Sylhet", value: "Sylhet" },
+    { label: "Khulna", value: "Khulna" },
+    { label: "Barishal", value: "Barishal" },
+    { label: "Dhaka", value: "Dhaka" },
+    { label: "Rajshahi", value: "Rajshahi" },
+    { label: "Rangpur", value: "Rangpur" },
+    { label: "Mymensingh", value: "Mymensingh" },
+  ];
+
+  const difficulties = ["All", "Easy", "Moderate", "Challenging"];
 
   const filteredTours = useMemo(() => {
     return tours
@@ -82,9 +95,6 @@ function ToursCatalogContent() {
       });
   }, [tours, searchQuery, selectedRegion, selectedDifficulty, sortBy]);
 
-  const regions = ["All", "Chittagong", "Sylhet", "Khulna", "Barisal", "Rajshahi"];
-  const difficulties = ["All", "Easy", "Moderate", "Challenging"];
-
   const resetFilters = () => {
     setSearchQuery("");
     setSelectedRegion("All");
@@ -93,84 +103,89 @@ function ToursCatalogContent() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {/* Search & Filter Bar */}
-      <div className="bg-[#080d1d] border border-white/[0.08] rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl">
-        <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
+      <div className="bg-white border border-[#EBE6DC] rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
+        <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
           <div className="relative flex-1">
-            <Search className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-stone-400" />
             <input
               type="text"
               placeholder="Search Sajek, Tanguar Haor, Sreemangal, Cox's Bazar, Sundarbans..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-black/40 border border-white/[0.1] rounded-2xl pl-11 pr-4 py-3 text-xs sm:text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500 transition-all"
+              className="w-full bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl pl-12 pr-10 py-3.5 text-sm sm:text-base text-stone-900 placeholder:text-stone-400 focus:bg-white focus:outline-none focus:border-stone-900 transition-all"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3.5 top-3.5 text-slate-400 hover:text-white"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 p-1"
+                aria-label="Clear search"
               >
                 <X className="h-4 w-4" />
               </button>
             )}
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-slate-400 shrink-0 font-medium">Sort by:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
-              className="bg-black/40 border border-white/[0.1] rounded-2xl px-4 py-3 text-xs text-white focus:outline-none cursor-pointer"
-            >
-              <option value="featured">Featured First</option>
-              <option value="priceAsc">Fare: Low to High</option>
-              <option value="priceDesc">Fare: High to Low</option>
-              <option value="duration">Longest Duration</option>
-            </select>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl px-4 py-2.5">
+              <ArrowUpDown className="h-4 w-4 text-stone-500 shrink-0" />
+              <span className="text-xs sm:text-sm font-medium text-stone-500 whitespace-nowrap">Sort:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                aria-label="Sort tours"
+                className="bg-transparent text-xs sm:text-sm font-semibold text-stone-900 focus:outline-none cursor-pointer"
+              >
+                <option value="featured">Featured First</option>
+                <option value="priceAsc">Fare: Low to High</option>
+                <option value="priceDesc">Fare: High to Low</option>
+                <option value="duration">Longest Duration</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2 bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl px-4 py-2.5">
+              <SlidersHorizontal className="h-4 w-4 text-stone-500 shrink-0" />
+              <span className="text-xs sm:text-sm font-medium text-stone-500 whitespace-nowrap">Difficulty:</span>
+              <select
+                value={selectedDifficulty}
+                onChange={(e) => setSelectedDifficulty(e.target.value)}
+                aria-label="Filter by difficulty"
+                className="bg-transparent text-xs sm:text-sm font-semibold text-stone-900 focus:outline-none cursor-pointer"
+              >
+                {difficulties.map((diff) => (
+                  <option key={diff} value={diff}>
+                    {diff === "All" ? "All Levels" : diff}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
-        {/* Division & Difficulty Pills */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/[0.06] text-xs">
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-            <span className="text-slate-400 text-[11px] font-semibold uppercase mr-1">Division:</span>
-            {regions.map((reg) => (
+        {/* Division Filter Pills */}
+        <div className="pt-2 border-t border-[#F0EBE1] flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          {divisions.map((div) => {
+            const active = selectedRegion.toLowerCase() === div.value.toLowerCase();
+            return (
               <button
-                key={reg}
-                onClick={() => setSelectedRegion(reg)}
-                className={`px-3.5 py-1.5 rounded-xl font-medium transition-all ${
-                  selectedRegion.toLowerCase() === reg.toLowerCase()
-                    ? "bg-teal-600 text-white shadow-sm"
-                    : "bg-white/[0.04] text-slate-300 hover:text-white hover:bg-white/[0.08]"
+                key={div.value}
+                onClick={() => setSelectedRegion(div.value)}
+                className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
+                  active
+                    ? "bg-stone-900 text-stone-50 shadow-xs"
+                    : "bg-[#FAF8F5] text-stone-700 border border-[#E5DFD5] hover:bg-stone-100 hover:text-stone-900"
                 }`}
               >
-                {reg}
+                {div.label}
               </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-            <span className="text-slate-400 text-[11px] font-semibold uppercase mr-1">Trek Grade:</span>
-            {difficulties.map((diff) => (
-              <button
-                key={diff}
-                onClick={() => setSelectedDifficulty(diff)}
-                className={`px-3.5 py-1.5 rounded-xl font-medium transition-all ${
-                  selectedDifficulty.toLowerCase() === diff.toLowerCase()
-                    ? "bg-sky-600 text-white shadow-sm"
-                    : "bg-white/[0.04] text-slate-300 hover:text-white hover:bg-white/[0.08]"
-                }`}
-              >
-                {diff}
-              </button>
-            ))}
-          </div>
+            );
+          })}
 
           {(searchQuery || selectedRegion !== "All" || selectedDifficulty !== "All") && (
             <button
               onClick={resetFilters}
-              className="text-[11px] text-teal-400 hover:text-teal-300 underline font-semibold ml-auto"
+              className="text-xs text-stone-600 hover:text-stone-900 underline font-semibold ml-auto whitespace-nowrap"
             >
               Reset Filters
             </button>
@@ -179,22 +194,22 @@ function ToursCatalogContent() {
       </div>
 
       {/* Results Count */}
-      <div className="flex items-center justify-between text-xs text-slate-400 font-medium px-1">
+      <div className="flex items-center justify-between text-xs sm:text-sm text-stone-500 font-medium px-1">
         <span>
-          Showing <strong className="text-white">{filteredTours.length}</strong> of {tours.length} tour packages
+          Showing <strong className="text-stone-900 font-bold">{filteredTours.length}</strong> of {tours.length} verified packages
         </span>
-        <span className="hidden sm:inline">All tours adhere to Bangladesh Tourist Police safety standards</span>
+        <span className="hidden sm:inline">Adheres to Bangladesh Tourist Police safety &amp; guide guidelines</span>
       </div>
 
       {/* Grid of Tours */}
       {loading ? (
-        <div className="py-24 text-center text-slate-500 text-sm">Loading Bangladesh tour packages...</div>
+        <div className="py-28 text-center text-stone-500 text-base">Loading Bangladesh tour packages...</div>
       ) : filteredTours.length === 0 ? (
-        <div className="py-20 text-center space-y-4 bg-[#080d1d] rounded-3xl border border-white/[0.08] p-8">
-          <p className="text-sm text-slate-400">No tour packages found matching your current filter.</p>
+        <div className="py-20 text-center space-y-4 bg-white rounded-3xl border border-[#EBE6DC] p-8 shadow-sm">
+          <p className="text-base text-stone-600">No tour packages found matching your current filter.</p>
           <button
             onClick={resetFilters}
-            className="px-4 py-2 rounded-xl bg-teal-600 text-white text-xs font-bold"
+            className="px-6 py-2.5 rounded-full bg-stone-900 text-stone-50 text-sm font-semibold hover:bg-stone-800 transition-colors"
           >
             Clear All Filters
           </button>
@@ -205,90 +220,91 @@ function ToursCatalogContent() {
             <Link
               key={tour.id}
               href={`/tours/${tour.slug}`}
-              className="group bg-[#080d1d] border border-white/[0.08] rounded-3xl overflow-hidden hover:border-teal-500/40 hover:-translate-y-1 transition-all duration-300 flex flex-col shadow-lg"
+              className="group bg-white border border-[#EBE6DC] rounded-3xl overflow-hidden hover:border-[#C4BAA9] hover-lift transition-smooth flex flex-col shadow-xs"
             >
-              <div className="relative h-64 w-full overflow-hidden bg-slate-900">
-                <img
+              <div className="relative h-64 w-full overflow-hidden bg-stone-100">
+                <ImageWithFallback
                   src={tour.coverImageUrl}
+                  fallbackSrc="https://images.unsplash.com/photo-1628085971946-b673e4492bf9?auto=format&fit=crop&w=800&q=80"
                   alt={tour.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#080d1d] via-transparent to-transparent opacity-90" />
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent opacity-90" />
 
                 <div className="absolute top-4 left-4">
-                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-black/60 backdrop-blur-md text-white border border-white/[0.1] flex items-center gap-1">
-                    <MapPin className="h-3 w-3 text-sky-400" />
+                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/95 backdrop-blur-md text-stone-900 border border-stone-200 shadow-2xs flex items-center gap-1.5">
+                    <MapPin className="h-3 w-3 text-amber-800" />
                     {tour.destination}
                   </span>
                 </div>
 
                 <div className="absolute top-4 right-4">
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-teal-600/90 backdrop-blur-md text-white shadow">
+                  <span className="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-stone-900/80 backdrop-blur-xs text-stone-100 shadow-xs">
                     {tour.difficulty}
                   </span>
                 </div>
 
-                <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-xs text-slate-300 font-medium">
-                  <span className="flex items-center gap-1.5">
-                    <Clock className="h-3.5 w-3.5 text-teal-400" />
+                <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-xs sm:text-sm text-stone-100 font-medium">
+                  <span className="flex items-center gap-1.5 drop-shadow">
+                    <Clock className="h-4 w-4 text-amber-300" />
                     {tour.durationDays} Days / {tour.durationNights} Nights
                   </span>
-                  <span className="flex items-center gap-1.5">
-                    <Users className="h-3.5 w-3.5 text-sky-400" />
+                  <span className="flex items-center gap-1.5 drop-shadow">
+                    <Users className="h-4 w-4 text-stone-300" />
                     Max {tour.maxGroupSize} Guests
                   </span>
                 </div>
               </div>
 
-              <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-xs">
-                    <div className="flex items-center text-amber-400">
-                      <Star className="h-3.5 w-3.5 fill-amber-400" />
-                      <span className="ml-1 font-bold text-white">{tour.averageRating.toFixed(1)}</span>
+              <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between space-y-4">
+                <div className="space-y-2.5">
+                  <div className="flex items-center gap-2 text-xs sm:text-sm">
+                    <div className="flex items-center text-amber-500">
+                      <Star className="h-4 w-4 fill-amber-500" />
+                      <span className="ml-1 font-bold text-stone-900">{(tour.averageRating ?? 4.9).toFixed(1)}</span>
                     </div>
-                    <span className="text-slate-600">•</span>
-                    <span className="text-slate-400">{tour.totalReviews} verified reviews</span>
+                    <span className="text-stone-300">•</span>
+                    <span className="text-stone-500">{tour.totalReviews ?? 15} verified reviews</span>
                   </div>
 
-                  <h3 className="text-base font-bold text-white group-hover:text-teal-400 transition-colors line-clamp-2">
+                  <h3 className="text-xl font-serif font-bold text-stone-900 group-hover:text-stone-700 transition-colors line-clamp-2">
                     {tour.title}
                   </h3>
 
-                  <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                  <p className="text-sm text-stone-600 line-clamp-2 leading-relaxed">
                     {tour.summary}
                   </p>
                 </div>
 
                 {tour.highlights && tour.highlights.length > 0 && (
-                  <div className="space-y-1.5 border-t border-white/[0.06] pt-3">
+                  <div className="space-y-2 border-t border-[#F0EBE1] pt-3.5">
                     {tour.highlights.slice(0, 2).map((hl, i) => (
-                      <div key={i} className="flex items-start gap-1.5 text-xs text-slate-300">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-teal-400 shrink-0 mt-0.5" />
+                      <div key={i} className="flex items-start gap-2 text-xs sm:text-sm text-stone-600">
+                        <CheckCircle2 className="h-4 w-4 text-amber-800 shrink-0 mt-0.5" />
                         <span className="line-clamp-1">{hl}</span>
                       </div>
                     ))}
                   </div>
                 )}
 
-                <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between">
+                <div className="pt-4 border-t border-[#F0EBE1] flex items-center justify-between">
                   <div>
-                    <div className="text-[10px] text-slate-400 uppercase font-semibold">Fare (per person)</div>
+                    <div className="text-xs text-stone-500 uppercase font-semibold">Fare (per traveler)</div>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-black text-white">
-                        ৳{(tour.discountPrice ?? tour.basePrice).toLocaleString()}
+                      <span className="text-2xl sm:text-3xl font-extrabold text-stone-900">
+                        BDT {(tour.discountPrice ?? tour.basePrice).toLocaleString()}
                       </span>
                       {tour.discountPrice && (
-                        <span className="text-xs text-slate-500 line-through">
-                          ৳{tour.basePrice.toLocaleString()}
+                        <span className="text-xs sm:text-sm text-stone-400 line-through">
+                          BDT {tour.basePrice.toLocaleString()}
                         </span>
                       )}
                     </div>
                   </div>
 
-                  <span className="px-4 py-2 rounded-xl bg-teal-600 group-hover:bg-teal-500 text-white text-xs font-bold transition-colors flex items-center gap-1 shadow-md shadow-teal-600/20">
-                    View Details
-                    <ChevronRight className="h-3.5 w-3.5" />
+                  <span className="px-5 py-2.5 rounded-full bg-stone-900 group-hover:bg-stone-800 text-stone-50 text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 shadow-xs">
+                    <span>View Itinerary</span>
+                    <ChevronRight className="h-4 w-4" />
                   </span>
                 </div>
               </div>
@@ -302,22 +318,28 @@ function ToursCatalogContent() {
 
 export default function ToursCatalogPage() {
   return (
-    <div className="w-full max-w-[1536px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-12 space-y-8">
-      <div className="space-y-3">
-        <div className="text-xs font-bold uppercase tracking-widest text-teal-400">
-          Domestic Guided Journeys
+    <div className="w-full min-h-screen bg-[#FAF8F5] pb-24">
+      {/* Editorial Page Header */}
+      <section className="border-b border-[#EBE6DC] bg-[#FAF8F5] py-14 sm:py-16">
+        <div className="w-full max-w-[1720px] mx-auto px-6 sm:px-10 lg:px-14 2xl:px-20 space-y-4">
+          <span className="text-xs sm:text-sm font-semibold tracking-widest uppercase text-amber-800">
+            Curated Bangladesh Guided Journeys
+          </span>
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-stone-900 tracking-tight">
+            Explore Tour Packages Across Bangladesh
+          </h1>
+          <p className="text-base sm:text-lg text-stone-600 max-w-3xl leading-relaxed">
+            Small-group guided tours across Sajek Valley, Tanguar Haor, Sreemangal tea estates, Bandarban mountain ranges, Sundarbans mangrove safari, and Cox&apos;s Bazar coast.
+          </p>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-          Explore Tour Packages Across Bangladesh
-        </h1>
-        <p className="text-sm text-slate-300 max-w-2xl leading-relaxed">
-          Small-group guided tours across Sajek Valley, Tanguar Haor, Sreemangal tea estates, Bandarban mountain ranges, Sundarbans mangrove safari, and Cox&apos;s Bazar coast.
-        </p>
-      </div>
+      </section>
 
-      <Suspense fallback={<div className="py-24 text-center text-slate-500 text-sm">Loading catalog...</div>}>
-        <ToursCatalogContent />
-      </Suspense>
+      {/* Main Content Area */}
+      <section className="w-full max-w-[1720px] mx-auto px-6 sm:px-10 lg:px-14 2xl:px-20 mt-10">
+        <Suspense fallback={<div className="py-28 text-center text-stone-500 text-base">Loading tour packages...</div>}>
+          <ToursCatalogContent />
+        </Suspense>
+      </section>
     </div>
   );
 }

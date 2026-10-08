@@ -15,6 +15,13 @@ public static class DependencyInjection
         services.AddDbContext<TourFlowDbContext>(options =>
             options.UseNpgsql(connectionString));
 
+        services.AddScoped<TourFlow.Application.Common.Interfaces.ITourFlowDbContext>(provider =>
+            provider.GetRequiredService<TourFlowDbContext>());
+
+        services.AddMemoryCache();
+        services.AddSingleton<TourFlow.Application.Common.Interfaces.ICacheService, TourFlow.Infrastructure.Services.MemoryCacheService>();
+        services.AddSingleton<TourFlow.Application.Common.Interfaces.IPhotoService, TourFlow.Infrastructure.Services.CloudinaryPhotoService>();
+
         return services;
     }
 }

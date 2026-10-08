@@ -23,6 +23,113 @@ namespace TourFlow.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("TourFlow.Domain.Entities.BlogComment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AuthorAvatar")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AuthorEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("AuthorName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<Guid>("BlogPostId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlogPostId");
+
+                    b.ToTable("BlogComments");
+                });
+
+            modelBuilder.Entity("TourFlow.Domain.Entities.BlogPost", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AuthorAvatar")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AuthorEmail")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("AuthorName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CoverImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Division")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("IsPinned")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("character varying(320)");
+
+                    b.Property<string>("Summary")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Upvotes")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Views")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BlogPosts");
+                });
+
             modelBuilder.Entity("TourFlow.Domain.Entities.Booking", b =>
                 {
                     b.Property<Guid>("Id")
@@ -104,6 +211,9 @@ namespace TourFlow.Infrastructure.Migrations
                     b.Property<DateTime?>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BookingReference")
@@ -113,7 +223,136 @@ namespace TourFlow.Infrastructure.Migrations
 
                     b.HasIndex("TourScheduleId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Bookings");
+                });
+
+            modelBuilder.Entity("TourFlow.Domain.Entities.Hotel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.PrimitiveCollection<List<string>>("Amenities")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("CheckInTime")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CheckOutTime")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.PrimitiveCollection<List<string>>("Cons")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("CoverImage")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.PrimitiveCollection<List<string>>("GalleryImages")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("HowToReach")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("NearbyAttractionsJson")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Place")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<decimal>("PriceNumeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<string>("PricePerNight")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.PrimitiveCollection<List<string>>("Pros")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<double>("Rating")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("ReceptionEmail")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<string>("ReceptionPhone")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("RelatedTourSlug")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RelatedTourTitle")
+                        .HasColumnType("text");
+
+                    b.Property<int>("ReviewsCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RoomTypesJson")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Tier")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("Hotels");
                 });
 
             modelBuilder.Entity("TourFlow.Domain.Entities.ItineraryDay", b =>
@@ -220,9 +459,14 @@ namespace TourFlow.Infrastructure.Migrations
                     b.Property<DateTime?>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TourPackageId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Reviews");
                 });
@@ -399,6 +643,113 @@ namespace TourFlow.Infrastructure.Migrations
                     b.ToTable("TourSchedules");
                 });
 
+            modelBuilder.Entity("TourFlow.Domain.Entities.TravelTip", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("BadgeColor")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("CheckpostProceduresJson")
+                        .HasColumnType("text");
+
+                    b.PrimitiveCollection<List<string>>("CommunityEtiquette")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("CoverImage")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Division")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("EmergencyContactsJson")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FieldScheduleJson")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.PrimitiveCollection<List<string>>("KeyHighlights")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("Overview")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.PrimitiveCollection<List<string>>("PackingList")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("ReadingTime")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RelatedHotelId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RelatedHotelName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RelatedTourSlug")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RelatedTourTitle")
+                        .HasColumnType("text");
+
+                    b.PrimitiveCollection<List<string>>("SafetyDirectives")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Summary")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<string>("TransportationJson")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("TravelTips");
+                });
+
             modelBuilder.Entity("TourFlow.Domain.Entities.Traveler", b =>
                 {
                     b.Property<Guid>("Id")
@@ -453,6 +804,10 @@ namespace TourFlow.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("AvatarUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.Property<string>("Bio")
                         .HasColumnType("text");
 
@@ -495,6 +850,13 @@ namespace TourFlow.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<string>("RefreshToken")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("RefreshTokenExpiryTime")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -514,6 +876,17 @@ namespace TourFlow.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("TourFlow.Domain.Entities.BlogComment", b =>
+                {
+                    b.HasOne("TourFlow.Domain.Entities.BlogPost", "BlogPost")
+                        .WithMany("Comments")
+                        .HasForeignKey("BlogPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BlogPost");
+                });
+
             modelBuilder.Entity("TourFlow.Domain.Entities.Booking", b =>
                 {
                     b.HasOne("TourFlow.Domain.Entities.TourPackage", "TourPackage")
@@ -528,9 +901,16 @@ namespace TourFlow.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("TourFlow.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("TourPackage");
 
                     b.Navigation("TourSchedule");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TourFlow.Domain.Entities.ItineraryDay", b =>
@@ -552,7 +932,14 @@ namespace TourFlow.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("TourFlow.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("TourPackage");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TourFlow.Domain.Entities.TourSchedule", b =>
@@ -575,6 +962,11 @@ namespace TourFlow.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Booking");
+                });
+
+            modelBuilder.Entity("TourFlow.Domain.Entities.BlogPost", b =>
+                {
+                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("TourFlow.Domain.Entities.Booking", b =>

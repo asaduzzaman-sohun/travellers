@@ -12,7 +12,10 @@ public class User : BaseEntity
     public string? HomeCity { get; set; }
     public string? NidOrPassport { get; set; }
     public string? Bio { get; set; }
+    public string? AvatarUrl { get; set; }
     public bool IsVerified { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
+    public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiryTime { get; set; }
 }

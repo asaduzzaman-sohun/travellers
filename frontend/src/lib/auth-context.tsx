@@ -7,7 +7,9 @@ interface AuthContextType {
   user: UserProfile | null;
   token: string | null;
   isLoggedIn: boolean;
+  isSuperAdmin: boolean;
   isAdmin: boolean;
+  isTraveler: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   register: (
@@ -28,6 +30,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const TOKEN_KEY = "tourflow_jwt_token";
+const REFRESH_TOKEN_KEY = "tourflow_refresh_token";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -47,11 +50,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAuthModalOpen(false);
   };
 
-  // Restore authenticated session from localStorage on mount
+  // Restore authenticated session from localStorage or refresh token on mount
   useEffect(() => {
     async function restoreSession() {
       try {
         const savedToken = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null;
+        const savedRefreshToken = typeof window !== "undefined" ? localStorage.getItem(REFRESH_TOKEN_KEY) : null;
+
         if (!savedToken) {
           setIsLoading(false);
           return;
@@ -67,9 +72,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (res.ok) {
           const userData: UserProfile = await res.json();
           setUser(userData);
+        } else if (savedRefreshToken) {
+          // Token expired - attempt seamless refresh
+          try {
+            const refreshRes = await fetch(`${API_BASE}/auth/refresh-token`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ token: savedToken, refreshToken: savedRefreshToken }),
+            });
+
+            if (refreshRes.ok) {
+              const refreshData: AuthResponse = await refreshRes.json();
+              setToken(refreshData.token);
+              setUser(refreshData.user);
+              localStorage.setItem(TOKEN_KEY, refreshData.token);
+              if (refreshData.refreshToken) {
+                localStorage.setItem(REFRESH_TOKEN_KEY, refreshData.refreshToken);
+              }
+            } else {
+              // Refresh token invalid or expired
+              localStorage.removeItem(TOKEN_KEY);
+              localStorage.removeItem(REFRESH_TOKEN_KEY);
+              setToken(null);
+              setUser(null);
+            }
+          } catch {
+            localStorage.removeItem(TOKEN_KEY);
+            localStorage.removeItem(REFRESH_TOKEN_KEY);
+            setToken(null);
+            setUser(null);
+          }
         } else {
-          // Token expired or invalid
           localStorage.removeItem(TOKEN_KEY);
+          localStorage.removeItem(REFRESH_TOKEN_KEY);
           setToken(null);
           setUser(null);
         }
@@ -101,6 +136,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(authData.token);
       setUser(authData.user);
       localStorage.setItem(TOKEN_KEY, authData.token);
+      if (authData.refreshToken) {
+        localStorage.setItem(REFRESH_TOKEN_KEY, authData.refreshToken);
+      }
       setAuthModalOpen(false);
       return { success: true };
     } catch (err) {
@@ -133,6 +171,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(authData.token);
       setUser(authData.user);
       localStorage.setItem(TOKEN_KEY, authData.token);
+      if (authData.refreshToken) {
+        localStorage.setItem(REFRESH_TOKEN_KEY, authData.refreshToken);
+      }
       setAuthModalOpen(false);
       return { success: true };
     } catch (err) {
@@ -142,10 +183,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
+    const savedToken = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null;
+    if (savedToken) {
+      fetch(`${API_BASE}/auth/revoke-token`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${savedToken}` },
+      }).catch(() => {});
+    }
+
     setUser(null);
     setToken(null);
     if (typeof window !== "undefined") {
       localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(REFRESH_TOKEN_KEY);
     }
   };
 
@@ -180,7 +230,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         token,
         isLoggedIn: !!user,
-        isAdmin: user?.role === "Admin",
+        isSuperAdmin: user?.role === "SuperAdmin",
+        isAdmin: user?.role === "Admin" || user?.role === "SuperAdmin",
+        isTraveler: user?.role === "User" || !user?.role,
         isLoading,
         login,
         register,

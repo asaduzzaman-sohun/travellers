@@ -1,159 +1,166 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Compass,
   PhoneCall,
   MapPin,
   ShieldCheck,
   Heart,
-  ExternalLink,
-  Mail
+  Mail,
+  ChevronRight
 } from "lucide-react";
 
 export default function Footer() {
+  const pathname = usePathname();
+  const isDashboardRoute = pathname.startsWith("/profile") || pathname.startsWith("/admin") || pathname.startsWith("/manage");
+
+  if (isDashboardRoute) {
+    return null;
+  }
+
   return (
-    <footer className="w-full border-t border-white/[0.08] bg-[#040711] text-slate-400 text-xs">
-      {/* 100% Full-Width Content Container with generous horizontal padding */}
-      <div className="w-full px-4 sm:px-8 lg:px-12 2xl:px-16 py-14 space-y-12">
+    <footer className="w-full border-t border-[#EBE6DC] bg-[#F5F2EB] text-stone-600 text-sm">
+      {/* Container matching standard website width */}
+      <div className="w-full max-w-[1720px] mx-auto px-6 sm:px-10 lg:px-14 2xl:px-20 py-16 space-y-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
-          {/* Column 1: Brand & Bangladesh Mission */}
+          {/* Column 1: Brand & Bangladesh Mission (2 cols) */}
           <div className="lg:col-span-2 space-y-4">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-teal-500 to-sky-600 flex items-center justify-center text-white shadow-lg shadow-teal-500/20">
-                <Compass className="h-5 w-5" />
-              </div>
-              <span className="text-xl font-bold text-white tracking-tight">
-                TourFlow <span className="text-teal-400 font-extrabold text-sm uppercase">BD</span>
+            <Link href="/" className="inline-block group">
+              <span className="font-serif text-3xl font-bold tracking-tight text-stone-900 group-hover:text-stone-700 transition-colors">
+                Traveller&apos;s
               </span>
             </Link>
-            <p className="text-slate-400 leading-relaxed text-xs max-w-sm">
-              A peaceful domestic tourism portal crafted exclusively for Bangladeshi travelers. Dedicated to authentic hill tracts, serene haor houseboats, ancient tea estates, and sustainable leave-no-trace ecotourism across our motherland.
+            <p className="text-stone-600 leading-relaxed text-sm sm:text-base max-w-md">
+              A peaceful domestic travel space crafted for Bangladeshi explorers. Dedicated exclusively to authentic hill tracts, serene haors, tea valleys, and sustainable leave-no-trace ecotourism across all 8 divisions.
             </p>
-            <div className="pt-2 text-[11px] text-slate-500 space-y-1">
-              <div>Dhaka Central Hub: Motijheel / Banani, Dhaka-1213</div>
-              <div>Emergency Tourist Assistance: <span className="text-teal-400 font-semibold">+880 1320-222222</span></div>
+            <div className="pt-2 text-xs sm:text-sm text-stone-500 space-y-1.5">
+              <div>Tourist Police Hotline: <span className="text-stone-900 font-bold">999 / +880 1320-222222</span></div>
+              <div>Operations Email: <span className="text-stone-900 font-semibold">support@travellers.com.bd</span></div>
+              <div>Headquarters: <span className="text-stone-800">Banani, Dhaka-1213, Bangladesh</span></div>
             </div>
           </div>
 
-          {/* Column 2: Explore Divisions */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider text-teal-400">
+          {/* Column 2: Divisional Expeditions */}
+          <div className="space-y-4">
+            <h4 className="text-xs sm:text-sm font-bold text-stone-900 uppercase tracking-wider">
               Divisional Expeditions
             </h4>
-            <ul className="space-y-2 text-xs">
+            <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/destinations?region=Chittagong" className="hover:text-teal-300 transition-colors">
-                  Chittagong Hill Tracts (Sajek & Bandarban)
+                <Link href="/destinations?region=Chittagong" className="hover:text-stone-950 transition-colors">
+                  Chittagong Hill Tracts (Sajek &amp; Bandarban)
                 </Link>
               </li>
               <li>
-                <Link href="/destinations?region=Sylhet" className="hover:text-teal-300 transition-colors">
-                  Sylhet & Sunamganj Haors
+                <Link href="/destinations?region=Sylhet" className="hover:text-stone-950 transition-colors">
+                  Sylhet &amp; Sunamganj (Tanguar Haor)
                 </Link>
               </li>
               <li>
-                <Link href="/destinations?region=Khulna" className="hover:text-teal-300 transition-colors">
-                  Khulna & Sundarbans Mangrove
+                <Link href="/destinations?region=Khulna" className="hover:text-stone-950 transition-colors">
+                  Khulna (Sundarbans Eco Cruise)
                 </Link>
               </li>
               <li>
-                <Link href="/destinations?region=Chittagong" className="hover:text-teal-300 transition-colors">
-                  Cox&apos;s Bazar &amp; Inani Marine Drive
+                <Link href="/destinations?region=Barishal" className="hover:text-stone-950 transition-colors">
+                  Barishal Backwaters &amp; Kuakata
                 </Link>
               </li>
               <li>
-                <Link href="/destinations?region=Rajshahi" className="hover:text-teal-300 transition-colors">
-                  Rajshahi &amp; Barind Heritage
+                <Link href="/destinations?region=Rajshahi" className="hover:text-stone-950 transition-colors">
+                  Rajshahi &amp; Paharpur Heritage
                 </Link>
               </li>
               <li>
-                <Link href="/destinations?region=Barisal" className="hover:text-teal-300 transition-colors">
-                  Barisal Floating Guava Markets
+                <Link href="/destinations?region=Rangpur" className="hover:text-stone-950 transition-colors">
+                  Rangpur &amp; Kantajew Terracotta
+                </Link>
+              </li>
+              <li>
+                <Link href="/destinations?region=Mymensingh" className="hover:text-stone-950 transition-colors">
+                  Mymensingh &amp; Birishiri Hills
                 </Link>
               </li>
             </ul>
           </div>
 
           {/* Column 3: Travel Guides & Community */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider text-sky-400">
+          <div className="space-y-4">
+            <h4 className="text-xs sm:text-sm font-bold text-stone-900 uppercase tracking-wider">
               Travel Resources
             </h4>
-            <ul className="space-y-2 text-xs">
+            <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/tips" className="hover:text-white transition-colors">
+                <Link href="/tips" className="hover:text-stone-950 transition-colors">
                   Army Escort Schedules (Dighinala)
                 </Link>
               </li>
               <li>
-                <Link href="/tips" className="hover:text-white transition-colors">
+                <Link href="/tips" className="hover:text-stone-950 transition-colors">
                   Haor Boat Safety &amp; Lifejacket Rules
                 </Link>
               </li>
               <li>
-                <Link href="/hotels" className="hover:text-white transition-colors">
-                  Verified Resort Reviews
+                <Link href="/hotels" className="hover:text-stone-950 transition-colors">
+                  Resort &amp; Cottage Reviews
                 </Link>
               </li>
               <li>
-                <Link href="/community" className="hover:text-white transition-colors">
-                  Community Discussions &amp; Q&amp;A
+                <Link href="/community" className="hover:text-stone-950 transition-colors">
+                  Community Discussions &amp; Stories
                 </Link>
               </li>
               <li>
-                <Link href="/write-post" className="hover:text-white transition-colors">
-                  Share Your Road &amp; Trip Report
+                <Link href="/write-post" className="hover:text-stone-950 transition-colors">
+                  Write &amp; Share Trip Story
                 </Link>
               </li>
               <li>
-                <Link href="/manage" className="hover:text-white transition-colors">
-                  Check Booking &amp; Travel Voucher
+                <Link href="/profile?tab=expeditions" className="hover:text-stone-950 transition-colors">
+                  Retrieve Booking Voucher
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 4: Tourist Safety & Helpline */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider text-teal-400">
-              Safety &amp; Helplines
+          {/* Column 4: Domestic Ecotourism Ethics */}
+          <div className="space-y-4">
+            <h4 className="text-xs sm:text-sm font-bold text-stone-900 uppercase tracking-wider">
+              Leave No Trace
             </h4>
-            <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.06] space-y-2">
-              <div className="flex items-center gap-2 text-white font-semibold text-xs">
-                <ShieldCheck className="h-4 w-4 text-teal-400" />
-                <span>Tourist Police Bangladesh</span>
-              </div>
-              <div className="text-[11px] text-slate-300 font-mono">
-                Hotline: 999 / +880 1320-222222
-              </div>
-              <p className="text-[10px] text-slate-500">
-                Call for assistance in Sajek, Cox&apos;s Bazar, Jaflong, or Sreemangal.
-              </p>
-            </div>
-
-            <div className="pt-1 text-[11px] text-slate-400 flex items-center gap-2">
-              <Mail className="h-3.5 w-3.5 text-teal-400" />
-              <span>support@tourflow.com.bd</span>
+            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Never dispose single-use plastics into wetlands or rivers. Always support local boatmen and indigenous families with fair rates and courtesy.
+            </p>
+            <div className="pt-2 flex flex-col space-y-2 text-xs sm:text-sm">
+              <Link href="/about" className="hover:text-stone-950 font-medium transition-colors">
+                About Our Heritage &amp; Ethos
+              </Link>
+              <Link href="/contact" className="hover:text-stone-950 font-medium transition-colors">
+                Regional Desks &amp; Support
+              </Link>
             </div>
           </div>
         </div>
 
-        {/* Bottom Bar: Copyright & Eco Statement */}
-        <div className="pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-400">
+        {/* Bottom Bar */}
+        <div className="pt-8 border-t border-[#E5DFD5] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-stone-500">
           <div>
-            &copy; {new Date().getFullYear()} TourFlow BD. Built with love for Bangladeshi domestic explorers.
+            &copy; {new Date().getFullYear()} <strong className="text-stone-800">Traveller&apos;s</strong>. Built for peaceful journeys across Bangladesh.
           </div>
-
           <div className="flex items-center gap-6">
-            <Link href="/about" className="hover:text-white transition-colors">
-              Our Story
+            <Link href="/tips" className="hover:text-stone-800 transition-colors">
+              Security Protocol
             </Link>
-            <Link href="/contact" className="hover:text-white transition-colors">
-              Contact Desks
+            <span>•</span>
+            <Link href="/about" className="hover:text-stone-800 transition-colors">
+              Community Guidelines
             </Link>
-            <span className="text-teal-400 flex items-center gap-1 font-medium">
-              <Heart className="h-3 w-3 fill-teal-400 text-teal-400" />
-              Preserve Beautiful Bangladesh
-            </span>
+            <span>•</span>
+            <Link href="/contact" className="hover:text-stone-800 transition-colors">
+              Tourist Police Assistance
+            </Link>
           </div>
         </div>
       </div>

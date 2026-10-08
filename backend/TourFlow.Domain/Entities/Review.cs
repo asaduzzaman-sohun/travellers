@@ -5,6 +5,7 @@ namespace TourFlow.Domain.Entities;
 public class Review : BaseEntity
 {
     public Guid TourPackageId { get; set; }
+    public Guid? UserId { get; set; }
     public string ReviewerName { get; set; } = string.Empty;
     public string ReviewerLocation { get; set; } = string.Empty; // e.g. "Bristol, United Kingdom"
     public string ReviewerEmail { get; set; } = string.Empty;
@@ -15,6 +16,7 @@ public class Review : BaseEntity
     public bool IsVerifiedBooking { get; set; } = true;
     public bool IsApproved { get; set; } = true;
 
-    // Navigation property
+    // Navigation properties
+    public User? User { get; set; }
     public TourPackage? TourPackage { get; set; }
 }

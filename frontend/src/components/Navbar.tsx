@@ -2,9 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
-  Compass,
   User,
   Bookmark,
   Settings,
@@ -14,16 +13,20 @@ import {
   X,
   ChevronDown,
   ShieldCheck,
-  MapPin,
-  Lock,
+  AlertCircle,
   Mail,
-  AlertCircle
+  Lock,
+  Crown,
+  Compass,
+  BookOpen,
+  LayoutDashboard
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const router = useRouter();
+  const isDashboardRoute = pathname.startsWith("/profile") || pathname.startsWith("/admin") || pathname.startsWith("/manage");
+
   const {
     user,
     isLoggedIn,
@@ -39,6 +42,7 @@ export default function Navbar() {
 
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Form states for login/register inside modal
@@ -60,6 +64,11 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // If on dashboard, do not render public marketing navbar
+  if (isDashboardRoute) {
+    return null;
+  }
+
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError(null);
@@ -69,7 +78,7 @@ export default function Navbar() {
       if (authModalMode === "login") {
         const result = await login(authEmail, authPassword);
         if (!result.success) {
-          setAuthError(result.error || "Login failed");
+          setAuthError(result.error || "Invalid email or password.");
         } else {
           closeAuthModal();
           setAuthEmail("");
@@ -78,7 +87,7 @@ export default function Navbar() {
       } else {
         const result = await register(authFullName, authEmail, authPassword, authPhone, "Dhaka");
         if (!result.success) {
-          setAuthError(result.error || "Registration failed");
+          setAuthError(result.error || "Registration failed.");
         } else {
           closeAuthModal();
           setAuthEmail("");
@@ -86,6 +95,38 @@ export default function Navbar() {
           setAuthFullName("");
           setAuthPhone("");
         }
+      }
+    } catch {
+      setAuthError("An unexpected error occurred. Please try again.");
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleRoleQuickLogin = async (roleType: "superadmin" | "admin" | "user") => {
+    setAuthError(null);
+    setAuthLoading(true);
+
+    let targetEmail = "";
+    let targetPass = "";
+
+    if (roleType === "superadmin") {
+      targetEmail = "super.admin@traveller.com";
+      targetPass = "Traveller@2026";
+    } else if (roleType === "admin") {
+      targetEmail = "admin@traveller.com";
+      targetPass = "Admin@2026";
+    } else {
+      targetEmail = "asad@gmail.com";
+      targetPass = "Asad@2026";
+    }
+
+    try {
+      const result = await login(targetEmail, targetPass);
+      if (!result.success) {
+        setAuthError(result.error || "Authentication failed.");
+      } else {
+        closeAuthModal();
       }
     } catch {
       setAuthError("An unexpected error occurred.");
@@ -104,39 +145,42 @@ export default function Navbar() {
     { label: "Contact", href: "/contact" },
   ];
 
+  const isRouteActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    if (href === "/destinations") return pathname.startsWith("/destinations") || pathname.startsWith("/tours");
+    if (href === "/tips") return pathname.startsWith("/tips");
+    if (href === "/hotels") return pathname.startsWith("/hotels");
+    if (href === "/community") return pathname.startsWith("/community") || pathname.startsWith("/write-post");
+    if (href === "/about") return pathname.startsWith("/about");
+    if (href === "/contact") return pathname.startsWith("/contact");
+    return pathname === href;
+  };
+
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-white/[0.08] bg-[#050814]/90 backdrop-blur-xl transition-all">
-        {/* Full-width container */}
-        <div className="w-full px-4 sm:px-8 lg:px-12 2xl:px-16">
-          <div className="flex h-18 items-center justify-between">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 shrink-0 group">
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-teal-500 via-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-teal-500/20 group-hover:scale-105 transition-transform duration-300">
-                <Compass className="h-5 w-5" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-lg font-bold tracking-tight text-white flex items-center gap-1.5">
-                  TourFlow <span className="text-teal-400 font-extrabold text-sm tracking-wider uppercase">BD</span>
-                </span>
-                <span className="text-[10px] text-slate-400 font-medium tracking-wide">
-                  Explore Serene Bangladesh
-                </span>
-              </div>
+      <header className="sticky top-0 z-40 w-full border-b border-[#EBE6DC] bg-[#FAF8F5]/95 backdrop-blur-md transition-all shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+        {/* Full-width container consistent with page content */}
+        <div className="w-full max-w-[1720px] mx-auto px-6 sm:px-10 lg:px-14 2xl:px-20">
+          <div className="flex h-20 items-center justify-between">
+            {/* Text Logo: Traveller's */}
+            <Link href="/" className="flex items-center gap-2 shrink-0 group">
+              <span className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 group-hover:text-stone-700 transition-colors">
+                Traveller&apos;s
+              </span>
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden xl:flex items-center gap-1 2xl:gap-2 text-[13px] font-medium text-slate-300">
+            <nav className="hidden lg:flex items-center gap-1 xl:gap-2 text-xs lg:text-xs xl:text-sm font-medium text-stone-600">
               {navLinks.map((item) => {
-                const isActive = pathname === item.href;
+                const isActive = isRouteActive(item.href);
                 return (
                   <Link
                     key={item.label}
                     href={item.href}
-                    className={`px-3 py-1.5 rounded-xl transition-colors duration-200 ${
+                    className={`px-3 xl:px-4 py-2 rounded-full transition-all duration-150 border ${
                       isActive
-                        ? "text-teal-300 bg-white/[0.06] font-semibold"
-                        : "hover:text-white hover:bg-white/[0.03]"
+                        ? "text-stone-900 font-semibold bg-[#F5F2EB] border-[#E5DFD5] shadow-2xs"
+                        : "border-transparent text-stone-600 hover:text-stone-900 hover:bg-[#F5F2EB]/60 hover:border-[#E5DFD5]/40"
                     }`}
                   >
                     {item.label}
@@ -146,110 +190,92 @@ export default function Navbar() {
             </nav>
 
             {/* Desktop Action Area */}
-            <div className="hidden xl:flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-3">
               {!isLoggedIn ? (
                 /* Logged Out State: Login | Register */
-                <div className="flex items-center gap-2 text-xs font-semibold">
-                  <button
-                    onClick={() => openAuthModal("login")}
-                    className="px-4 py-2 rounded-xl text-slate-200 hover:text-white hover:bg-white/[0.05] transition-all"
+                <div className="flex items-center gap-2 text-xs xl:text-sm font-semibold">
+                  <Link
+                    href="/login"
+                    className="px-3.5 xl:px-4 py-2 rounded-full text-stone-700 hover:text-stone-900 hover:bg-[#F5F2EB] border border-transparent hover:border-[#E5DFD5] transition-all font-medium"
                   >
                     Login
-                  </button>
-                  <button
-                    onClick={() => openAuthModal("register")}
-                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-teal-500 to-sky-600 hover:from-teal-400 hover:to-sky-500 text-white font-bold transition-all shadow-md shadow-teal-500/15"
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="px-4 xl:px-5 py-2.5 rounded-full bg-stone-900 hover:bg-stone-800 text-stone-50 font-semibold transition-all shadow-xs"
                   >
                     Register
-                  </button>
+                  </Link>
                 </div>
               ) : (
-                /* Logged In State: + Write a Post | Profile Dropdown */
+                /* Logged In State: Write a Story | Clean Circular Avatar Dropdown */
                 <div className="flex items-center gap-3">
                   <Link
                     href="/write-post"
-                    className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-sky-600 to-teal-600 hover:from-sky-500 hover:to-teal-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md shadow-sky-600/15"
+                    className="px-3.5 xl:px-4 py-2 rounded-full bg-stone-900 hover:bg-stone-800 text-stone-50 text-xs xl:text-sm font-semibold flex items-center gap-2 transition-all shadow-xs shrink-0"
                   >
-                    <PenSquare className="h-3.5 w-3.5" />
-                    <span>+ Write a Post</span>
+                    <PenSquare className="h-4 w-4" />
+                    <span>Write a Story</span>
                   </Link>
 
-                  {/* Profile Dropdown */}
+                  {/* Clean Circular Avatar Trigger */}
                   <div className="relative" ref={dropdownRef}>
                     <button
+                      type="button"
                       onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                      className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-white transition-colors"
+                      className="h-9 w-9 sm:h-10 sm:w-10 rounded-full border border-[#EBE6DC] bg-white overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-stone-400 transition-all cursor-pointer shadow-2xs"
+                      aria-label="User Account Menu"
                     >
-                      <div className="h-7 w-7 rounded-xl bg-gradient-to-tr from-teal-500 to-indigo-500 flex items-center justify-center text-xs font-bold text-white shadow-sm">
-                        {user?.fullName ? user.fullName[0].toUpperCase() : "U"}
-                      </div>
-                      <div className="flex flex-col text-left">
-                        <span className="text-xs font-semibold max-w-[120px] truncate leading-tight">
-                          {user?.fullName || "Traveler"}
-                        </span>
-                        <span className="text-[10px] text-teal-400 font-medium leading-none">
-                          {user?.role === "Admin" ? "Operator" : "Traveler"}
-                        </span>
-                      </div>
-                      <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+                      {user?.avatarUrl && !avatarError ? (
+                        <img
+                          src={user.avatarUrl}
+                          alt={user.fullName || "User"}
+                          className="h-full w-full object-cover"
+                          onError={() => setAvatarError(true)}
+                        />
+                      ) : (
+                        <div className="h-full w-full bg-stone-900 text-stone-50 flex items-center justify-center text-xs sm:text-sm font-bold">
+                          {user?.fullName ? user.fullName[0].toUpperCase() : "U"}
+                        </div>
+                      )}
                     </button>
 
+                    {/* Simple Dropdown: Dashboard & Log Out */}
                     {profileDropdownOpen && (
-                      <div className="absolute right-0 mt-2 w-52 bg-[#0a0f1d] border border-white/[0.1] rounded-2xl shadow-2xl py-2 z-50 divide-y divide-white/[0.06] text-xs">
-                        <div className="px-4 py-2">
-                          <div className="font-bold text-white truncate">{user?.fullName}</div>
-                          <div className="text-[11px] text-slate-400 truncate">{user?.email}</div>
+                      <div className="absolute right-0 mt-2.5 w-56 bg-white border border-[#EBE6DC] rounded-2xl shadow-xl py-1.5 z-50 divide-y divide-[#F0EBE1] text-xs sm:text-sm animate-in fade-in slide-in-from-top-2 duration-150">
+                        {/* User Identity Mini-Header */}
+                        <div className="px-4 py-2.5">
+                          <div className="font-bold text-stone-900 truncate">
+                            {user?.fullName || "User"}
+                          </div>
+                          <div className="text-xs text-stone-500 truncate mt-0.5">
+                            {user?.email}
+                          </div>
                         </div>
 
+                        {/* Primary Dashboard Link */}
                         <div className="py-1">
                           <Link
                             href="/profile"
                             onClick={() => setProfileDropdownOpen(false)}
-                            className="flex items-center gap-2.5 px-4 py-2 text-slate-300 hover:bg-white/[0.05] hover:text-white"
+                            className="flex items-center gap-2.5 px-4 py-2 text-stone-700 hover:bg-[#FAF8F5] hover:text-stone-950 font-medium transition-colors"
                           >
-                            <User className="h-3.5 w-3.5 text-sky-400" />
-                            <span>My Profile</span>
+                            <LayoutDashboard className="h-4 w-4 text-stone-500" />
+                            <span>Dashboard</span>
                           </Link>
-
-                          <Link
-                            href="/profile?tab=saved"
-                            onClick={() => setProfileDropdownOpen(false)}
-                            className="flex items-center gap-2.5 px-4 py-2 text-slate-300 hover:bg-white/[0.05] hover:text-white"
-                          >
-                            <Bookmark className="h-3.5 w-3.5 text-teal-400" />
-                            <span>Bookmarks / Saved</span>
-                          </Link>
-
-                          <Link
-                            href="/profile?tab=settings"
-                            onClick={() => setProfileDropdownOpen(false)}
-                            className="flex items-center gap-2.5 px-4 py-2 text-slate-300 hover:bg-white/[0.05] hover:text-white"
-                          >
-                            <Settings className="h-3.5 w-3.5 text-indigo-400" />
-                            <span>Account Settings</span>
-                          </Link>
-
-                          {isAdmin && (
-                            <Link
-                              href="/admin"
-                              onClick={() => setProfileDropdownOpen(false)}
-                              className="flex items-center gap-2.5 px-4 py-2 text-amber-300 hover:bg-white/[0.05] font-semibold"
-                            >
-                              <ShieldCheck className="h-3.5 w-3.5 text-amber-400" />
-                              <span>Operator Dashboard</span>
-                            </Link>
-                          )}
                         </div>
 
+                        {/* Log Out Button */}
                         <div className="py-1">
                           <button
+                            type="button"
                             onClick={() => {
                               logout();
                               setProfileDropdownOpen(false);
                             }}
-                            className="w-full flex items-center gap-2.5 px-4 py-2 text-rose-400 hover:bg-rose-500/10 transition-colors text-left font-medium"
+                            className="w-full flex items-center gap-2.5 px-4 py-2 text-rose-600 hover:bg-rose-50 text-left font-medium transition-colors cursor-pointer"
                           >
-                            <LogOut className="h-3.5 w-3.5" />
+                            <LogOut className="h-4 w-4 text-rose-500" />
                             <span>Log Out</span>
                           </button>
                         </div>
@@ -260,79 +286,81 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Mobile Hamburger Button */}
-            <div className="flex items-center gap-2 xl:hidden">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 text-slate-300 hover:text-white"
-                aria-label="Toggle Navigation"
-              >
-                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-              </button>
-            </div>
+            {/* Mobile Menu Toggle Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 rounded-xl text-stone-700 hover:bg-stone-100 transition-colors"
+              aria-label="Toggle Navigation Menu"
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
           </div>
         </div>
 
-        {/* Mobile Flyout Menu */}
+        {/* Mobile Navigation Dropdown */}
         {mobileMenuOpen && (
-          <div className="xl:hidden bg-[#070b16] border-b border-white/[0.08] px-6 py-5 space-y-4">
-            <nav className="flex flex-col space-y-2 text-sm font-medium text-slate-300">
-              {navLinks.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="py-1.5 hover:text-teal-400"
-                >
-                  {item.label}
-                </Link>
-              ))}
+          <div className="lg:hidden border-t border-[#EBE6DC] bg-[#FAF8F5] px-6 py-6 space-y-4 shadow-lg animate-in slide-in-from-top-2">
+            <nav className="flex flex-col space-y-2 text-sm font-medium text-stone-700">
+              {navLinks.map((item) => {
+                const isActive = isRouteActive(item.href);
+                return (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-4 py-2.5 rounded-xl transition-all border ${
+                      isActive
+                        ? "bg-[#F5F2EB] text-stone-900 font-semibold border-[#E5DFD5]"
+                        : "border-transparent hover:bg-white text-stone-700"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
             </nav>
 
-            <div className="pt-4 border-t border-white/[0.08] flex flex-col gap-2.5 text-xs">
+            <div className="pt-4 border-t border-[#EBE6DC] space-y-3">
               {!isLoggedIn ? (
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => {
-                      openAuthModal("login");
-                      setMobileMenuOpen(false);
-                    }}
-                    className="py-2.5 text-center rounded-xl bg-white/[0.06] text-white font-semibold"
+                <div className="grid grid-cols-2 gap-3 text-sm font-semibold">
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full py-2.5 rounded-full border border-[#E5DFD5] bg-white text-stone-800 text-center hover:bg-stone-50 block"
                   >
                     Login
-                  </button>
-                  <button
-                    onClick={() => {
-                      openAuthModal("register");
-                      setMobileMenuOpen(false);
-                    }}
-                    className="py-2.5 text-center rounded-xl bg-teal-600 text-white font-semibold"
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full py-2.5 rounded-full bg-stone-900 text-stone-50 text-center hover:bg-stone-800 block"
                   >
                     Register
-                  </button>
+                  </Link>
                 </div>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-2 text-sm">
                   <Link
                     href="/write-post"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="w-full py-2.5 rounded-xl bg-sky-600 text-white font-bold text-center block"
+                    className="w-full py-2.5 rounded-full bg-stone-900 text-stone-50 font-semibold text-center block hover:bg-stone-800 transition-colors flex items-center justify-center gap-2"
                   >
-                    + Write a Post
+                    <PenSquare className="h-4 w-4" />
+                    <span>Write a Story</span>
                   </Link>
                   <Link
                     href="/profile"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="w-full py-2 rounded-xl bg-white/[0.05] text-slate-200 font-medium text-center block"
+                    className="w-full py-2.5 rounded-full bg-white border border-[#EBE6DC] text-stone-800 font-semibold text-center block"
                   >
-                    My Profile ({user?.fullName})
+                    Dashboard
                   </Link>
                   <button
                     onClick={() => {
                       logout();
                       setMobileMenuOpen(false);
                     }}
-                    className="w-full py-2 rounded-xl bg-rose-500/10 text-rose-400 font-semibold text-center"
+                    className="w-full py-2.5 rounded-full bg-rose-50 text-rose-700 font-semibold text-center hover:bg-rose-100 block cursor-pointer"
                   >
                     Log Out
                   </button>
@@ -345,80 +373,83 @@ export default function Navbar() {
 
       {/* Global Authentication Modal */}
       {authModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="bg-[#0b1222] border border-white/[0.1] rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs">
+          <div className="bg-white border border-[#EBE6DC] rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
             <button
               onClick={closeAuthModal}
-              className="absolute top-5 right-5 h-8 w-8 rounded-full bg-white/[0.05] text-slate-400 hover:text-white flex items-center justify-center transition-colors"
+              className="absolute top-5 right-5 h-8 w-8 rounded-full bg-stone-100 text-stone-400 hover:text-stone-800 flex items-center justify-center transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
 
             <div className="text-center space-y-1 mb-6">
-              <h3 className="text-2xl font-bold text-white tracking-tight">
-                {authModalMode === "login" ? "Welcome Back" : "Join Bangladeshi Explorers"}
+              <span className="font-serif text-2xl font-bold tracking-tight text-stone-900 block">
+                Traveller&apos;s
+              </span>
+              <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
+                {authModalMode === "login" ? "Traveler Sign In" : "Join Bangladeshi Explorers"}
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs sm:text-sm text-stone-500">
                 {authModalMode === "login"
-                  ? "Sign in to save tour bookmarks, view vouchers, and post in community."
-                  : "Create your free traveler account to share local insights and reviews."}
+                  ? "Sign in to access your saved itineraries, vouchers, and stories."
+                  : "Create your free traveler account to share field stories and reviews."}
               </p>
             </div>
 
             {authError && (
-              <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2">
+              <div className="mb-4 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs sm:text-sm flex items-center gap-2.5">
                 <AlertCircle className="h-4 w-4 shrink-0" />
                 <span>{authError}</span>
               </div>
             )}
 
-            <form onSubmit={handleAuthSubmit} className="space-y-3.5 text-xs">
+            <form onSubmit={handleAuthSubmit} className="space-y-4 text-xs sm:text-sm">
               {authModalMode === "register" && (
                 <>
-                  <div>
-                    <label className="block text-slate-300 mb-1 font-medium">Full Name</label>
+                  <div className="space-y-1">
+                    <label className="block text-stone-700 font-semibold">Full Name</label>
                     <input
                       type="text"
                       placeholder="e.g. Tanvir Ahmed"
                       value={authFullName}
                       onChange={(e) => setAuthFullName(e.target.value)}
-                      className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
+                      className="w-full bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 transition-colors"
                       required
                     />
                   </div>
-                  <div>
-                    <label className="block text-slate-300 mb-1 font-medium">Phone Number (bKash / WhatsApp)</label>
+                  <div className="space-y-1">
+                    <label className="block text-stone-700 font-semibold">Phone Number (bKash / WhatsApp)</label>
                     <input
                       type="tel"
                       placeholder="+880 1711-234567"
                       value={authPhone}
                       onChange={(e) => setAuthPhone(e.target.value)}
-                      className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
+                      className="w-full bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 transition-colors"
                     />
                   </div>
                 </>
               )}
 
-              <div>
-                <label className="block text-slate-300 mb-1 font-medium">Email Address</label>
+              <div className="space-y-1">
+                <label className="block text-stone-700 font-semibold">Email Address</label>
                 <input
                   type="email"
                   placeholder="tanvir@example.com"
                   value={authEmail}
                   onChange={(e) => setAuthEmail(e.target.value)}
-                  className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  className="w-full bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 transition-colors"
                   required
                 />
               </div>
 
-              <div>
-                <label className="block text-slate-300 mb-1 font-medium">Password</label>
+              <div className="space-y-1">
+                <label className="block text-stone-700 font-semibold">Password</label>
                 <input
                   type="password"
                   placeholder="••••••••"
                   value={authPassword}
                   onChange={(e) => setAuthPassword(e.target.value)}
-                  className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  className="w-full bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 transition-colors"
                   required
                 />
               </div>
@@ -426,7 +457,7 @@ export default function Navbar() {
               <button
                 type="submit"
                 disabled={authLoading}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-teal-500 to-sky-600 hover:from-teal-400 hover:to-sky-500 text-white font-bold text-xs shadow-lg shadow-teal-500/20 transition-all mt-2 disabled:opacity-50"
+                className="w-full py-3.5 rounded-full bg-stone-900 hover:bg-stone-800 text-stone-50 font-semibold text-sm shadow-xs transition-all mt-2 disabled:opacity-50"
               >
                 {authLoading
                   ? "Processing..."
@@ -442,7 +473,7 @@ export default function Navbar() {
                     setAuthError(null);
                     openAuthModal(authModalMode === "login" ? "register" : "login");
                   }}
-                  className="text-[11px] text-teal-400 hover:underline"
+                  className="text-xs sm:text-sm text-stone-600 hover:text-stone-950 font-medium"
                 >
                   {authModalMode === "login"
                     ? "New traveler? Create an account here"
@@ -451,8 +482,36 @@ export default function Navbar() {
               </div>
 
               {authModalMode === "login" && (
-                <div className="pt-2 text-[11px] text-slate-500 border-t border-white/[0.06] text-center">
-                  Quick demo: <code className="text-slate-300">tanvir@tourflow.com.bd</code> / <code className="text-slate-300">Tanvir@123456</code>
+                <div className="pt-3 border-t border-[#F0EBE1] space-y-2.5">
+                  <span className="block text-[11px] font-semibold text-stone-500 uppercase tracking-wider text-center">
+                    Instant Role Access
+                  </span>
+                  <div className="flex items-center justify-between gap-2 p-1.5 rounded-2xl bg-[#FAF8F5] border border-[#EBE6DC]">
+                    <button
+                      type="button"
+                      disabled={authLoading}
+                      onClick={() => handleRoleQuickLogin("superadmin")}
+                      className="flex-1 py-2 px-1.5 rounded-xl bg-white border border-[#EBE6DC] hover:border-stone-400 hover:bg-stone-50 text-xs font-semibold text-stone-900 transition-all disabled:opacity-50 text-center cursor-pointer shadow-2xs"
+                    >
+                      Super Admin
+                    </button>
+                    <button
+                      type="button"
+                      disabled={authLoading}
+                      onClick={() => handleRoleQuickLogin("admin")}
+                      className="flex-1 py-2 px-1.5 rounded-xl bg-white border border-[#EBE6DC] hover:border-stone-400 hover:bg-stone-50 text-xs font-semibold text-stone-900 transition-all disabled:opacity-50 text-center cursor-pointer shadow-2xs"
+                    >
+                      Admin
+                    </button>
+                    <button
+                      type="button"
+                      disabled={authLoading}
+                      onClick={() => handleRoleQuickLogin("user")}
+                      className="flex-1 py-2 px-1.5 rounded-xl bg-white border border-[#EBE6DC] hover:border-stone-400 hover:bg-stone-50 text-xs font-semibold text-stone-900 transition-all disabled:opacity-50 text-center cursor-pointer shadow-2xs"
+                    >
+                      User (Traveler)
+                    </button>
+                  </div>
                 </div>
               )}
             </form>

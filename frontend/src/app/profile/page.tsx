@@ -1,591 +1,738 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import React, { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
-  User,
-  Bookmark,
-  Settings,
-  MapPin,
-  Phone,
-  Mail,
-  ShieldCheck,
+  LayoutDashboard,
+  Users,
   Calendar,
   Compass,
-  ArrowRight,
-  Heart,
-  Save,
-  CheckCircle2,
-  Trash2,
-  ExternalLink,
-  Bell,
+  FileText,
+  Bookmark,
+  Settings,
   Lock,
-  Smartphone,
-  AlertCircle
+  Plus,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { useToast } from "@/lib/toast-context";
+import {
+  API_BASE,
+  SystemUser,
+  PlatformStats,
+  DashboardStats,
+  BookingRecord,
+  TourSummary,
+  BlogPost,
+  fetchPlatformStats,
+  fetchDashboardStats,
+  fetchAllUsers,
+  updateUserRole,
+  fetchAllBookings,
+  updateBookingStatus,
+  fetchTourPackages,
+  createTourPackage,
+  fetchBookingByReference,
+  testSystemHealth,
+  getBlogPosts,
+  createBlogPost,
+  deleteBlogPost,
+  uploadPostImage,
+} from "@/lib/api";
 
-function ProfileContent() {
-  const { user, isLoggedIn, updateProfile, openAuthModal } = useAuth();
+import { DashboardSidebar, NavItem } from "@/components/dashboard/DashboardSidebar";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { OverviewTab } from "@/components/dashboard/OverviewTab";
+import { UsersTab } from "@/components/dashboard/UsersTab";
+import { BookingsTab } from "@/components/dashboard/BookingsTab";
+import { ToursTab } from "@/components/dashboard/ToursTab";
+import { StoriesTab } from "@/components/dashboard/StoriesTab";
+import { SavedTab } from "@/components/dashboard/SavedTab";
+import { ProfileSettingsTab } from "@/components/dashboard/ProfileSettingsTab";
+import { CreateTourModal } from "@/components/dashboard/CreateTourModal";
+import { CreateStoryModal } from "@/components/dashboard/CreateStoryModal";
+
+function DashboardContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const queryTab = searchParams.get("tab");
+  const initialTab = searchParams.get("tab") || "overview";
 
-  const [activeTab, setActiveTab] = useState<"profile" | "saved" | "settings">(
-    queryTab === "saved" || queryTab === "bookmarks"
-      ? "saved"
-      : queryTab === "settings"
-      ? "settings"
-      : "profile"
-  );
+  const { user, token, isLoggedIn, logout, updateProfile } = useAuth();
+  const { toast } = useToast();
+
+  // Navigation & UI States
+  const [activeTab, setActiveTab] = useState<string>(initialTab);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    if (queryTab === "saved" || queryTab === "bookmarks") {
-      setActiveTab("saved");
-    } else if (queryTab === "settings") {
-      setActiveTab("settings");
-    } else if (queryTab === "profile") {
-      setActiveTab("profile");
+    const tabParam = searchParams.get("tab");
+    if (tabParam) {
+      setActiveTab(tabParam);
     }
-  }, [queryTab]);
+  }, [searchParams]);
 
-  // Form State for Profile
-  const [fullName, setFullName] = useState(user?.fullName || "Tanvir Ahmed");
-  const [email, setEmail] = useState(user?.email || "tanvir@tourflow.com.bd");
-  const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber || "+880 1711-234567");
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    router.replace(`/profile?tab=${tabId}`, { scroll: false });
+    setSidebarOpen(false);
+  };
+
+  // Data States
+  const [loading, setLoading] = useState(false);
+  const [platformStats, setPlatformStats] = useState<PlatformStats | null>(null);
+  const [tourStats, setTourStats] = useState<DashboardStats | null>(null);
+  const [usersList, setUsersList] = useState<SystemUser[]>([]);
+  const [bookingsList, setBookingsList] = useState<BookingRecord[]>([]);
+  const [toursList, setToursList] = useState<TourSummary[]>([]);
+  const [storiesList, setStoriesList] = useState<BlogPost[]>([]);
+
+  // Connectivity Test State
+  const [connectivityStatus, setConnectivityStatus] = useState<string | null>(null);
+
+  // Profile Form States
+  const [fullName, setFullName] = useState(user?.fullName || "");
+  const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber || "");
   const [homeCity, setHomeCity] = useState(user?.homeCity || "Dhaka");
-  const [nidNumber, setNidNumber] = useState(user?.nidOrPassport || "19952692810003412");
-  const [bio, setBio] = useState(
-    user?.bio ||
-      "Frequent domestic traveler exploring the Chittagong Hill Tracts, Tanguar Haor wetlands, and coastal trails. Passionate about leave-no-trace ecotourism."
-  );
-  const [saveSuccess, setSaveSuccess] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
+  const [nidOrPassport, setNidOrPassport] = useState(user?.nidOrPassport || "");
+  const [emergencyContact, setEmergencyContact] = useState(user?.emergencyContact || "");
+  const [bio, setBio] = useState(user?.bio || "");
+  const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl || "");
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileMessage, setProfileMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
-  // Sync state when user updates
+  // Password Change States
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  // Voucher Lookup State
+  const [voucherSearchRef, setVoucherSearchRef] = useState(searchParams.get("ref") || "");
+  const [voucherResult, setVoucherResult] = useState<BookingRecord | null>(null);
+  const [voucherError, setVoucherError] = useState<string | null>(null);
+  const [searchingVoucher, setSearchingVoucher] = useState(false);
+
+  // Create Tour Modal States
+  const [createTourOpen, setCreateTourOpen] = useState(false);
+  const [newTourTitle, setNewTourTitle] = useState("");
+  const [newTourLocation, setNewTourLocation] = useState("");
+  const [newTourDivision, setNewTourDivision] = useState("Chittagong");
+  const [newTourCategory, setNewTourCategory] = useState("Hill Tracts");
+  const [newTourPrice, setNewTourPrice] = useState(8500);
+  const [newTourDays, setNewTourDays] = useState(3);
+  const [newTourNights, setNewTourNights] = useState(2);
+  const [newTourCapacity, setNewTourCapacity] = useState(14);
+  const [newTourDescription, setNewTourDescription] = useState("");
+  const [creatingTour, setCreatingTour] = useState(false);
+
+  // Create Story Modal States
+  const [createStoryOpen, setCreateStoryOpen] = useState(false);
+  const [newStoryTitle, setNewStoryTitle] = useState("");
+  const [newStoryDivision, setNewStoryDivision] = useState("Chittagong");
+  const [newStoryCategory, setNewStoryCategory] = useState("Travel Guide");
+  const [newStoryContent, setNewStoryContent] = useState("");
+  const [newStoryCover, setNewStoryCover] = useState("");
+  const [uploadingStoryCover, setUploadingStoryCover] = useState(false);
+  const [creatingStory, setCreatingStory] = useState(false);
+
   useEffect(() => {
     if (user) {
-      setFullName(user.fullName);
-      setEmail(user.email);
-      if (user.phoneNumber) setPhoneNumber(user.phoneNumber);
-      if (user.homeCity) setHomeCity(user.homeCity);
-      if (user.nidOrPassport) setNidNumber(user.nidOrPassport);
-      if (user.bio) setBio(user.bio);
+      setFullName(user.fullName || "");
+      setPhoneNumber(user.phoneNumber || "");
+      setHomeCity(user.homeCity || "Dhaka");
+      setNidOrPassport(user.nidOrPassport || "");
+      setEmergencyContact(user.emergencyContact || "");
+      setBio(user.bio || "");
+      setAvatarUrl(user.avatarUrl || "");
     }
   }, [user]);
 
-  // Settings State
-  const [smsAlerts, setSmsAlerts] = useState(true);
-  const [whatsappAlerts, setWhatsappAlerts] = useState(true);
-  const [newsletter, setNewsletter] = useState(false);
+  const loadData = async () => {
+    if (!token) return;
+    setLoading(true);
+    try {
+      const [tStats, bPosts, tList] = await Promise.all([
+        fetchDashboardStats().catch(() => null),
+        getBlogPosts().catch(() => []),
+        fetchTourPackages().catch(() => []),
+      ]);
 
-  // Saved Bookmarks
-  const [savedItems, setSavedItems] = useState([
-    {
-      id: "1",
-      title: "Sajek Valley: Kingdom of Clouds & Hill Tracts",
-      category: "Tour Package",
-      location: "Rangamati / Baghaichhari",
-      price: "৳7,500",
-      slug: "sajek-valley-clouds-hill-tracts",
-      image: "https://images.unsplash.com/photo-1628085971946-b673e4492bf9?auto=format&fit=crop&w=600&q=80"
-    },
-    {
-      id: "2",
-      title: "Tanguar Haor & Shimul Bagan: Premium Houseboat Bajra",
-      category: "Tour Package",
-      location: "Tahirpur, Sunamganj",
-      price: "৳8,900",
-      slug: "tanguar-haor-premium-houseboat",
-      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80"
-    },
-    {
-      id: "3",
-      title: "Army Escort Schedule & Timings at Dighinala for Sajek",
-      category: "Travel Tip",
-      location: "Khagrachhari – Sajek Route",
-      price: "Travel Guidance",
-      slug: "tips",
-      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80"
-    },
-    {
-      id: "4",
-      title: "Sayeman Beach Resort (Marine Drive, Cox's Bazar)",
-      category: "Hotel Review",
-      location: "Kolatoli / Marine Drive",
-      price: "Reviewed (4.8/5)",
-      slug: "hotels",
-      image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"
+      if (tStats) setTourStats(tStats);
+      setStoriesList(bPosts);
+      setToursList(tList);
+
+      if (user?.role === "SuperAdmin" || user?.role === "Admin") {
+        const [pStats, uList, bList] = await Promise.all([
+          fetchPlatformStats(token).catch(() => null),
+          fetchAllUsers(token).catch(() => []),
+          fetchAllBookings().catch(() => []),
+        ]);
+        if (pStats) setPlatformStats(pStats);
+        setUsersList(uList);
+        setBookingsList(bList);
+      } else {
+        fetchAllBookings()
+          .then((all) => {
+            const mine = all.filter((b) => b.customerEmail.toLowerCase() === user?.email.toLowerCase());
+            setBookingsList(mine);
+          })
+          .catch(() => {});
+      }
+    } catch (err) {
+      console.error("Data loading error:", err);
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
 
-  const handleProfileSave = async (e: React.FormEvent) => {
+  useEffect(() => {
+    if (isLoggedIn && token) {
+      loadData();
+    }
+  }, [isLoggedIn, token, user?.role]);
+
+  const runConnectivityTest = async () => {
+    setConnectivityStatus("Testing gateway...");
+    const t0 = performance.now();
+    try {
+      await testSystemHealth();
+      const latency = Math.round(performance.now() - t0);
+      setConnectivityStatus(`Operational (${latency}ms)`);
+    } catch {
+      setConnectivityStatus("Unreachable");
+    }
+  };
+
+  const handleAvatarFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingAvatar(true);
+    setProfileMessage(null);
+    try {
+      const res = await uploadPostImage(file);
+      setAvatarUrl(res.url);
+
+      const updateRes = await updateProfile({
+        fullName,
+        phoneNumber,
+        homeCity,
+        nidOrPassport,
+        emergencyContact,
+        bio,
+        avatarUrl: res.url,
+      });
+
+      if (updateRes.success) {
+        setProfileMessage({ type: "success", text: "Profile image updated successfully." });
+      }
+    } catch {
+      setProfileMessage({ type: "error", text: "Failed to upload image. Please try again." });
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSaveError(null);
-    const res = await updateProfile({
-      fullName,
-      phoneNumber,
-      homeCity,
-      nidOrPassport: nidNumber,
-      bio,
-    });
+    setSavingProfile(true);
+    setProfileMessage(null);
 
-    if (res.success) {
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
-    } else {
-      setSaveError(res.error || "Failed to update profile.");
+    try {
+      const updateRes = await updateProfile({
+        fullName,
+        phoneNumber,
+        homeCity,
+        nidOrPassport,
+        emergencyContact,
+        bio,
+        avatarUrl,
+      });
+
+      if (updateRes.success) {
+        setProfileMessage({ type: "success", text: "Profile details updated successfully." });
+      } else {
+        setProfileMessage({ type: "error", text: updateRes.error || "Failed to update profile." });
+      }
+    } catch {
+      setProfileMessage({ type: "error", text: "An error occurred while saving." });
+    } finally {
+      setSavingProfile(false);
     }
   };
 
-  const removeItem = (id: string) => {
-    setSavedItems((prev) => prev.filter((item) => item.id !== id));
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordMessage(null);
+
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage({ type: "error", text: "New passwords do not match." });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordMessage({ type: "error", text: "Password must be at least 6 characters long." });
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      const res = await fetch(`${API_BASE}/auth/change-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || "Failed to update password.");
+      }
+
+      setPasswordMessage({ type: "success", text: "Password changed successfully." });
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err: unknown) {
+      setPasswordMessage({
+        type: "error",
+        text: err instanceof Error ? err.message : "Password update failed.",
+      });
+    } finally {
+      setChangingPassword(false);
+    }
   };
 
-  if (!isLoggedIn) {
-    return (
-      <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center space-y-6">
-        <div className="h-16 w-16 mx-auto rounded-3xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center">
-          <Lock className="h-8 w-8" />
-        </div>
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-white tracking-tight">Traveler Profile Access</h1>
-          <p className="text-sm text-slate-400 max-w-md mx-auto">
-            Please sign in to view your profile, manage bookmarked tours, and review your verified travel details.
-          </p>
-        </div>
+  const handleRoleChange = async (userId: string, newRole: string) => {
+    if (!token) return;
+    try {
+      await updateUserRole(userId, newRole, token);
+      setUsersList((prev) =>
+        prev.map((u) => (u.id === userId ? { ...u, role: newRole as SystemUser["role"] } : u))
+      );
+    } catch {
+      toast.error("Role Update Failed", "Could not persist role assignment.");
+    }
+  };
 
-        <div className="flex items-center justify-center gap-3">
-          <button
-            onClick={() => openAuthModal("login")}
-            className="px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-lg transition-all"
-          >
-            Sign In Now
-          </button>
-          <Link
-            href="/register"
-            className="px-6 py-3 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 text-xs font-semibold transition-all"
-          >
-            Register Account
-          </Link>
+  const handleBookingStatusChange = async (bookingId: string, status: string, paymentStatus?: string) => {
+    try {
+      await updateBookingStatus(bookingId, status, paymentStatus);
+      setBookingsList((prev) =>
+        prev.map((b) => (b.id === bookingId ? { ...b, status, paymentStatus: paymentStatus || b.paymentStatus } : b))
+      );
+    } catch {
+      toast.error("Booking Update Failed", "Could not update status.");
+    }
+  };
+
+  const handleVoucherLookup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!voucherSearchRef.trim()) return;
+
+    setSearchingVoucher(true);
+    setVoucherResult(null);
+    setVoucherError(null);
+
+    try {
+      const record = await fetchBookingByReference(voucherSearchRef.trim(), user?.email);
+      setVoucherResult(record);
+      toast.success("Voucher Verified", `Found reservation for ${record.customerName}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Booking voucher not found.";
+      setVoucherError(msg);
+      toast.error("Voucher Not Found", msg);
+    } finally {
+      setSearchingVoucher(false);
+    }
+  };
+
+  const handleCreateTour = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCreatingTour(true);
+    try {
+      const created = await createTourPackage(
+        {
+          title: newTourTitle.trim(),
+          summary: newTourDescription.trim() || newTourTitle.trim(),
+          description: newTourDescription.trim(),
+          destination: newTourLocation.trim(),
+          country: "Bangladesh",
+          region: newTourDivision,
+          startCity: "Dhaka",
+          endCity: "Dhaka",
+          durationDays: newTourDays,
+          durationNights: newTourNights,
+          basePrice: newTourPrice,
+          depositAmount: Math.round(newTourPrice * 0.3),
+          maxGroupSize: newTourCapacity,
+          difficulty: "Moderate",
+          category: newTourCategory,
+          coverImageUrl:
+            "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
+          highlights: ["Scenic vistas", "Local authentic meals", "Guided security tour"],
+          inclusions: ["All transportation", "Eco resort stay", "Experienced trip guide"],
+          exclusions: ["Personal items", "Shopping"],
+          isActive: true,
+          isFeatured: false,
+        },
+        token || undefined
+      );
+
+      setToursList((prev) => [created, ...prev]);
+      setCreateTourOpen(false);
+      setNewTourTitle("");
+      setNewTourLocation("");
+      setNewTourDescription("");
+      toast.success("Expedition Created!", `"${created.title}" is now published.`);
+    } catch (err: unknown) {
+      toast.error("Creation Failed", err instanceof Error ? err.message : "Failed to create tour package.");
+    } finally {
+      setCreatingTour(false);
+    }
+  };
+
+  const handleCreateStory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCreatingStory(true);
+    try {
+      const created = await createBlogPost({
+        title: newStoryTitle.trim(),
+        division: newStoryDivision,
+        category: newStoryCategory,
+        content: newStoryContent.trim(),
+        coverImageUrl:
+          newStoryCover ||
+          "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
+        authorName: user?.fullName || "Explorer",
+      });
+
+      setStoriesList((prev) => [created, ...prev]);
+      setCreateStoryOpen(false);
+      setNewStoryTitle("");
+      setNewStoryContent("");
+      setNewStoryCover("");
+      toast.success("Narrative Published!", `"${created.title}" is now live.`);
+    } catch (err: unknown) {
+      toast.error("Publish Failed", err instanceof Error ? err.message : "Failed to publish story.");
+    } finally {
+      setCreatingStory(false);
+    }
+  };
+
+  const handleDeleteStory = async (storyId: string) => {
+    try {
+      await deleteBlogPost(storyId);
+      setStoriesList((prev) => prev.filter((s) => s.id !== storyId));
+    } catch {
+      toast.error("Deletion Failed", "Failed to delete story.");
+    }
+  };
+
+  if (!isLoggedIn || !user) {
+    return (
+      <div className="min-h-[80vh] bg-[#F9FAFB] flex items-center justify-center py-20 px-6">
+        <div className="max-w-md w-full bg-[#FFFFFF] border border-[#E5E7EB] rounded-lg p-8 text-center space-y-4">
+          <div className="h-12 w-12 mx-auto rounded-full bg-[#F3F4F6] border border-[#E5E7EB] flex items-center justify-center text-[#111827]">
+            <Lock className="h-6 w-6" />
+          </div>
+          <h2 className="text-xl font-bold text-[#111827] tracking-tight">Authentication Required</h2>
+          <p className="text-xs text-[#4B5563]">
+            Please sign in with your authorized credentials to access your dashboard.
+          </p>
+          <div className="pt-2 flex flex-col gap-2">
+            <Link
+              href="/login"
+              className="w-full py-2.5 bg-[#111827] hover:bg-black text-white text-xs font-semibold rounded-md transition-colors"
+            >
+              Sign In to Platform
+            </Link>
+            <Link
+              href="/register"
+              className="w-full py-2.5 bg-[#FFFFFF] border border-[#D1D5DB] hover:bg-[#F9FAFB] text-[#111827] text-xs font-semibold rounded-md transition-colors"
+            >
+              Create Traveler Account
+            </Link>
+          </div>
         </div>
       </div>
     );
   }
 
+  const isSuperAdmin = user.role === "SuperAdmin";
+  const isAdmin = user.role === "Admin";
+  const isTraveller = user.role === "User";
+
+  const navItems: NavItem[] = [
+    {
+      id: "overview",
+      label: !isTraveller ? "Operations Overview" : "Explorer Overview",
+      icon: LayoutDashboard,
+    },
+    ...(!isTraveller
+      ? [
+          {
+            id: "users",
+            label: isSuperAdmin ? "User Governance" : "User Monitoring",
+            icon: Users,
+          },
+        ]
+      : []),
+    {
+      id: "bookings",
+      label: !isTraveller ? "Booking Manifest" : "My Bookings & Vouchers",
+      icon: Calendar,
+    },
+    {
+      id: "tours",
+      label: !isTraveller ? "Tour Packages" : "Explore Tours",
+      icon: Compass,
+    },
+    {
+      id: "stories",
+      label: !isTraveller ? "Story Moderation" : "My Travel Stories",
+      icon: FileText,
+    },
+    ...(isTraveller
+      ? [
+          {
+            id: "saved",
+            label: "Saved Itineraries",
+            icon: Bookmark,
+          },
+        ]
+      : []),
+    {
+      id: "profile",
+      label: "Profile & Security",
+      icon: Settings,
+    },
+  ];
+
   return (
-    <div className="w-full max-w-[1536px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-12 space-y-8">
-      {/* Traveler Header Banner */}
-      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-teal-950/40 via-[#080d1d] to-sky-950/40 border border-white/[0.08] p-6 sm:p-10 shadow-2xl">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div className="flex items-center gap-5">
-            <div className="h-20 w-20 rounded-2xl bg-gradient-to-tr from-teal-500 via-sky-500 to-indigo-600 flex items-center justify-center text-3xl font-extrabold text-white shadow-xl shadow-teal-500/20">
-              {fullName ? fullName[0].toUpperCase() : "T"}
-            </div>
+    <div className="min-h-screen bg-[#F9FAFB] text-[#111827] flex font-sans antialiased">
+      {/* 1. LEFT SIDEBAR */}
+      <DashboardSidebar
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        isSuperAdmin={isSuperAdmin}
+        isAdmin={isAdmin}
+        navItems={navItems}
+        activeTab={activeTab}
+        handleTabChange={handleTabChange}
+        avatarUrl={avatarUrl}
+        user={user}
+        logout={logout}
+      />
+
+      {/* 2. RIGHT MAIN CONTAINER */}
+      <div className="flex-1 flex flex-col lg:pl-64 min-w-0">
+        <DashboardHeader
+          setSidebarOpen={setSidebarOpen}
+          activeTab={activeTab}
+          navItems={navItems}
+          handleTabChange={handleTabChange}
+          loadData={loadData}
+          loading={loading}
+          avatarUrl={avatarUrl}
+          user={user}
+          logout={logout}
+        />
+
+        <main className="flex-1 p-6 sm:p-8 space-y-6 max-w-6xl w-full mx-auto">
+          {/* Header Subtitle */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-2xl sm:text-3xl font-bold text-white">{fullName}</h1>
-                <span className="inline-flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-semibold bg-teal-500/20 text-teal-300 border border-teal-500/30">
-                  <ShieldCheck className="h-3.5 w-3.5" />
-                  NID Verified Traveler
-                </span>
-                {user?.role === "Admin" && (
-                  <span className="inline-flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                    TourFlow Operator
-                  </span>
-                )}
-              </div>
-              <p className="text-xs text-slate-300 mt-1.5 flex flex-wrap items-center gap-3">
-                <span className="flex items-center gap-1">
-                  <MapPin className="h-3.5 w-3.5 text-sky-400" />
-                  {homeCity}, Bangladesh
-                </span>
-                <span>•</span>
-                <span className="flex items-center gap-1">
-                  <Mail className="h-3.5 w-3.5 text-teal-400" />
-                  {email}
-                </span>
+              <h1 className="text-xl sm:text-2xl font-bold text-[#111827] tracking-tight">
+                {navItems.find((n) => n.id === activeTab)?.label || "Dashboard"}
+              </h1>
+              <p className="text-xs text-[#4B5563] mt-0.5">
+                {isSuperAdmin
+                  ? "Supreme platform administration, security governance, and dispatch."
+                  : isAdmin
+                  ? "Operational trip oversight, participant records, and verification."
+                  : "Track personal expeditions, vouchers, and community contributions."}
               </p>
             </div>
+
+            {/* Quick Actions */}
+            <div className="flex items-center gap-2">
+              {!isTraveller && (
+                <button
+                  onClick={() => setCreateTourOpen(true)}
+                  className="px-3.5 py-2 bg-[#111827] hover:bg-black text-white rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>Create Tour Package</span>
+                </button>
+              )}
+              {isTraveller && (
+                <Link
+                  href="/tours"
+                  className="px-3.5 py-2 bg-[#111827] hover:bg-black text-white rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors"
+                >
+                  <Compass className="h-3.5 w-3.5" />
+                  <span>Browse Expeditions</span>
+                </Link>
+              )}
+            </div>
           </div>
 
-          <div className="flex items-center gap-3 text-xs">
-            <span className="px-3.5 py-2 rounded-xl bg-black/40 border border-white/[0.08] text-slate-300">
-              Trips Logged: <strong className="text-white">4</strong>
-            </span>
-            <span className="px-3.5 py-2 rounded-xl bg-black/40 border border-white/[0.08] text-slate-300">
-              Bookmarks: <strong className="text-white">{savedItems.length}</strong>
-            </span>
-          </div>
-        </div>
+          {/* TAB CONTENTS */}
+          {activeTab === "overview" && (
+            <OverviewTab
+              platformStats={platformStats}
+              tourStats={tourStats}
+              usersList={usersList}
+              bookingsList={bookingsList}
+              toursList={toursList}
+              isTraveller={isTraveller}
+              connectivityStatus={connectivityStatus}
+              runConnectivityTest={runConnectivityTest}
+              handleTabChange={handleTabChange}
+            />
+          )}
 
-        {/* Tab Navigation */}
-        <div className="flex items-center gap-2 mt-8 pt-6 border-t border-white/[0.08] text-xs font-semibold overflow-x-auto">
-          <button
-            onClick={() => setActiveTab("profile")}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
-              activeTab === "profile"
-                ? "bg-teal-600 text-white shadow-md shadow-teal-600/20"
-                : "bg-white/[0.04] text-slate-300 hover:text-white hover:bg-white/[0.08]"
-            }`}
-          >
-            <User className="h-4 w-4" />
-            <span>My Profile</span>
-          </button>
+          {activeTab === "users" && !isTraveller && (
+            <UsersTab
+              usersList={usersList}
+              isSuperAdmin={isSuperAdmin}
+              handleRoleChange={handleRoleChange}
+            />
+          )}
 
-          <button
-            onClick={() => setActiveTab("saved")}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
-              activeTab === "saved"
-                ? "bg-teal-600 text-white shadow-md shadow-teal-600/20"
-                : "bg-white/[0.04] text-slate-300 hover:text-white hover:bg-white/[0.08]"
-            }`}
-          >
-            <Bookmark className="h-4 w-4" />
-            <span>Bookmarks / Saved ({savedItems.length})</span>
-          </button>
+          {activeTab === "bookings" && (
+            <BookingsTab
+              bookingsList={bookingsList}
+              isTraveller={isTraveller}
+              handleBookingStatusChange={handleBookingStatusChange}
+              voucherSearchRef={voucherSearchRef}
+              setVoucherSearchRef={setVoucherSearchRef}
+              handleVoucherLookup={handleVoucherLookup}
+              searchingVoucher={searchingVoucher}
+              voucherError={voucherError}
+              voucherResult={voucherResult}
+              onRefresh={loadData}
+            />
+          )}
 
-          <button
-            onClick={() => setActiveTab("settings")}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
-              activeTab === "settings"
-                ? "bg-teal-600 text-white shadow-md shadow-teal-600/20"
-                : "bg-white/[0.04] text-slate-300 hover:text-white hover:bg-white/[0.08]"
-            }`}
-          >
-            <Settings className="h-4 w-4" />
-            <span>Account Settings</span>
-          </button>
-        </div>
+          {activeTab === "tours" && (
+            <ToursTab
+              toursList={toursList}
+              isTraveller={isTraveller}
+              setCreateTourOpen={setCreateTourOpen}
+            />
+          )}
+
+          {activeTab === "stories" && (
+            <StoriesTab
+              storiesList={storiesList}
+              isTraveller={isTraveller}
+              setCreateStoryOpen={setCreateStoryOpen}
+              handleDeleteStory={handleDeleteStory}
+            />
+          )}
+
+          {activeTab === "saved" && isTraveller && (
+            <SavedTab toursList={toursList} />
+          )}
+
+          {activeTab === "profile" && (
+            <ProfileSettingsTab
+              user={user}
+              fullName={fullName}
+              setFullName={setFullName}
+              phoneNumber={phoneNumber}
+              setPhoneNumber={setPhoneNumber}
+              homeCity={homeCity}
+              setHomeCity={setHomeCity}
+              nidOrPassport={nidOrPassport}
+              setNidOrPassport={setNidOrPassport}
+              emergencyContact={emergencyContact}
+              setEmergencyContact={setEmergencyContact}
+              bio={bio}
+              setBio={setBio}
+              avatarUrl={avatarUrl}
+              setAvatarUrl={setAvatarUrl}
+              savingProfile={savingProfile}
+              profileMessage={profileMessage}
+              handleProfileSubmit={handleProfileSubmit}
+              handleAvatarFileChange={handleAvatarFileChange}
+              uploadingAvatar={uploadingAvatar}
+              currentPassword={currentPassword}
+              setCurrentPassword={setCurrentPassword}
+              newPassword={newPassword}
+              setNewPassword={setNewPassword}
+              confirmPassword={confirmPassword}
+              setConfirmPassword={setConfirmPassword}
+              changingPassword={changingPassword}
+              passwordMessage={passwordMessage}
+              handlePasswordSubmit={handlePasswordSubmit}
+            />
+          )}
+        </main>
       </div>
 
-      {/* Tab 1: Profile Details & Past Trips */}
-      {activeTab === "profile" && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left Column: Form (8 cols) */}
-          <div className="lg:col-span-8 bg-[#080d1d] border border-white/[0.08] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl">
-            <div>
-              <h2 className="text-xl font-bold text-white">Traveler Details &amp; Verification</h2>
-              <p className="text-xs text-slate-400 mt-1">
-                Keep your domestic emergency and checkpost credentials updated for smooth clearance.
-              </p>
-            </div>
+      {/* MODALS */}
+      <CreateTourModal
+        createTourOpen={createTourOpen}
+        setCreateTourOpen={setCreateTourOpen}
+        newTourTitle={newTourTitle}
+        setNewTourTitle={setNewTourTitle}
+        newTourLocation={newTourLocation}
+        setNewTourLocation={setNewTourLocation}
+        newTourDivision={newTourDivision}
+        setNewTourDivision={setNewTourDivision}
+        newTourCategory={newTourCategory}
+        setNewTourCategory={setNewTourCategory}
+        newTourPrice={newTourPrice}
+        setNewTourPrice={setNewTourPrice}
+        newTourDays={newTourDays}
+        setNewTourDays={setNewTourDays}
+        newTourNights={newTourNights}
+        setNewTourNights={setNewTourNights}
+        newTourDescription={newTourDescription}
+        setNewTourDescription={setNewTourDescription}
+        creatingTour={creatingTour}
+        handleCreateTour={handleCreateTour}
+      />
 
-            {saveSuccess && (
-              <div className="p-3.5 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-300 text-xs flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 shrink-0" />
-                <span>Profile successfully updated in database!</span>
-              </div>
-            )}
-
-            {saveError && (
-              <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                <span>{saveError}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleProfileSave} className="space-y-4 text-xs">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-slate-300 mb-1.5 font-medium">Full Name</label>
-                  <input
-                    type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-300 mb-1.5 font-medium">Email Address (Read-only)</label>
-                  <input
-                    type="email"
-                    value={email}
-                    disabled
-                    className="w-full bg-black/20 border border-white/[0.06] rounded-xl px-3.5 py-2.5 text-slate-400 cursor-not-allowed"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-slate-300 mb-1.5 font-medium">Phone Number (bKash / WhatsApp)</label>
-                  <input
-                    type="text"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-300 mb-1.5 font-medium">Home City / Division</label>
-                  <select
-                    value={homeCity}
-                    onChange={(e) => setHomeCity(e.target.value)}
-                    className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
-                  >
-                    <option value="Dhaka">Dhaka</option>
-                    <option value="Chittagong">Chittagong</option>
-                    <option value="Sylhet">Sylhet</option>
-                    <option value="Khulna">Khulna</option>
-                    <option value="Rajshahi">Rajshahi</option>
-                    <option value="Barisal">Barisal</option>
-                    <option value="Rangpur">Rangpur</option>
-                    <option value="Mymensingh">Mymensingh</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-slate-300 mb-1.5 font-medium">National Identity (NID / Smart Card Number)</label>
-                <input
-                  type="text"
-                  value={nidNumber}
-                  onChange={(e) => setNidNumber(e.target.value)}
-                  className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-white font-mono focus:outline-none focus:ring-1 focus:ring-teal-500"
-                />
-                <p className="text-[11px] text-slate-500 mt-1">
-                  Required for official Army checkposts in Dighinala, Sajek, Ruma, and Sundarbans forest entry passes.
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-slate-300 mb-1.5 font-medium">Travel Bio &amp; Interests</label>
-                <textarea
-                  rows={3}
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-teal-500 leading-relaxed"
-                />
-              </div>
-
-              <div className="pt-2 flex justify-end">
-                <button
-                  type="submit"
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-sky-600 hover:from-teal-400 hover:to-sky-500 text-white font-bold transition-all shadow-md shadow-teal-500/20"
-                >
-                  <Save className="h-4 w-4" />
-                  <span>Save Profile</span>
-                </button>
-              </div>
-            </form>
-          </div>
-
-          {/* Right Column: History & Verifications (4 cols) */}
-          <div className="lg:col-span-4 space-y-6">
-            <div className="bg-[#080d1d] border border-white/[0.08] rounded-3xl p-6 sm:p-8 space-y-4 shadow-xl">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Compass className="h-4 w-4 text-sky-400" />
-                <span>Past Expeditions</span>
-              </h3>
-              <div className="space-y-3 text-xs">
-                <div className="p-3.5 rounded-2xl bg-black/40 border border-white/[0.06] space-y-1">
-                  <div className="flex justify-between items-center">
-                    <strong className="text-white">Bandarban Trails &amp; Nafakhum</strong>
-                    <span className="text-[10px] text-emerald-400">Completed</span>
-                  </div>
-                  <div className="text-[11px] text-slate-400">December 2025 • 3 Days</div>
-                </div>
-
-                <div className="p-3.5 rounded-2xl bg-black/40 border border-white/[0.06] space-y-1">
-                  <div className="flex justify-between items-center">
-                    <strong className="text-white">Sreemangal Tea Estates Walk</strong>
-                    <span className="text-[10px] text-emerald-400">Completed</span>
-                  </div>
-                  <div className="text-[11px] text-slate-400">October 2025 • 2 Days</div>
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <Link
-                  href="/manage"
-                  className="w-full py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-200 text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
-                >
-                  <span>Retrieve Any Voucher Code</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </div>
-            </div>
-
-            <div className="bg-[#080d1d] border border-white/[0.08] rounded-3xl p-6 sm:p-8 space-y-3 text-xs text-slate-300 shadow-xl">
-              <h4 className="text-base font-bold text-white flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-teal-400" />
-                <span>Security Assurance</span>
-              </h4>
-              <p className="text-slate-400 text-xs leading-relaxed">
-                Your NID details are strictly protected and only shared with verified licensed tour operators when Army checkpost clearances are required.
-              </p>
-              <div className="p-3 rounded-xl bg-black/40 border border-white/[0.06] text-[11px] text-slate-300">
-                Tourist Police Helpline: <strong className="text-teal-400 font-mono">999 / +880 1320-222222</strong>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tab 2: Bookmarks / Saved */}
-      {activeTab === "saved" && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
-            <div>
-              <h2 className="text-xl font-bold text-white">Bookmarks &amp; Saved Itineraries</h2>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Packages, travel guides, and hotel reviews you&apos;ve saved for future trips.
-              </p>
-            </div>
-            <span className="text-xs text-slate-400">{savedItems.length} items saved</span>
-          </div>
-
-          {savedItems.length === 0 ? (
-            <div className="py-20 text-center bg-[#080d1d] border border-white/[0.08] rounded-3xl p-8 space-y-3">
-              <Bookmark className="h-8 w-8 text-slate-600 mx-auto" />
-              <p className="text-sm text-slate-400">You haven&apos;t bookmarked any tours or tips yet.</p>
-              <Link
-                href="/destinations"
-                className="inline-block px-5 py-2.5 rounded-xl bg-teal-600 text-white text-xs font-bold"
-              >
-                Explore Bangladesh Destinations
-              </Link>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {savedItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-[#080d1d] border border-white/[0.08] rounded-3xl overflow-hidden flex flex-col sm:flex-row p-5 gap-4 items-start sm:items-center justify-between hover:border-teal-500/30 transition-all shadow-xl"
-                >
-                  <div className="flex items-center gap-4">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="h-20 w-24 rounded-2xl object-cover bg-slate-900 shrink-0"
-                    />
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-teal-400">
-                        {item.category}
-                      </span>
-                      <h3 className="text-sm font-bold text-white line-clamp-1">{item.title}</h3>
-                      <div className="text-xs text-slate-400 flex items-center gap-1.5">
-                        <MapPin className="h-3 w-3 text-sky-400" />
-                        <span>{item.location}</span>
-                      </div>
-                      <div className="text-xs font-bold text-white">{item.price}</div>
-                    </div>
-                  </div>
-
-                  <div className="flex sm:flex-col items-center gap-2 self-end sm:self-center shrink-0">
-                    <Link
-                      href={item.slug.startsWith("tips") ? "/tips" : item.slug.startsWith("hotels") ? "/hotels" : `/tours/${item.slug}`}
-                      className="px-3.5 py-1.5 rounded-xl bg-teal-600/90 hover:bg-teal-500 text-white text-xs font-semibold flex items-center gap-1"
-                    >
-                      <span>View</span>
-                      <ExternalLink className="h-3 w-3" />
-                    </Link>
-                    <button
-                      onClick={() => removeItem(item.id)}
-                      className="p-1.5 rounded-xl bg-black/40 border border-white/[0.08] text-slate-500 hover:text-rose-400 transition-colors"
-                      title="Remove bookmark"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Tab 3: Account Settings */}
-      {activeTab === "settings" && (
-        <div className="max-w-3xl bg-[#080d1d] border border-white/[0.08] rounded-3xl p-6 sm:p-10 space-y-8 shadow-xl">
-          <div>
-            <h2 className="text-xl font-bold text-white">Account &amp; Notification Settings</h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Customize how you receive travel alerts, weather warnings, and security updates.
-            </p>
-          </div>
-
-          {/* Travel Alerts */}
-          <div className="space-y-4 text-xs">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-teal-400 flex items-center gap-2">
-              <Bell className="h-4 w-4" />
-              <span>Real-time Travel &amp; Weather Alerts</span>
-            </h3>
-
-            <div className="space-y-3 bg-black/40 p-4 rounded-2xl border border-white/[0.06]">
-              <label className="flex items-center justify-between cursor-pointer">
-                <div>
-                  <div className="text-slate-200 font-semibold">SMS Road &amp; Escort Alerts</div>
-                  <div className="text-[11px] text-slate-400">Get SMS updates on Sajek/Bandarban Army escort times or blockages.</div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={smsAlerts}
-                  onChange={(e) => setSmsAlerts(e.target.checked)}
-                  className="h-4 w-4 rounded accent-teal-600 cursor-pointer"
-                />
-              </label>
-
-              <div className="border-t border-white/[0.06] pt-3">
-                <label className="flex items-center justify-between cursor-pointer">
-                  <div>
-                    <div className="text-slate-200 font-semibold">WhatsApp Weather &amp; Flash Flood Advisories</div>
-                    <div className="text-[11px] text-slate-400">Receive flash flood warnings for Sunamganj haors and monsoon sea conditions.</div>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={whatsappAlerts}
-                    onChange={(e) => setWhatsappAlerts(e.target.checked)}
-                    className="h-4 w-4 rounded accent-teal-600 cursor-pointer"
-                  />
-                </label>
-              </div>
-
-              <div className="border-t border-white/[0.06] pt-3">
-                <label className="flex items-center justify-between cursor-pointer">
-                  <div>
-                    <div className="text-slate-200 font-semibold">Community Forum Digest</div>
-                    <div className="text-[11px] text-slate-400">Weekly digest of top travel tips and new homestay discoveries.</div>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={newsletter}
-                    onChange={(e) => setNewsletter(e.target.checked)}
-                    className="h-4 w-4 rounded accent-teal-600 cursor-pointer"
-                  />
-                </label>
-              </div>
-            </div>
-          </div>
-
-          {/* Currency & Region */}
-          <div className="space-y-3 text-xs border-t border-white/[0.08] pt-6">
-            <div className="flex justify-between items-center text-slate-300">
-              <div>
-                <strong className="text-white">Display Currency:</strong> Bangladeshi Taka (৳ BDT)
-              </div>
-              <span className="text-[11px] text-teal-400 font-semibold">Active Default</span>
-            </div>
-            <div className="flex justify-between items-center text-slate-300">
-              <div>
-                <strong className="text-white">Region:</strong> Bangladesh (+880)
-              </div>
-              <span className="text-[11px] text-teal-400 font-semibold">Verified</span>
-            </div>
-          </div>
-        </div>
-      )}
+      <CreateStoryModal
+        createStoryOpen={createStoryOpen}
+        setCreateStoryOpen={setCreateStoryOpen}
+        newStoryTitle={newStoryTitle}
+        setNewStoryTitle={setNewStoryTitle}
+        newStoryDivision={newStoryDivision}
+        setNewStoryDivision={setNewStoryDivision}
+        newStoryCategory={newStoryCategory}
+        setNewStoryCategory={setNewStoryCategory}
+        newStoryContent={newStoryContent}
+        setNewStoryContent={setNewStoryContent}
+        newStoryCover={newStoryCover}
+        setNewStoryCover={setNewStoryCover}
+        uploadingStoryCover={uploadingStoryCover}
+        setUploadingStoryCover={setUploadingStoryCover}
+        creatingStory={creatingStory}
+        handleCreateStory={handleCreateStory}
+      />
     </div>
   );
 }
 
 export default function ProfilePage() {
   return (
-    <Suspense fallback={<div className="py-24 text-center text-slate-500 text-sm">Loading profile...</div>}>
-      <ProfileContent />
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#111827] border-t-transparent" />
+        </div>
+      }
+    >
+      <DashboardContent />
     </Suspense>
   );
 }
