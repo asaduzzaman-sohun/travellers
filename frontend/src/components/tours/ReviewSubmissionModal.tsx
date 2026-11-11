@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { Star, X, CheckCircle2, MessageSquare } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Star, X, MessageSquare, LogIn, ShieldCheck } from "lucide-react";
 import { useToast } from "@/lib/toast-context";
+import { useAuth } from "@/lib/auth-context";
+import { submitReview } from "@/lib/api";
 
 export interface SubmittedReview {
   id: string;
@@ -12,6 +14,7 @@ export interface SubmittedReview {
   reviewerName: string;
   reviewerLocation: string;
   tripDateFormatted: string;
+  isVerifiedBooking?: boolean;
 }
 
 interface ReviewSubmissionModalProps {
@@ -30,6 +33,7 @@ export default function ReviewSubmissionModal({
   onSuccess,
 }: ReviewSubmissionModalProps) {
   const { toast } = useToast();
+  const { user, token, isLoggedIn, openAuthModal } = useAuth();
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState(0);
   const [title, setTitle] = useState("");
@@ -39,36 +43,73 @@ export default function ReviewSubmissionModal({
   const [travelMonth, setTravelMonth] = useState("October 2026");
   const [submitting, setSubmitting] = useState(false);
 
+  useEffect(() => {
+    if (user?.fullName) {
+      setReviewerName((prev) => prev || user.fullName);
+    }
+    if (user?.homeCity) {
+      setReviewerLocation(user.homeCity);
+    }
+  }, [user?.id, user?.fullName, user?.homeCity]);
+
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!comment.trim() || !title.trim() || !reviewerName.trim()) {
-      toast.error("Missing Fields", "Please fill in all review details.");
+    if (!isLoggedIn || !token) {
+      toast.info("Sign In Required", "Please sign in to publish a verified traveler review.");
+      onClose();
+      openAuthModal("login");
+      return;
+    }
+
+    if (!comment.trim() || !title.trim()) {
+      toast.error("Missing Fields", "Please provide both a headline and review feedback.");
       return;
     }
 
     setSubmitting(true);
-    // Construct local high-fidelity review
-    const newReview: SubmittedReview = {
-      id: `rev-${Date.now()}`,
-      rating,
-      title: title.trim(),
-      comment: comment.trim(),
-      reviewerName: reviewerName.trim(),
-      reviewerLocation: reviewerLocation.trim(),
-      tripDateFormatted: travelMonth,
-    };
-
-    setTimeout(() => {
-      setSubmitting(false);
-      toast.success(
-        "Review Submitted!",
-        "Thank you for sharing your authentic journey with our travel community."
+    try {
+      const saved = await submitReview(
+        tourPackageId,
+        {
+          rating,
+          title: title.trim(),
+          comment: comment.trim(),
+          reviewerLocation: reviewerLocation.trim() || "Bangladesh",
+          tripDateFormatted: `Traveled ${travelMonth}`,
+        },
+        token
       );
+
+      const newReview: SubmittedReview = {
+        id: saved.id || `rev-${Date.now()}`,
+        rating: saved.rating ?? rating,
+        title: saved.title || title.trim(),
+        comment: saved.comment || comment.trim(),
+        reviewerName: saved.reviewerName || user?.fullName || reviewerName.trim() || "Verified Traveler",
+        reviewerLocation: saved.reviewerLocation || reviewerLocation.trim() || "Bangladesh",
+        tripDateFormatted: saved.tripDateFormatted || `Traveled ${travelMonth}`,
+        isVerifiedBooking: Boolean(saved.isVerifiedBooking),
+      };
+
+      toast.success(
+        "Review Published!",
+        newReview.isVerifiedBooking
+          ? "Saved with your Verified Booking badge."
+          : "Your traveler feedback is now live in the database."
+      );
+
+      setTitle("");
+      setComment("");
       if (onSuccess) onSuccess(newReview);
       onClose();
-    }, 600);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Could not submit review right now.";
+      toast.error("Submission Failed", message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -95,6 +136,29 @@ export default function ReviewSubmissionModal({
               Reviewing: {tourTitle}
             </p>
           </div>
+
+          {!isLoggedIn ? (
+            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 space-y-3 text-xs">
+              <div className="flex items-start gap-2.5 text-amber-950">
+                <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                <p>
+                  Sign in to persist your review directly to PostgreSQL and automatically earn a{" "}
+                  <strong>Verified Booking</strong> badge if you booked this tour.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  openAuthModal("login");
+                }}
+                className="w-full py-2.5 rounded-full bg-stone-900 hover:bg-stone-800 text-white font-semibold flex items-center justify-center gap-2 transition"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                Sign In to Post Review
+              </button>
+            </div>
+          ) : null}
 
           <form onSubmit={handleSubmit} className="space-y-4 text-xs sm:text-sm">
             {/* Rating Stars Selector */}
@@ -178,7 +242,7 @@ export default function ReviewSubmissionModal({
                   value={reviewerName}
                   onChange={(e) => setReviewerName(e.target.value)}
                   className="w-full bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl px-4 py-2 text-stone-900 focus:outline-none focus:border-stone-900"
-                  required
+                  required={isLoggedIn}
                 />
               </div>
               <div>

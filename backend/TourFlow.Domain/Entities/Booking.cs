@@ -28,6 +28,9 @@ public class Booking : BaseEntity
     public string? EmergencyContactName { get; set; }
     public string? EmergencyContactPhone { get; set; }
     public string? PaymentTransactionId { get; set; }
+    public string? AppliedPromoCode { get; set; }
+    public decimal PromoDiscountAmount { get; set; }
+    public bool PayDepositOnly { get; set; } = true;
 
     // Associated User account (optional for guest bookings)
     public Guid? UserId { get; set; }

@@ -1,6 +1,11 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using TourFlow.Api.DTOs;
+using TourFlow.Api.Services;
+using TourFlow.Domain.Entities;
 using TourFlow.Domain.Enums;
 using TourFlow.Infrastructure.Data;
 
@@ -11,10 +16,17 @@ namespace TourFlow.Api.Controllers;
 public class PaymentsController : ControllerBase
 {
     private readonly TourFlowDbContext _context;
+    private readonly IRealtimeNotifier _notifier;
+    private readonly IConfiguration _configuration;
 
-    public PaymentsController(TourFlowDbContext context)
+    public PaymentsController(
+        TourFlowDbContext context,
+        IRealtimeNotifier notifier,
+        IConfiguration configuration)
     {
         _context = context;
+        _notifier = notifier;
+        _configuration = configuration;
     }
 
     [HttpGet("methods")]
@@ -67,6 +79,8 @@ public class PaymentsController : ControllerBase
         return Ok(methods);
     }
 
+    [Authorize]
+    [EnableRateLimiting("booking")]
     [HttpPost("initiate")]
     public async Task<IActionResult> InitiatePayment([FromBody] InitiatePaymentRequestDto request)
     {
@@ -82,6 +96,11 @@ public class PaymentsController : ControllerBase
         if (booking == null)
         {
             return NotFound(new { message = "Booking not found." });
+        }
+
+        if (!CanCallerAccessBooking(booking))
+        {
+            return Forbid();
         }
 
         if (booking.PaymentStatus == PaymentStatus.Paid && booking.BalanceRemaining <= 0)
@@ -101,10 +120,11 @@ public class PaymentsController : ControllerBase
 
         var txId = $"TRX-{prefix}-{Guid.NewGuid().ToString("N")[..8].ToUpper()}";
         var amountDue = booking.BalanceRemaining > 0 ? booking.BalanceRemaining : booking.TotalAmount;
+        var frontendUrl = (_configuration["FrontendUrl"] ?? "http://localhost:3000").TrimEnd('/');
 
         // In production, this would call bKash / SSLCommerz merchant API to create checkout URL.
         // In local/sandbox mode, we generate the simulated gateway redirection session.
-        var checkoutUrl = $"http://localhost:3000/booking/payment?bookingId={booking.Id}&trx={txId}&method={methodNormalized}";
+        var checkoutUrl = $"{frontendUrl}/booking/payment?bookingId={booking.Id}&trx={txId}&method={methodNormalized}";
 
         booking.PaymentTransactionId = txId;
         booking.UpdatedAtUtc = DateTime.UtcNow;
@@ -124,6 +144,8 @@ public class PaymentsController : ControllerBase
         });
     }
 
+    [Authorize]
+    [EnableRateLimiting("booking")]
     [HttpPost("verify")]
     public async Task<IActionResult> VerifyPayment([FromBody] VerifyPaymentRequestDto request)
     {
@@ -141,7 +163,12 @@ public class PaymentsController : ControllerBase
             return NotFound(new { message = "Booking not found." });
         }
 
-        if (booking.PaymentStatus == PaymentStatus.Paid)
+        if (!CanCallerAccessBooking(booking))
+        {
+            return Forbid();
+        }
+
+        if (booking.PaymentStatus == PaymentStatus.Paid && booking.BalanceRemaining <= 0)
         {
             return Ok(new PaymentReceiptDto
             {
@@ -160,22 +187,38 @@ public class PaymentsController : ControllerBase
             });
         }
 
+        var submittedTxId = request.TransactionId.Trim();
+        if (string.IsNullOrWhiteSpace(booking.PaymentTransactionId)
+            || !string.Equals(booking.PaymentTransactionId, submittedTxId, StringComparison.Ordinal))
+        {
+            return BadRequest(new { message = "Invalid or uninitiated payment transaction reference." });
+        }
+
         // Apply payment confirmation
         booking.PaymentStatus = PaymentStatus.Paid;
         booking.Status = BookingStatus.Confirmed;
         booking.DepositPaid = booking.TotalAmount;
         booking.BalanceRemaining = 0m;
-        booking.PaymentTransactionId = request.TransactionId;
         booking.UpdatedAtUtc = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
+
+        await _notifier.PublishNotificationAsync(new RealtimeNotificationPublishRequest(
+            TargetUserId: booking.UserId,
+            TargetEmail: booking.CustomerEmail,
+            TargetRole: null,
+            Category: "payment",
+            Title: $"Payment Verified · {booking.BookingReference}",
+            Message: $"Full payment of BDT {booking.TotalAmount:N0} verified for {booking.TourPackage?.Title ?? "your tour"}.",
+            ActionUrl: "/profile?tab=bookings"
+        ));
 
         return Ok(new PaymentReceiptDto
         {
             Success = true,
             BookingId = booking.Id,
             BookingReference = booking.BookingReference,
-            TransactionId = request.TransactionId,
+            TransactionId = booking.PaymentTransactionId,
             PaymentStatus = booking.PaymentStatus.ToString(),
             BookingStatus = booking.Status.ToString(),
             TotalAmount = booking.TotalAmount,
@@ -185,5 +228,23 @@ public class PaymentsController : ControllerBase
             CustomerEmail = booking.CustomerEmail,
             TourTitle = booking.TourPackage?.Title ?? "Tour Package"
         });
+    }
+
+    private bool CanCallerAccessBooking(Booking booking)
+    {
+        if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
+        {
+            return true;
+        }
+
+        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (Guid.TryParse(userIdStr, out var callerId) && callerId != Guid.Empty && booking.UserId == callerId)
+        {
+            return true;
+        }
+
+        var email = User.FindFirstValue(ClaimTypes.Email)?.Trim();
+        return !string.IsNullOrWhiteSpace(email)
+            && string.Equals(booking.CustomerEmail, email, StringComparison.OrdinalIgnoreCase);
     }
 }

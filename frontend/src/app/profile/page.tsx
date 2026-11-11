@@ -339,7 +339,11 @@ function DashboardContent() {
     setVoucherError(null);
 
     try {
-      const record = await fetchBookingByReference(voucherSearchRef.trim(), user?.email);
+      const record = await fetchBookingByReference(
+        voucherSearchRef.trim(),
+        user?.email,
+        token
+      );
       setVoucherResult(record);
       toast.success("Voucher Verified", `Found reservation for ${record.customerName}`);
     } catch (err: unknown) {

@@ -11,6 +11,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { NavItem } from "./DashboardSidebar";
+import { NotificationBell } from "@/components/realtime/NotificationBell";
 
 interface DashboardHeaderProps {
   setSidebarOpen: (open: boolean) => void;
@@ -86,6 +87,8 @@ export function DashboardHeader({
             className={`h-4 w-4 ${loading ? "animate-spin text-[#111827]" : ""}`}
           />
         </button>
+
+        <NotificationBell variant="dashboard" />
 
         <div className="relative">
           <button

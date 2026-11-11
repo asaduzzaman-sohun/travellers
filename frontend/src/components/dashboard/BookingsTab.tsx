@@ -17,6 +17,7 @@ import {
   Ticket,
 } from "lucide-react";
 import { BookingRecord, initiatePayment, verifyPayment } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
 import { useToast } from "@/lib/toast-context";
 import TravelVoucherModal from "@/components/ui/TravelVoucherModal";
 
@@ -46,6 +47,7 @@ export function BookingsTab({
   onRefresh,
 }: BookingsTabProps) {
   const { toast } = useToast();
+  const { token } = useAuth();
   const [bookingSearch, setBookingSearch] = useState("");
   const [bookingStatusFilter, setBookingStatusFilter] = useState("all");
   const [payingBookingId, setPayingBookingId] = useState<string | null>(null);
@@ -69,10 +71,10 @@ export function BookingsTab({
   const handlePayNow = async (booking: BookingRecord) => {
     try {
       setPayingBookingId(booking.id);
-      const res = await initiatePayment(booking.id, "bkash");
+      const res = await initiatePayment(booking.id, "bkash", token);
       if (res && res.transactionId) {
-        // Automatically verify for instant UX
-        await verifyPayment(booking.id, res.transactionId, "bkash");
+        // Automatically verify with gateway transaction reference
+        await verifyPayment(booking.id, res.transactionId, "bkash", token);
         toast.success(
           "Payment Successful via bKash!",
           `Transaction TrxID: ${res.transactionId}. Pass has been confirmed.`

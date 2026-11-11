@@ -2100,6 +2100,78 @@ We set off at 5:45 AM toward the Finlay Tea Estate. The morning air was delightf
             }
         }
         await context.SaveChangesAsync();
+
+        // 7. Seed Promo & Group Discount Codes idempotently
+        var seedPromos = new[]
+        {
+            new PromoCode
+            {
+                Id = Guid.NewGuid(),
+                Code = "MONSOON15",
+                Description = "15% off seasonal trips across Bangladesh (up to 4,000 BDT)",
+                DiscountType = "Percentage",
+                DiscountValue = 15,
+                MaxDiscountAmount = 4000,
+                MinimumTravelers = 1,
+                MaxUses = 1000,
+                TimesUsed = 42,
+                ExpiresAtUtc = DateTime.UtcNow.AddMonths(12),
+                IsActive = true
+            },
+            new PromoCode
+            {
+                Id = Guid.NewGuid(),
+                Code = "SUNDARBAN10",
+                Description = "10% off Wildlife & Safari expeditions (up to 3,500 BDT)",
+                DiscountType = "Percentage",
+                DiscountValue = 10,
+                MaxDiscountAmount = 3500,
+                MinimumTravelers = 1,
+                MaxUses = 500,
+                TimesUsed = 19,
+                ExpiresAtUtc = DateTime.UtcNow.AddMonths(12),
+                IsActive = true,
+                ApplicableCategory = "WildlifeAndSafari"
+            },
+            new PromoCode
+            {
+                Id = Guid.NewGuid(),
+                Code = "GROUP12",
+                Description = "12% off group bookings of 4 or more travelers (up to 6,000 BDT)",
+                DiscountType = "Percentage",
+                DiscountValue = 12,
+                MaxDiscountAmount = 6000,
+                MinimumTravelers = 4,
+                MaxUses = 500,
+                TimesUsed = 28,
+                ExpiresAtUtc = DateTime.UtcNow.AddMonths(12),
+                IsActive = true
+            },
+            new PromoCode
+            {
+                Id = Guid.NewGuid(),
+                Code = "WELCOME500",
+                Description = "Flat 500 BDT instant discount on any verified booking",
+                DiscountType = "Flat",
+                DiscountValue = 500,
+                MaxDiscountAmount = null,
+                MinimumTravelers = 1,
+                MaxUses = 2000,
+                TimesUsed = 114,
+                ExpiresAtUtc = DateTime.UtcNow.AddMonths(12),
+                IsActive = true
+            }
+        };
+
+        foreach (var promo in seedPromos)
+        {
+            var exists = await context.PromoCodes.AnyAsync(p => p.Code == promo.Code);
+            if (!exists)
+            {
+                context.PromoCodes.Add(promo);
+            }
+        }
+        await context.SaveChangesAsync();
     }
 
     private static string HashPassword(string password)

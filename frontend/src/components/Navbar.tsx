@@ -22,6 +22,7 @@ import {
   LayoutDashboard
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { NotificationBell } from "@/components/realtime/NotificationBell";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -103,7 +104,10 @@ export default function Navbar() {
     }
   };
 
+  const isDevEnvironment = process.env.NODE_ENV !== "production";
+
   const handleRoleQuickLogin = async (roleType: "superadmin" | "admin" | "user") => {
+    if (!isDevEnvironment) return;
     setAuthError(null);
     setAuthLoading(true);
 
@@ -141,6 +145,7 @@ export default function Navbar() {
     { label: "Travel Tips", href: "/tips" },
     { label: "Hotels Review", href: "/hotels" },
     { label: "Community / Forum", href: "/community" },
+    { label: "AI Concierge", href: "/concierge" },
     { label: "About Us", href: "/about" },
     { label: "Contact", href: "/contact" },
   ];
@@ -151,6 +156,7 @@ export default function Navbar() {
     if (href === "/tips") return pathname.startsWith("/tips");
     if (href === "/hotels") return pathname.startsWith("/hotels");
     if (href === "/community") return pathname.startsWith("/community") || pathname.startsWith("/write-post");
+    if (href === "/concierge") return pathname.startsWith("/concierge");
     if (href === "/about") return pathname.startsWith("/about");
     if (href === "/contact") return pathname.startsWith("/contact");
     return pathname === href;
@@ -208,8 +214,8 @@ export default function Navbar() {
                   </Link>
                 </div>
               ) : (
-                /* Logged In State: Write a Story | Clean Circular Avatar Dropdown */
-                <div className="flex items-center gap-3">
+                /* Logged In State: Write a Story | Live Notifications | Avatar Dropdown */
+                <div className="flex items-center gap-2.5">
                   <Link
                     href="/write-post"
                     className="px-3.5 xl:px-4 py-2 rounded-full bg-stone-900 hover:bg-stone-800 text-stone-50 text-xs xl:text-sm font-semibold flex items-center gap-2 transition-all shadow-xs shrink-0"
@@ -217,6 +223,8 @@ export default function Navbar() {
                     <PenSquare className="h-4 w-4" />
                     <span>Write a Story</span>
                   </Link>
+
+                  <NotificationBell />
 
                   {/* Clean Circular Avatar Trigger */}
                   <div className="relative" ref={dropdownRef}>
@@ -286,14 +294,17 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Mobile Menu Toggle Button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl text-stone-700 hover:bg-stone-100 transition-colors"
-              aria-label="Toggle Navigation Menu"
-            >
-              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
+            {/* Mobile Bell + Menu Toggle Button */}
+            <div className="flex items-center gap-2 lg:hidden">
+              <NotificationBell />
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 rounded-xl text-stone-700 hover:bg-stone-100 transition-colors"
+                aria-label="Toggle Navigation Menu"
+              >
+                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -481,10 +492,10 @@ export default function Navbar() {
                 </button>
               </div>
 
-              {authModalMode === "login" && (
+              {isDevEnvironment && authModalMode === "login" && (
                 <div className="pt-3 border-t border-[#F0EBE1] space-y-2.5">
                   <span className="block text-[11px] font-semibold text-stone-500 uppercase tracking-wider text-center">
-                    Instant Role Access
+                    Developer Quick Access
                   </span>
                   <div className="flex items-center justify-between gap-2 p-1.5 rounded-2xl bg-[#FAF8F5] border border-[#EBE6DC]">
                     <button

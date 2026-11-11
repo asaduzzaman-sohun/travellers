@@ -1,4 +1,5 @@
-export const API_BASE = "http://localhost:5000/api";
+export const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace(/\/$/, "");
+export const API_ROOT = API_BASE.replace(/\/api\/?$/, "");
 
 export interface TourSummary {
   id: string;
@@ -432,11 +433,18 @@ export async function createTourPackage(tour: any, token?: string): Promise<any>
   return res.json();
 }
 
-export async function fetchBookingByReference(refCode: string, email?: string): Promise<BookingRecord> {
+export async function fetchBookingByReference(
+  refCode: string,
+  email?: string,
+  token?: string | null
+): Promise<BookingRecord> {
   const url = `${API_BASE}/bookings/reference/${encodeURIComponent(refCode.trim())}${
     email ? `?email=${encodeURIComponent(email.trim())}` : ""
   }`;
-  const res = await fetch(url);
+  const headers: Record<string, string> = {};
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  const res = await fetch(url, { headers });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.message || "Reservation not found");
@@ -509,10 +517,17 @@ export async function fetchPaymentMethods(): Promise<any[]> {
   return res.json();
 }
 
-export async function initiatePayment(bookingId: string, paymentMethod: string): Promise<any> {
+export async function initiatePayment(
+  bookingId: string,
+  paymentMethod: string,
+  token?: string | null
+): Promise<any> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers.Authorization = `Bearer ${token}`;
+
   const res = await fetch(`${API_BASE}/payments/initiate`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify({ bookingId, paymentMethod }),
   });
   if (!res.ok) {
@@ -525,11 +540,15 @@ export async function initiatePayment(bookingId: string, paymentMethod: string):
 export async function verifyPayment(
   bookingId: string,
   transactionId: string,
-  paymentMethod: string = "bkash"
+  paymentMethod: string = "bkash",
+  token?: string | null
 ): Promise<any> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers.Authorization = `Bearer ${token}`;
+
   const res = await fetch(`${API_BASE}/payments/verify`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify({ bookingId, transactionId, paymentMethod }),
   });
   if (!res.ok) {
@@ -571,4 +590,425 @@ export async function fetchTourReviews(tourId: string): Promise<any[]> {
   if (!res.ok) throw new Error("Failed to load reviews");
   return res.json();
 }
+
+export interface PromoOffer {
+  code: string;
+  description: string;
+  discountType: string;
+  discountValue: number;
+  maxDiscountAmount?: number | null;
+  minimumTravelers: number;
+  applicableCategory?: string | null;
+}
+
+export interface PromoValidationResult {
+  isValid: boolean;
+  normalizedCode?: string | null;
+  grossTotal: number;
+  discountAmount: number;
+  finalTotal: number;
+  message: string;
+  description?: string | null;
+  discountType?: string | null;
+  discountValue?: number | null;
+}
+
+export interface RateLimitPolicyMetadata {
+  name: string;
+  algorithm: string;
+  permitLimit: number;
+  windowDescription: string;
+  partitionStrategy: string;
+}
+
+export interface RateLimitEventRecord {
+  timestampUtc: string;
+  policy: string;
+  clientKey: string;
+  path: string;
+}
+
+export interface SystemMetricsResponse {
+  instanceId: string;
+  startedAtUtc: string;
+  uptimeSeconds: number;
+  totalRequests: number;
+  totalRateLimitRejections: number;
+  averageResponseTimeMs: number;
+  requestsByMethod: Record<string, number>;
+  rejectionsByPolicy: Record<string, number>;
+  recentThrottles: RateLimitEventRecord[];
+  policies: RateLimitPolicyMetadata[];
+}
+
+export interface LoadBalancerDestination {
+  id: string;
+  address: string;
+  activeHealth: string;
+  passiveHealth: string;
+  isAvailable: boolean;
+  concurrentRequests: number;
+}
+
+export interface LoadBalancerStatusResponse {
+  gateway: string;
+  algorithm: string;
+  edgeRateLimit: string;
+  healthCheckIntervalSeconds: number;
+  uptimeSeconds: number;
+  totalProxiedRequests: number;
+  totalGatewayThrottled: number;
+  healthyNodeCount: number;
+  totalNodeCount: number;
+  destinations: LoadBalancerDestination[];
+}
+
+export async function fetchActivePromos(): Promise<PromoOffer[]> {
+  const res = await fetch(`${API_BASE}/bookings/promos`);
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function validatePromoCode(
+  tourScheduleId: string,
+  numberOfTravelers: number,
+  promoCode: string
+): Promise<PromoValidationResult> {
+  const res = await fetch(`${API_BASE}/bookings/validate-promo`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ tourScheduleId, numberOfTravelers, promoCode }),
+  });
+
+  if (res.status === 429) {
+    const retryAfter = res.headers.get("Retry-After") || "30";
+    throw new Error(`Too many promo checks. Please wait ${retryAfter}s before retrying.`);
+  }
+
+  const data = await res.json().catch(() => null);
+  if (!data) throw new Error("Unable to verify promo code right now.");
+  return data;
+}
+
+export async function fetchSystemMetrics(token: string): Promise<{
+  metrics: SystemMetricsResponse;
+  servedBy: string | null;
+  loadBalancer: string | null;
+  responseTimeMs: string | null;
+}> {
+  const res = await fetch(`${API_BASE}/system/metrics`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) {
+    throw new Error("Metrics endpoint unauthorized or unavailable");
+  }
+  const metrics: SystemMetricsResponse = await res.json();
+  return {
+    metrics,
+    servedBy: res.headers.get("X-Served-By"),
+    loadBalancer: res.headers.get("X-LoadBalancer"),
+    responseTimeMs: res.headers.get("X-Response-Time-Ms"),
+  };
+}
+
+export async function fetchLoadBalancerStatus(): Promise<LoadBalancerStatusResponse> {
+  const gatewayRoot = API_BASE.replace(/\/api\/?$/, "");
+  const res = await fetch(`${gatewayRoot}/lb-status`);
+  if (!res.ok) {
+    throw new Error("Load balancer diagnostic endpoint unavailable");
+  }
+  return res.json();
+}
+
+// ---------------- SignalR Realtime Chat & Notifications ----------------
+
+// Real-time AI Travel Concierge & Notifications API
+export interface ChatTourCardDto {
+  id: string;
+  title: string;
+  slug: string;
+  destination: string;
+  region: string;
+  durationDays: number;
+  durationNights: number;
+  effectivePrice: number;
+  currency: string;
+  coverImageUrl?: string | null;
+  nextStartDate?: string | null;
+  nextAvailableSeats?: number | null;
+}
+
+export interface ChatHotelCardDto {
+  id: string;
+  name: string;
+  slug: string;
+  location: string;
+  tier: string;
+  priceNumeric: number;
+  currency: string;
+  rating: number;
+  coverImage?: string | null;
+  relatedTourSlug?: string | null;
+}
+
+export interface ChatPromoChipDto {
+  code: string;
+  description: string;
+  discountLabel: string;
+  minimumTravelers: number;
+  applicableCategory?: string | null;
+}
+
+export interface ChatBookingCardDto {
+  id: string;
+  bookingReference: string;
+  tourTitle: string;
+  status: string;
+  paymentStatus: string;
+  totalAmount: number;
+  depositPaid: number;
+  balanceRemaining: number;
+  numberOfTravelers: number;
+  departureDate?: string | null;
+}
+
+export interface ChatRichMetadata {
+  tours?: ChatTourCardDto[] | null;
+  hotels?: ChatHotelCardDto[] | null;
+  promos?: ChatPromoChipDto[] | null;
+  bookings?: ChatBookingCardDto[] | null;
+  suggestedFollowUps?: string[] | null;
+  usedExternalLlm?: boolean | null;
+}
+
+export interface ChatMessageDto {
+  id: string;
+  sessionId?: string | null;
+  roomId: string;
+  senderUserId?: string | null;
+  senderName: string;
+  senderEmail: string;
+  senderRole: string;
+  message: string;
+  metadata?: ChatRichMetadata | null;
+  createdAtUtc: string;
+}
+
+export interface ChatSessionDto {
+  id: string;
+  roomId: string;
+  ownerUserId: string;
+  ownerName: string;
+  ownerEmail: string;
+  title: string;
+  isEscalatedToHuman: boolean;
+  lastMessageAtUtc: string;
+  createdAtUtc: string;
+  messageCount: number;
+  lastMessagePreview?: string | null;
+}
+
+export interface AskChatbotResponse {
+  session: ChatSessionDto;
+  userMessage: ChatMessageDto;
+  assistantMessage: ChatMessageDto;
+}
+
+export interface RealtimeNotificationDto {
+  id: string;
+  category: string;
+  title: string;
+  message: string;
+  actionUrl?: string | null;
+  isRead: boolean;
+  createdAtUtc: string;
+  targetRole?: string | null;
+}
+
+export interface NotificationsFeedResponse {
+  notifications: RealtimeNotificationDto[];
+  unreadCount: number;
+}
+
+export async function fetchChatSessions(token: string): Promise<ChatSessionDto[]> {
+  const res = await fetch(`${API_BASE}/chat/sessions`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Unable to load your conversation history");
+  return res.json();
+}
+
+export async function createChatSession(
+  token: string,
+  payload?: { title?: string; initialMessage?: string }
+): Promise<ChatSessionDto> {
+  const res = await fetch(`${API_BASE}/chat/sessions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload ?? {}),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.message || "Unable to start a new AI conversation");
+  }
+  return res.json();
+}
+
+export async function fetchSessionMessages(
+  sessionId: string,
+  token: string,
+  take = 80
+): Promise<ChatMessageDto[]> {
+  const res = await fetch(
+    `${API_BASE}/chat/sessions/${encodeURIComponent(sessionId)}/messages?take=${take}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  if (!res.ok) throw new Error("Unable to load messages for this session");
+  return res.json();
+}
+
+export async function askChatbot(
+  sessionId: string,
+  message: string,
+  token: string
+): Promise<AskChatbotResponse> {
+  const res = await fetch(
+    `${API_BASE}/chat/sessions/${encodeURIComponent(sessionId)}/ask`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ message }),
+    }
+  );
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.message || "Failed to send message to TourFlow AI Concierge");
+  }
+  return res.json();
+}
+
+export async function escalateChatSession(
+  sessionId: string,
+  token: string
+): Promise<ChatSessionDto> {
+  const res = await fetch(
+    `${API_BASE}/chat/sessions/${encodeURIComponent(sessionId)}/escalate`,
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.message || "Could not escalate session");
+  }
+  return res.json();
+}
+
+export async function replyAsHumanSpecialist(
+  sessionId: string,
+  message: string,
+  token: string
+): Promise<ChatSessionDto> {
+  const res = await fetch(
+    `${API_BASE}/chat/sessions/${encodeURIComponent(sessionId)}/reply`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ message }),
+    }
+  );
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.message || "Failed to send specialist reply");
+  }
+  return res.json();
+}
+
+export async function deleteChatSession(
+  sessionId: string,
+  token: string
+): Promise<void> {
+  const res = await fetch(
+    `${API_BASE}/chat/sessions/${encodeURIComponent(sessionId)}`,
+    {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  if (!res.ok) throw new Error("Failed to remove conversation");
+}
+
+export async function fetchNotifications(
+  token: string,
+  take = 30
+): Promise<NotificationsFeedResponse> {
+  const res = await fetch(`${API_BASE}/notifications?take=${take}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Unable to load notifications");
+  return res.json();
+}
+
+export async function markNotificationRead(
+  id: string,
+  token: string
+): Promise<{ id: string; isRead: boolean; unreadCount: number }> {
+  const res = await fetch(`${API_BASE}/notifications/${id}/read`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Unable to mark notification as read");
+  return res.json();
+}
+
+export async function markAllNotificationsRead(
+  token: string
+): Promise<{ unreadCount: number }> {
+  const res = await fetch(`${API_BASE}/notifications/read-all`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Unable to mark notifications as read");
+  return res.json();
+}
+
+export async function sendAdminBroadcast(
+  payload: {
+    title: string;
+    message: string;
+    category?: string;
+    actionUrl?: string;
+    targetEmail?: string;
+    targetRole?: string;
+  },
+  token: string
+): Promise<RealtimeNotificationDto> {
+  const res = await fetch(`${API_BASE}/notifications/broadcast`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.message || "Failed to send live broadcast");
+  }
+  return res.json();
+}
+
+
 

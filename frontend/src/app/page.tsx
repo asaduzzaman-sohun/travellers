@@ -19,6 +19,7 @@ import {
 import { TourSummary, API_BASE, BlogPost, getBlogPosts } from "@/lib/api";
 import ImageWithFallback from "@/components/ImageWithFallback";
 import LiveOmnibarSearch from "@/components/LiveOmnibarSearch";
+import TourQuickActions from "@/components/tours/TourQuickActions";
 import { TourCardSkeleton, StoryCardSkeleton } from "@/components/ui/Skeletons";
 
 export default function HomePage() {
@@ -215,10 +216,11 @@ export default function HomePage() {
                     </span>
                   </div>
 
-                  <div className="absolute top-4 right-4">
+                  <div className="absolute top-4 right-4 flex flex-col items-end gap-2">
                     <span className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-stone-900/80 backdrop-blur-sm text-stone-100 border border-white/20 shadow-xs">
                       {tour.difficulty}
                     </span>
+                    <TourQuickActions tour={tour} />
                   </div>
 
                   <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-xs sm:text-sm text-white font-medium">

@@ -21,6 +21,10 @@ public class TourFlowDbContext : DbContext, ITourFlowDbContext
     public DbSet<BlogComment> BlogComments => Set<BlogComment>();
     public DbSet<Hotel> Hotels => Set<Hotel>();
     public DbSet<TravelTip> TravelTips => Set<TravelTip>();
+    public DbSet<PromoCode> PromoCodes => Set<PromoCode>();
+    public DbSet<ChatSession> ChatSessions => Set<ChatSession>();
+    public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
+    public DbSet<RealtimeNotification> RealtimeNotifications => Set<RealtimeNotification>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -86,6 +90,8 @@ public class TourFlowDbContext : DbContext, ITourFlowDbContext
             entity.Property(e => e.TotalAmount).HasPrecision(18, 2);
             entity.Property(e => e.DepositPaid).HasPrecision(18, 2);
             entity.Property(e => e.BalanceRemaining).HasPrecision(18, 2);
+            entity.Property(e => e.PromoDiscountAmount).HasPrecision(18, 2);
+            entity.Property(e => e.AppliedPromoCode).HasMaxLength(50);
 
             entity.HasMany(e => e.Travelers)
                 .WithOne(e => e.Booking)
@@ -197,6 +203,68 @@ public class TourFlowDbContext : DbContext, ITourFlowDbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.AuthorName).HasMaxLength(150).IsRequired();
             entity.Property(e => e.Content).HasMaxLength(2000).IsRequired();
+        });
+
+        // PromoCode
+        modelBuilder.Entity<PromoCode>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.Code).IsUnique();
+            entity.Property(e => e.Code).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(250).IsRequired();
+            entity.Property(e => e.DiscountType).HasMaxLength(20).IsRequired();
+            entity.Property(e => e.DiscountValue).HasPrecision(18, 2);
+            entity.Property(e => e.MaxDiscountAmount).HasPrecision(18, 2);
+            entity.Property(e => e.ApplicableCategory).HasMaxLength(80);
+            entity.HasQueryFilter(e => !e.IsDeleted);
+        });
+
+        // ChatSession (Authorized AI Concierge Conversations)
+        modelBuilder.Entity<ChatSession>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.OwnerEmail).HasMaxLength(180).IsRequired();
+            entity.Property(e => e.OwnerName).HasMaxLength(120).IsRequired();
+            entity.Property(e => e.Title).HasMaxLength(140).IsRequired();
+            entity.HasIndex(e => new { e.OwnerUserId, e.LastMessageAtUtc });
+            entity.HasIndex(e => new { e.OwnerEmail, e.LastMessageAtUtc });
+            entity.HasIndex(e => new { e.IsEscalatedToHuman, e.LastMessageAtUtc });
+            entity.HasMany(e => e.Messages)
+                .WithOne(m => m.Session)
+                .HasForeignKey(m => m.SessionId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasQueryFilter(e => !e.IsDeleted);
+        });
+
+        // ChatMessage (SignalR Realtime Chat)
+        modelBuilder.Entity<ChatMessage>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.RoomId).HasMaxLength(120).IsRequired();
+            entity.Property(e => e.SenderName).HasMaxLength(120).IsRequired();
+            entity.Property(e => e.SenderEmail).HasMaxLength(180);
+            entity.Property(e => e.SenderRole).HasMaxLength(40);
+            entity.Property(e => e.Message).HasMaxLength(4000).IsRequired();
+            entity.Property(e => e.MetadataJson).HasMaxLength(12000);
+            entity.HasIndex(e => new { e.SessionId, e.CreatedAtUtc });
+            entity.HasIndex(e => new { e.RoomId, e.CreatedAtUtc });
+            entity.HasQueryFilter(e => !e.IsDeleted);
+        });
+
+        // RealtimeNotification (SignalR Persistent Inbox)
+        modelBuilder.Entity<RealtimeNotification>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.TargetEmail).HasMaxLength(180);
+            entity.Property(e => e.TargetRole).HasMaxLength(40);
+            entity.Property(e => e.Category).HasMaxLength(40).IsRequired();
+            entity.Property(e => e.Title).HasMaxLength(160).IsRequired();
+            entity.Property(e => e.Message).HasMaxLength(600).IsRequired();
+            entity.Property(e => e.ActionUrl).HasMaxLength(300);
+            entity.Property(e => e.ReadByUsers).HasMaxLength(4000);
+            entity.HasIndex(e => new { e.TargetEmail, e.IsRead, e.CreatedAtUtc });
+            entity.HasIndex(e => new { e.TargetRole, e.CreatedAtUtc });
+            entity.HasQueryFilter(e => !e.IsDeleted);
         });
     }
 }

@@ -16,6 +16,10 @@ public interface ITourFlowDbContext
     DbSet<BlogComment> BlogComments { get; }
     DbSet<Hotel> Hotels { get; }
     DbSet<TravelTip> TravelTips { get; }
+    DbSet<PromoCode> PromoCodes { get; }
+    DbSet<ChatSession> ChatSessions { get; }
+    DbSet<ChatMessage> ChatMessages { get; }
+    DbSet<RealtimeNotification> RealtimeNotifications { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using TourFlow.Domain.Entities;
 using TourFlow.Infrastructure.Data;
@@ -118,6 +119,7 @@ public class BlogPostsController : ControllerBase
 
     // POST /api/blogposts
     [Authorize]
+    [EnableRateLimiting("write")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateBlogPostRequest request)
     {
@@ -176,6 +178,7 @@ public class BlogPostsController : ControllerBase
 
     // PUT /api/blogposts/{id}
     [Authorize]
+    [EnableRateLimiting("write")]
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateBlogPostRequest request)
     {
@@ -233,6 +236,7 @@ public class BlogPostsController : ControllerBase
 
     // DELETE /api/blogposts/{id}
     [Authorize]
+    [EnableRateLimiting("write")]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
@@ -259,6 +263,7 @@ public class BlogPostsController : ControllerBase
     }
 
     // POST /api/blogposts/{id}/upvote
+    [EnableRateLimiting("write")]
     [HttpPost("{id:guid}/upvote")]
     public async Task<IActionResult> Upvote(Guid id)
     {
@@ -276,6 +281,7 @@ public class BlogPostsController : ControllerBase
 
     // POST /api/blogposts/{id}/comments
     [Authorize]
+    [EnableRateLimiting("write")]
     [HttpPost("{id:guid}/comments")]
     public async Task<IActionResult> AddComment(Guid id, [FromBody] AddCommentRequest request)
     {

@@ -1,8 +1,10 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using TourFlow.Api.DTOs;
+using TourFlow.Api.Services;
 using TourFlow.Domain.Entities;
 using TourFlow.Domain.Enums;
 using TourFlow.Infrastructure.Data;
@@ -14,10 +16,12 @@ namespace TourFlow.Api.Controllers;
 public class ReviewsController : ControllerBase
 {
     private readonly TourFlowDbContext _context;
+    private readonly IRealtimeNotifier _notifier;
 
-    public ReviewsController(TourFlowDbContext context)
+    public ReviewsController(TourFlowDbContext context, IRealtimeNotifier notifier)
     {
         _context = context;
+        _notifier = notifier;
     }
 
     [HttpGet("tour/{tourId:guid}")]
@@ -48,6 +52,7 @@ public class ReviewsController : ControllerBase
     }
 
     [Authorize]
+    [EnableRateLimiting("write")]
     [HttpPost("tour/{tourId:guid}")]
     public async Task<IActionResult> CreateReview(Guid tourId, [FromBody] CreateReviewRequestDto request)
     {
@@ -116,6 +121,16 @@ public class ReviewsController : ControllerBase
 
         _context.Reviews.Add(review);
         await _context.SaveChangesAsync();
+
+        await _notifier.PublishNotificationAsync(new RealtimeNotificationPublishRequest(
+            TargetUserId: null,
+            TargetEmail: null,
+            TargetRole: "Admin",
+            Category: "review",
+            Title: $"New {review.Rating}★ Review Submitted",
+            Message: $"{review.ReviewerName}: \"{review.Title}\"",
+            ActionUrl: "/admin"
+        ));
 
         return CreatedAtAction(nameof(GetTourReviews), new { tourId }, new ReviewResponseDto
         {

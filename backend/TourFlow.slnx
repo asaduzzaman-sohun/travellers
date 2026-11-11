@@ -3,5 +3,6 @@
   <Project Path="TourFlow.Application/TourFlow.Application.csproj" />
   <Project Path="TourFlow.Domain/TourFlow.Domain.csproj" />
   <Project Path="TourFlow.Infrastructure/TourFlow.Infrastructure.csproj" />
+  <Project Path="TourFlow.LoadBalancer/TourFlow.LoadBalancer.csproj" />
   <Project Path="TourFlow.Tests/TourFlow.Tests.csproj" />
 </Solution>

@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { TourSummary, API_BASE } from "@/lib/api";
 import ImageWithFallback from "@/components/ImageWithFallback";
+import TourQuickActions from "@/components/tours/TourQuickActions";
 import { TourCardSkeleton } from "@/components/ui/Skeletons";
 
 function DestinationsContent() {
@@ -284,16 +285,19 @@ function DestinationsContent() {
                   </span>
                 </div>
 
-                {/* Difficulty & Featured Badge */}
-                <div className="absolute top-4 right-4 flex items-center gap-1.5">
-                  {tour.isFeatured && (
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-amber-600 text-white shadow-xs">
-                      Featured
+                {/* Difficulty, Featured Badge & Quick Actions */}
+                <div className="absolute top-4 right-4 flex flex-col items-end gap-2">
+                  <div className="flex items-center gap-1.5">
+                    {tour.isFeatured && (
+                      <span className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-amber-600 text-white shadow-xs">
+                        Featured
+                      </span>
+                    )}
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-stone-900/80 backdrop-blur-sm text-stone-100 border border-white/20 shadow-xs">
+                      {tour.difficulty}
                     </span>
-                  )}
-                  <span className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-stone-900/80 backdrop-blur-sm text-stone-100 border border-white/20 shadow-xs">
-                    {tour.difficulty}
-                  </span>
+                  </div>
+                  <TourQuickActions tour={tour} />
                 </div>
 
                 {/* Duration & Group Size Overlay */}

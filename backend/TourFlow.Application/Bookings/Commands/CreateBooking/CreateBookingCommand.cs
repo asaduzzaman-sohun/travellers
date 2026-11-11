@@ -30,7 +30,9 @@ public record CreateBookingCommand(
     string PaymentMethod = "bkash",
     List<TravelerInputDto>? Travelers = null,
     Guid? CallerUserId = null,
-    string? CallerEmail = null
+    string? CallerEmail = null,
+    bool PayDepositOnly = true,
+    string? PromoCode = null
 ) : IRequest<BookingResultDto>;
 
 public record BookingResultDto(
@@ -44,7 +46,9 @@ public record BookingResultDto(
     decimal DepositPaid,
     decimal BalanceRemaining,
     string Status,
-    string PaymentStatus
+    string PaymentStatus,
+    decimal PromoDiscountAmount = 0m,
+    string? AppliedPromoCode = null
 );
 
 public class CreateBookingCommandValidator : AbstractValidator<CreateBookingCommand>
@@ -98,13 +102,42 @@ public class CreateBookingCommandHandler : IRequestHandler<CreateBookingCommand,
             throw new InvalidOperationException($"Only {availableSeats} seat(s) remaining for this departure. Requested: {request.NumberOfTravelers}.");
         }
 
-        // Determine price
-        var unitPrice = schedule.TourPackage.DiscountPrice ?? schedule.PricePerPerson;
-        if (unitPrice <= 0) unitPrice = schedule.TourPackage.BasePrice;
+        // Determine pricing & optional promo code discount
+        var unitPrice = TourFlow.Application.Bookings.Common.PromoCodeCalculator.ComputeUnitPrice(schedule);
+        var grossTotal = unitPrice * request.NumberOfTravelers;
+        decimal promoDiscountAmount = 0m;
+        string? appliedPromoCode = null;
 
-        var totalAmount = unitPrice * request.NumberOfTravelers;
-        var depositAmount = schedule.TourPackage.DepositAmount > 0
-            ? schedule.TourPackage.DepositAmount * request.NumberOfTravelers
+        if (!string.IsNullOrWhiteSpace(request.PromoCode))
+        {
+            var normalizedCode = request.PromoCode.Trim().ToUpperInvariant();
+            var promo = await _context.PromoCodes
+                .FirstOrDefaultAsync(p => p.Code.ToUpper() == normalizedCode, cancellationToken);
+
+            var promoResult = TourFlow.Application.Bookings.Common.PromoCodeCalculator.Evaluate(
+                promo,
+                grossTotal,
+                request.NumberOfTravelers,
+                schedule.TourPackage.Category.ToString());
+
+            if (!promoResult.IsValid)
+            {
+                throw new InvalidOperationException(promoResult.Message);
+            }
+
+            promoDiscountAmount = promoResult.DiscountAmount;
+            appliedPromoCode = promoResult.NormalizedCode;
+            if (promo != null)
+            {
+                promo.TimesUsed += 1;
+            }
+        }
+
+        var totalAmount = Math.Max(0m, grossTotal - promoDiscountAmount);
+        var depositAmount = request.PayDepositOnly
+            ? Math.Min(totalAmount, schedule.TourPackage.DepositAmount > 0
+                ? schedule.TourPackage.DepositAmount * request.NumberOfTravelers
+                : totalAmount)
             : totalAmount;
 
         var refCode = $"TF-{DateTime.UtcNow:yyyyMM}-{Random.Shared.Next(1000, 9999)}";
@@ -138,6 +171,9 @@ public class CreateBookingCommandHandler : IRequestHandler<CreateBookingCommand,
             SpecialRequests = request.SpecialRequests,
             EmergencyContactName = request.EmergencyContactName,
             EmergencyContactPhone = request.EmergencyContactPhone,
+            AppliedPromoCode = appliedPromoCode,
+            PromoDiscountAmount = promoDiscountAmount,
+            PayDepositOnly = request.PayDepositOnly,
             PaymentTransactionId = $"TRX-MOCK-{Guid.NewGuid().ToString("N")[..8].ToUpper()}",
             CreatedAtUtc = DateTime.UtcNow
         };
@@ -191,7 +227,9 @@ public class CreateBookingCommandHandler : IRequestHandler<CreateBookingCommand,
             booking.DepositPaid,
             booking.BalanceRemaining,
             booking.Status.ToString(),
-            booking.PaymentStatus.ToString()
+            booking.PaymentStatus.ToString(),
+            booking.PromoDiscountAmount,
+            booking.AppliedPromoCode
         );
     }
 }

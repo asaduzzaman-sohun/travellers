@@ -4,7 +4,10 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import CompareFloatingBar from "@/components/tours/CompareFloatingBar";
 import { AuthProvider } from "@/lib/auth-context";
+import { SignalRProvider } from "@/lib/signalr-context";
+import { LiveChatWidget } from "@/components/realtime/LiveChatWidget";
 import { ToastProvider } from "@/lib/toast-context";
 
 const geistSans = Geist({
@@ -67,15 +70,20 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#FAF8F5] text-stone-800 selection:bg-stone-900 selection:text-white">
         <ToastProvider>
           <AuthProvider>
-            <Navbar />
-            <main className="flex-1 flex flex-col pb-14 md:pb-0">{children}</main>
-            <Footer />
-            <MobileBottomNav />
+            <SignalRProvider>
+              <Navbar />
+              <main className="flex-1 flex flex-col pb-14 md:pb-0">{children}</main>
+              <Footer />
+              <CompareFloatingBar />
+              <MobileBottomNav />
+              <LiveChatWidget />
+            </SignalRProvider>
           </AuthProvider>
         </ToastProvider>
       </body>

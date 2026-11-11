@@ -42,6 +42,15 @@ public class AuthController : ControllerBase
         }
 
         var normalizedEmail = dto.Email.Trim().ToLowerInvariant();
+        if (!System.Net.Mail.MailAddress.TryCreate(normalizedEmail, out _))
+        {
+            return BadRequest(new { message = "Please enter a valid email address." });
+        }
+
+        if (dto.Password.Length < 8 || !dto.Password.Any(char.IsLetter) || !dto.Password.Any(char.IsDigit))
+        {
+            return BadRequest(new { message = "Password must be at least 8 characters and include both letters and numbers." });
+        }
 
         var existingUser = await _context.Users.AnyAsync(u => u.Email == normalizedEmail);
         if (existingUser)

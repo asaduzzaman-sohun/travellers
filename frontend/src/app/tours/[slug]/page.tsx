@@ -18,29 +18,44 @@ import {
   Compass,
   Calendar,
   PenSquare,
-  Ticket
+  Ticket,
+  Tag,
+  Sparkles,
+  Loader2
 } from "lucide-react";
-import { TourDetail, API_BASE } from "@/lib/api";
+import {
+  TourDetail,
+  API_BASE,
+  PromoOffer,
+  PromoValidationResult,
+  fetchActivePromos,
+  validatePromoCode,
+  fetchTourReviews
+} from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
 import ImageWithFallback from "@/components/ImageWithFallback";
 import { useToast } from "@/lib/toast-context";
 import { TourDetailSkeleton } from "@/components/ui/Skeletons";
 import TravelVoucherModal from "@/components/ui/TravelVoucherModal";
 import PackingChecklist from "@/components/tours/PackingChecklist";
+import TourQuickActions from "@/components/tours/TourQuickActions";
 import ReviewSubmissionModal, { SubmittedReview } from "@/components/tours/ReviewSubmissionModal";
 
 export default function TourDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = use(params);
   const slug = resolvedParams.slug;
   const { toast } = useToast();
+  const { token, user } = useAuth();
 
   const [tour, setTour] = useState<TourDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"itinerary" | "dates" | "inclusions" | "reviews">("itinerary");
   const [customReviews, setCustomReviews] = useState<SubmittedReview[]>([]);
+  const [dbReviews, setDbReviews] = useState<SubmittedReview[]>([]);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
   const [voucherModalOpen, setVoucherModalOpen] = useState(false);
 
-  // Booking Modal State
+  // Booking Modal & Promo State
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const [selectedScheduleId, setSelectedScheduleId] = useState<string>("");
   const [travelersCount, setTravelersCount] = useState<number>(1);
@@ -53,19 +68,42 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
   const [emergencyContactPhone, setEmergencyContactPhone] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"bkash" | "nagad" | "bank" | "card">("bkash");
   const [payDepositOnly, setPayDepositOnly] = useState(true);
+  const [promoCodeInput, setPromoCodeInput] = useState("");
+  const [appliedPromo, setAppliedPromo] = useState<PromoValidationResult | null>(null);
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [activePromos, setActivePromos] = useState<PromoOffer[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [confirmedBookingRef, setConfirmedBookingRef] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    setCustomerName((prev) => prev || user.fullName || "");
+    setCustomerEmail((prev) => prev || user.email || "");
+    setCustomerPhone((prev) => prev || user.phoneNumber || "");
+  }, [user]);
 
   useEffect(() => {
     async function fetchDetail() {
       try {
         setLoading(true);
-        const res = await fetch(`${API_BASE}/tourpackages/${slug}`);
-        if (res.ok) {
-          const data = await res.json();
+        const [tourRes, promos] = await Promise.all([
+          fetch(`${API_BASE}/tourpackages/${slug}`),
+          fetchActivePromos().catch(() => []),
+        ]);
+        setActivePromos(promos);
+
+        if (tourRes.ok) {
+          const data = await tourRes.json();
           setTour(data);
           if (data.schedules && data.schedules.length > 0) {
             setSelectedScheduleId(data.schedules[0].id);
+          }
+          if (data.id) {
+            const liveReviews = await fetchTourReviews(data.id).catch(() => []);
+            if (Array.isArray(liveReviews) && liveReviews.length > 0) {
+              setDbReviews(liveReviews);
+            }
           }
         }
       } catch (err) {
@@ -76,6 +114,41 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
     }
     fetchDetail();
   }, [slug]);
+
+  const handleApplyPromo = async (explicitCode?: string) => {
+    const code = (explicitCode ?? promoCodeInput).trim().toUpperCase();
+    if (!code || !selectedScheduleId) return;
+    if (explicitCode) setPromoCodeInput(code);
+
+    setPromoLoading(true);
+    setPromoError(null);
+    try {
+      const result = await validatePromoCode(selectedScheduleId, travelersCount, code);
+      setAppliedPromo(result);
+      toast.success("Promo Code Applied!", result.message);
+    } catch (err) {
+      setAppliedPromo(null);
+      const message = err instanceof Error ? err.message : "Invalid promo code.";
+      setPromoError(message);
+    } finally {
+      setPromoLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (appliedPromo?.normalizedCode && selectedScheduleId) {
+      validatePromoCode(selectedScheduleId, travelersCount, appliedPromo.normalizedCode)
+        .then((res) => {
+          setAppliedPromo(res);
+          setPromoError(null);
+        })
+        .catch(() => {
+          setAppliedPromo(null);
+          setPromoError("Promo conditions changed with traveler count or batch selection.");
+        });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [travelersCount, selectedScheduleId]);
 
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,12 +167,18 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
         specialRequests: `Payment Channel: ${paymentMethod.toUpperCase()}`,
         emergencyContactName,
         emergencyContactPhone,
-        payDepositOnly
+        payDepositOnly,
+        promoCode: appliedPromo?.isValid ? appliedPromo.normalizedCode : null
       };
+
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
 
       const res = await fetch(`${API_BASE}/bookings`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(payload)
       });
 
@@ -139,8 +218,26 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
   const selectedSchedule = tour.schedules?.find((s) => s.id === selectedScheduleId) || tour.schedules?.[0];
   const unitPrice = selectedSchedule?.pricePerPerson || (tour.discountPrice ?? tour.basePrice);
   const totalTripPrice = unitPrice * travelersCount;
+  const promoDiscount = appliedPromo?.isValid ? appliedPromo.discountAmount : 0;
+  const netTripPrice = Math.max(0, totalTripPrice - promoDiscount);
   const depositPerPerson = tour.depositAmount || Math.round(unitPrice * 0.25);
-  const totalDepositAmount = depositPerPerson * travelersCount;
+  const totalDepositAmount = Math.min(netTripPrice, depositPerPerson * travelersCount);
+
+  const mergedReviews = (() => {
+    const map = new Map<string, SubmittedReview & { isVerifiedBooking?: boolean }>();
+    [...customReviews, ...dbReviews, ...(tour.reviews || [])].forEach((r) => {
+      if (r && r.id && !map.has(r.id)) {
+        map.set(r.id, r);
+      }
+    });
+    return Array.from(map.values());
+  })();
+
+  const ratingHistogram = [5, 4, 3, 2, 1].map((star) => {
+    const count = mergedReviews.filter((r) => Math.round(r.rating) === star).length;
+    const pct = mergedReviews.length > 0 ? Math.round((count / mergedReviews.length) * 100) : 0;
+    return { star, count, pct };
+  });
 
   // Safe rating and reviews calculation
   const reviewsCount = tour.totalReviews ?? tour.reviews?.length ?? 16;
@@ -179,9 +276,12 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-stone-900 tracking-tight">
-            {tour.title}
-          </h1>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-stone-900 tracking-tight">
+              {tour.title}
+            </h1>
+            <TourQuickActions tour={tour} variant="header" />
+          </div>
 
           <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-stone-600">
             <span className="flex items-center gap-1.5 font-medium text-stone-800">
@@ -470,14 +570,57 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                 </button>
               </div>
 
+              {/* 5-to-1 Rating Distribution Histogram */}
+              <div className="bg-white border border-[#EBE6DC] rounded-3xl p-6 grid grid-cols-1 md:grid-cols-3 gap-6 items-center shadow-xs">
+                <div className="text-center md:text-left md:border-r md:border-[#F0EBE1] md:pr-6">
+                  <div className="text-4xl font-serif font-black text-stone-900">
+                    {avgRating.toFixed(1)}
+                    <span className="text-lg font-normal text-stone-400"> / 5.0</span>
+                  </div>
+                  <div className="flex items-center justify-center md:justify-start gap-1 text-amber-500 my-1.5">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star key={s} className="h-4 w-4 fill-amber-500" />
+                    ))}
+                  </div>
+                  <p className="text-xs text-stone-500">
+                    Based on {mergedReviews.length || reviewsCount} traveler reviews
+                  </p>
+                </div>
+
+                <div className="md:col-span-2 space-y-2">
+                  {ratingHistogram.map((row) => (
+                    <div key={row.star} className="flex items-center gap-3 text-xs">
+                      <span className="w-10 font-semibold text-stone-700 flex items-center gap-1">
+                        {row.star} <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                      </span>
+                      <div className="flex-1 h-2 bg-stone-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-amber-500 rounded-full transition-all duration-500"
+                          style={{ width: `${row.pct}%` }}
+                        />
+                      </div>
+                      <span className="w-10 text-right text-stone-500 tabular-nums">{row.pct}%</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <div className="space-y-4">
-                {[...customReviews, ...(tour.reviews || [])].map((rev) => (
+                {mergedReviews.map((rev) => (
                   <div key={rev.id} className="bg-white border border-[#EBE6DC] rounded-3xl p-6 sm:p-8 space-y-3 shadow-xs">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1 text-amber-500">
-                        {[...Array(rev.rating)].map((_, i) => (
-                          <Star key={i} className="h-4 w-4 fill-amber-500" />
-                        ))}
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex items-center gap-1 text-amber-500">
+                          {[...Array(rev.rating)].map((_, i) => (
+                            <Star key={i} className="h-4 w-4 fill-amber-500" />
+                          ))}
+                        </div>
+                        {rev.isVerifiedBooking && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-bold">
+                            <CheckCircle2 className="w-3 h-3" />
+                            Verified Booking
+                          </span>
+                        )}
                       </div>
                       <span className="text-xs text-stone-400">{rev.tripDateFormatted}</span>
                     </div>
@@ -784,6 +927,71 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                     </div>
                   </div>
 
+                  {/* Promo & Group Discount Engine */}
+                  <div className="pt-2 space-y-2">
+                    <label className="block text-stone-700 font-semibold flex items-center gap-1.5">
+                      <Tag className="w-3.5 h-3.5 text-teal-600" />
+                      Promo or Group Discount Code
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="e.g. MONSOON15 or GROUP12"
+                        value={promoCodeInput}
+                        onChange={(e) => setPromoCodeInput(e.target.value.toUpperCase())}
+                        className="flex-1 bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl px-4 py-2 text-stone-900 font-mono uppercase focus:outline-none focus:border-stone-900"
+                      />
+                      <button
+                        type="button"
+                        disabled={promoLoading || !promoCodeInput.trim()}
+                        onClick={() => handleApplyPromo()}
+                        className="px-4 py-2 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs transition disabled:opacity-50 flex items-center gap-1.5"
+                      >
+                        {promoLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Apply"}
+                      </button>
+                    </div>
+
+                    {activePromos.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 pt-0.5">
+                        {activePromos.slice(0, 4).map((p) => (
+                          <button
+                            key={p.code}
+                            type="button"
+                            onClick={() => handleApplyPromo(p.code)}
+                            title={p.description}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-800 text-[11px] font-semibold transition cursor-pointer"
+                          >
+                            <Sparkles className="w-3 h-3" />
+                            {p.code}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {appliedPromo?.isValid && (
+                      <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center justify-between">
+                        <span className="font-semibold flex items-center gap-1.5">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                          {appliedPromo.message}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAppliedPromo(null);
+                            setPromoCodeInput("");
+                          }}
+                          className="text-emerald-700 hover:underline font-bold ml-2"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+
+                    {promoError && (
+                      <p className="text-xs text-rose-600 font-medium">{promoError}</p>
+                    )}
+                  </div>
+
                   {/* Payment Amount Option */}
                   <div className="pt-2">
                     <label className="block text-stone-700 mb-2 font-semibold">Payment Option</label>
@@ -811,7 +1019,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                         }`}
                       >
                         <div className="font-bold text-sm">Pay Full Amount</div>
-                        <div className="text-xs text-stone-600 font-semibold">BDT {totalTripPrice.toLocaleString()} today</div>
+                        <div className="text-xs text-stone-600 font-semibold">BDT {netTripPrice.toLocaleString()} today</div>
                       </button>
                     </div>
                   </div>
@@ -820,9 +1028,21 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
                 <div className="pt-4 border-t border-[#F0EBE1] flex items-center justify-between">
                   <div>
                     <span className="text-[11px] text-stone-500 uppercase font-semibold">Payable Now</span>
-                    <div className="text-2xl font-serif font-bold text-stone-900">
-                      BDT {(payDepositOnly ? totalDepositAmount : totalTripPrice).toLocaleString()}
+                    <div className="flex items-baseline gap-2">
+                      <div className="text-2xl font-serif font-bold text-stone-900">
+                        BDT {(payDepositOnly ? totalDepositAmount : netTripPrice).toLocaleString()}
+                      </div>
+                      {promoDiscount > 0 && !payDepositOnly && (
+                        <span className="text-xs line-through text-stone-400">
+                          BDT {totalTripPrice.toLocaleString()}
+                        </span>
+                      )}
                     </div>
+                    {promoDiscount > 0 && (
+                      <div className="text-[11px] font-semibold text-emerald-700">
+                        Includes BDT {promoDiscount.toLocaleString()} promo savings
+                      </div>
+                    )}
                   </div>
 
                   <button
@@ -869,7 +1089,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
               : "Upcoming Departure",
             duration: `${tour.durationDays} Days / ${tour.durationNights} Nights`,
             guestsCount: travelersCount,
-            totalPrice: payDepositOnly ? totalDepositAmount : totalTripPrice,
+            totalPrice: payDepositOnly ? totalDepositAmount : netTripPrice,
             pickupPoint: "Sayedabad / Central Bus Terminal / Police Camp",
             status: "Confirmed",
           }}

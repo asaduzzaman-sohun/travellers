@@ -1,9 +1,12 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
+using TourFlow.Api.Services;
 using TourFlow.Application.Bookings.Commands.CreateBooking;
+using TourFlow.Application.Bookings.Queries.ValidatePromoCode;
 using TourFlow.Domain.Entities;
 using TourFlow.Domain.Enums;
 using TourFlow.Infrastructure.Data;
@@ -16,11 +19,13 @@ public class BookingsController : ControllerBase
 {
     private readonly TourFlowDbContext _context;
     private readonly IMediator _mediator;
+    private readonly IRealtimeNotifier _notifier;
 
-    public BookingsController(TourFlowDbContext context, IMediator mediator)
+    public BookingsController(TourFlowDbContext context, IMediator mediator, IRealtimeNotifier notifier)
     {
         _context = context;
         _mediator = mediator;
+        _notifier = notifier;
     }
 
     [Authorize]
@@ -88,7 +93,17 @@ public class BookingsController : ControllerBase
     [HttpGet("reference/{refCode}")]
     public async Task<IActionResult> GetBookingByReference(string refCode, [FromQuery] string? email)
     {
+        var isAuthenticated = User.Identity?.IsAuthenticated == true;
+        var isAdmin = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
+
+        // Prevent unauthenticated reference enumeration; anonymous voucher lookup must match both refCode and email.
+        if (!isAuthenticated && string.IsNullOrWhiteSpace(email))
+        {
+            return BadRequest(new { message = "Email address is required to verify a booking reference." });
+        }
+
         var query = _context.Bookings
+            .AsNoTracking()
             .Include(b => b.TourPackage)
             .Include(b => b.TourSchedule)
             .Include(b => b.Travelers)
@@ -106,6 +121,33 @@ public class BookingsController : ControllerBase
             return NotFound(new { message = "Reservation record not found. Please check your reference code and email." });
         }
 
+        if (isAuthenticated && !isAdmin)
+        {
+            var callerEmail = User.FindFirstValue(ClaimTypes.Email)?.Trim();
+            var callerIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid.TryParse(callerIdStr, out var callerId);
+
+            var ownsBooking = (callerId != Guid.Empty && booking.UserId == callerId)
+                || (!string.IsNullOrWhiteSpace(callerEmail) && string.Equals(booking.CustomerEmail, callerEmail, StringComparison.OrdinalIgnoreCase));
+
+            if (!ownsBooking)
+            {
+                return Forbid();
+            }
+        }
+
+        // Redact sensitive passenger documents on unauthenticated lookups while returning full voucher details to owners/admins.
+        if (!isAuthenticated)
+        {
+            foreach (var traveler in booking.Travelers)
+            {
+                traveler.PassportNumber = null;
+                traveler.DateOfBirth = null;
+                traveler.Email = null;
+                traveler.PhoneNumber = null;
+            }
+        }
+
         return Ok(booking);
     }
 
@@ -121,7 +163,8 @@ public class BookingsController : ControllerBase
         string? EmergencyContactName,
         string? EmergencyContactPhone,
         bool PayDepositOnly,
-        List<CreateTravelerRequest>? Travelers
+        List<CreateTravelerRequest>? Travelers,
+        string? PromoCode = null
     );
 
     public record CreateTravelerRequest(
@@ -132,7 +175,51 @@ public class BookingsController : ControllerBase
         string? Nationality
     );
 
+    public record ValidatePromoRequest(
+        Guid TourScheduleId,
+        int NumberOfTravelers,
+        string PromoCode
+    );
+
+    [AllowAnonymous]
+    [HttpGet("promos")]
+    public async Task<IActionResult> GetActivePromos()
+    {
+        var now = DateTime.UtcNow;
+        var promos = await _context.PromoCodes
+            .Where(p => p.IsActive && (!p.ExpiresAtUtc.HasValue || p.ExpiresAtUtc > now) && p.TimesUsed < p.MaxUses)
+            .OrderByDescending(p => p.DiscountValue)
+            .Select(p => new
+            {
+                p.Code,
+                p.Description,
+                p.DiscountType,
+                p.DiscountValue,
+                p.MaxDiscountAmount,
+                p.MinimumTravelers,
+                p.ApplicableCategory
+            })
+            .ToListAsync();
+
+        return Ok(promos);
+    }
+
+    [AllowAnonymous]
+    [EnableRateLimiting("booking")]
+    [HttpPost("validate-promo")]
+    public async Task<IActionResult> ValidatePromo([FromBody] ValidatePromoRequest request)
+    {
+        var result = await _mediator.Send(new ValidatePromoCodeQuery(
+            request.TourScheduleId,
+            request.NumberOfTravelers,
+            request.PromoCode ?? string.Empty
+        ));
+
+        return result.IsValid ? Ok(result) : BadRequest(result);
+    }
+
     [HttpPost]
+    [EnableRateLimiting("booking")]
     public async Task<IActionResult> CreateBooking([FromBody] CreateBookingRequest request)
     {
         var callerIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -152,10 +239,35 @@ public class BookingsController : ControllerBase
             "bkash",
             request.Travelers?.Select(t => new TravelerInputDto(t.FullName, 30, "Other", t.Email, t.PhoneNumber, t.PassportNumber, t.Nationality)).ToList(),
             callerId,
-            callerEmail
+            callerEmail,
+            request.PayDepositOnly,
+            request.PromoCode
         );
 
         var result = await _mediator.Send(command);
+
+        if (!string.IsNullOrWhiteSpace(command.CustomerEmail))
+        {
+            await _notifier.PublishNotificationAsync(new RealtimeNotificationPublishRequest(
+                TargetUserId: command.CallerUserId,
+                TargetEmail: command.CustomerEmail,
+                TargetRole: null,
+                Category: "booking",
+                Title: $"Booking Confirmed · {result.BookingReference}",
+                Message: $"Your reservation for {result.TourTitle} ({result.NumberOfTravelers} guest{(result.NumberOfTravelers == 1 ? "" : "s")}) is {result.Status}.",
+                ActionUrl: "/profile"
+            ));
+        }
+
+        await _notifier.PublishNotificationAsync(new RealtimeNotificationPublishRequest(
+            TargetUserId: null,
+            TargetEmail: null,
+            TargetRole: "Admin",
+            Category: "booking",
+            Title: $"New Booking · {result.BookingReference}",
+            Message: $"{command.CustomerName} booked {result.TourTitle} ({result.NumberOfTravelers} guest{(result.NumberOfTravelers == 1 ? "" : "s")}, BDT {result.DepositPaid:N0} paid).",
+            ActionUrl: "/admin"
+        ));
 
         return CreatedAtAction(nameof(GetBookingByReference), new { refCode = result.BookingReference }, result);
     }
@@ -175,6 +287,19 @@ public class BookingsController : ControllerBase
 
         booking.UpdatedAtUtc = DateTime.UtcNow;
         await _context.SaveChangesAsync();
+
+        if (!string.IsNullOrWhiteSpace(booking.CustomerEmail))
+        {
+            await _notifier.PublishNotificationAsync(new RealtimeNotificationPublishRequest(
+                TargetUserId: booking.UserId,
+                TargetEmail: booking.CustomerEmail,
+                TargetRole: null,
+                Category: "booking",
+                Title: $"Booking Update · {booking.BookingReference}",
+                Message: $"Your booking status is now {booking.Status} (Payment: {booking.PaymentStatus}).",
+                ActionUrl: "/profile"
+            ));
+        }
 
         return Ok(new { message = "Booking status updated.", booking.Id, booking.Status, booking.PaymentStatus });
     }

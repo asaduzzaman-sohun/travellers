@@ -1,5 +1,17 @@
 version: '3.8'
 
+x-backend-env: &backend_env
+  ASPNETCORE_ENVIRONMENT: Production
+  ASPNETCORE_URLS: "http://+:5000"
+  ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=tourflow_db;Username=postgres;Password=postgres"
+  Jwt__Secret: "TourFlow_Super_Secret_Jwt_Security_Key_2026_Bangladesh_Tourism_Special_Key_12345!"
+  Jwt__Issuer: "TourFlowApi"
+  Jwt__Audience: "TourFlowApp"
+  FrontendUrl: "http://localhost:3000"
+  Cloudinary__CloudName: ${CLOUDINARY_CLOUD_NAME:-YOUR_CLOUDINARY_CLOUD_NAME}
+  Cloudinary__ApiKey: ${CLOUDINARY_API_KEY:-YOUR_CLOUDINARY_API_KEY}
+  Cloudinary__ApiSecret: ${CLOUDINARY_API_SECRET:-YOUR_CLOUDINARY_API_SECRET}
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -21,27 +33,61 @@ services:
     networks:
       - tourflow-network
 
-  backend:
+  backend-1:
     build:
       context: ./backend
       dockerfile: TourFlow.Api/Dockerfile
-    container_name: tourflow-backend
+    container_name: tourflow-backend-1
     restart: unless-stopped
     environment:
-      ASPNETCORE_ENVIRONMENT: Production
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=tourflow_db;Username=postgres;Password=postgres"
-      Jwt__Secret: "TourFlow_Super_Secret_Jwt_Security_Key_2026_Bangladesh_Tourism_Special_Key_12345!"
-      Jwt__Issuer: "TourFlowApi"
-      Jwt__Audience: "TourFlowApp"
-      FrontendUrl: "http://localhost:3000"
-      Cloudinary__CloudName: ${CLOUDINARY_CLOUD_NAME:-YOUR_CLOUDINARY_CLOUD_NAME}
-      Cloudinary__ApiKey: ${CLOUDINARY_API_KEY:-YOUR_CLOUDINARY_API_KEY}
-      Cloudinary__ApiSecret: ${CLOUDINARY_API_SECRET:-YOUR_CLOUDINARY_API_SECRET}
-    ports:
-      - "5000:5000"
+      <<: *backend_env
+      INSTANCE_ID: "api-node-1"
+    volumes:
+      - uploads_data:/app/wwwroot/uploads
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:5000/api/health/ready || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - tourflow-network
+
+  backend-2:
+    build:
+      context: ./backend
+      dockerfile: TourFlow.Api/Dockerfile
+    container_name: tourflow-backend-2
+    restart: unless-stopped
+    environment:
+      <<: *backend_env
+      INSTANCE_ID: "api-node-2"
+    volumes:
+      - uploads_data:/app/wwwroot/uploads
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:5000/api/health/ready || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - tourflow-network
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: tourflow-nginx-lb
+    restart: unless-stopped
+    ports:
+      - "5000:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend-1
+      - backend-2
     networks:
       - tourflow-network
 
@@ -58,12 +104,14 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - backend
+      - nginx
     networks:
       - tourflow-network
 
 volumes:
   postgres_data:
+    driver: local
+  uploads_data:
     driver: local
 
 networks:

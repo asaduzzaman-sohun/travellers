@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Compass, Hotel, MessageSquare, User } from "lucide-react";
+import { Home, Compass, Hotel, Bot, User } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
 export default function MobileBottomNav() {
@@ -41,10 +41,10 @@ export default function MobileBottomNav() {
       isActive: pathname.startsWith("/hotels"),
     },
     {
-      label: "Community",
-      href: "/community",
-      icon: MessageSquare,
-      isActive: pathname.startsWith("/community"),
+      label: "Concierge",
+      href: "/concierge",
+      icon: Bot,
+      isActive: pathname.startsWith("/concierge"),
     },
     {
       label: isLoggedIn ? "Profile" : "Sign In",

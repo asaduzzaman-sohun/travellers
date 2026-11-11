@@ -42,6 +42,21 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
     };
+
+    // SignalR sends JWTs over WebSocket/SSE via ?access_token=... because browsers cannot set Authorization headers on WebSockets.
+    options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
 
 builder.Services.AddAuthorization(options =>
@@ -58,6 +73,16 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 
+// Real-Time SignalR Hub & PostgreSQL Cross-Node Backplane
+builder.Services.AddHttpClient("GeminiConcierge", client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(10);
+});
+builder.Services.AddSignalR();
+builder.Services.AddScoped<TourFlow.Api.Services.IRealtimeNotifier, TourFlow.Api.Services.RealtimeNotificationService>();
+builder.Services.AddScoped<TourFlow.Api.Services.ITourFlowChatbotService, TourFlow.Api.Services.TourFlowChatbotService>();
+builder.Services.AddHostedService<TourFlow.Api.Services.PostgresSignalRBackplaneService>();
+
 // Configure CORS for Next.js Frontend
 var frontendUrl = builder.Configuration["FrontendUrl"] ?? "http://localhost:3000";
 builder.Services.AddCors(options =>
@@ -67,32 +92,16 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(frontendUrl, "http://localhost:3001")
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials();
+              .AllowCredentials()
+              .WithExposedHeaders("X-Served-By", "X-Response-Time-Ms", "X-LoadBalancer", "X-RateLimit-Policy", "Retry-After");
     });
 });
 
 // OpenAPI configuration
 builder.Services.AddOpenApi();
 
-// Configure Rate Limiting to protect against DoS and credential brute-force attacks
-builder.Services.AddRateLimiter(options =>
-{
-    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-
-    options.AddFixedWindowLimiter("auth", opt =>
-    {
-        opt.PermitLimit = 20;
-        opt.Window = TimeSpan.FromMinutes(1);
-        opt.QueueLimit = 0;
-    });
-
-    options.AddFixedWindowLimiter("general", opt =>
-    {
-        opt.PermitLimit = 150;
-        opt.Window = TimeSpan.FromMinutes(1);
-        opt.QueueLimit = 5;
-    });
-});
+// Configure Partitioned Rate Limiting, Proxy Forwarded Headers & Node Observability
+TourFlow.Api.Extensions.ResilienceExtensions.AddTourFlowResilience(builder.Services);
 
 // Configure Response Compression for high throughput
 builder.Services.AddResponseCompression(options =>
@@ -102,8 +111,9 @@ builder.Services.AddResponseCompression(options =>
 
 var app = builder.Build();
 
-// Enable Response Compression early in pipeline
+// Enable Response Compression & Security Headers early in pipeline
 app.UseResponseCompression();
+app.UseMiddleware<TourFlow.Api.Middleware.SecurityHeadersMiddleware>();
 
 // Global validation & exception handling middleware
 app.UseMiddleware<TourFlow.Api.Middleware.ValidationExceptionMiddleware>();
@@ -135,7 +145,10 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+if (app.Configuration.GetValue<bool>("EnableHttpsRedirection"))
+{
+    app.UseHttpsRedirection();
+}
 
 var wwwrootPath = Path.Combine(app.Environment.ContentRootPath, "wwwroot");
 if (!Directory.Exists(wwwrootPath))
@@ -154,23 +167,17 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = ""
 });
 
+app.UseForwardedHeaders();
 app.UseCors("AllowFrontend");
-
-app.UseRateLimiter();
+app.UseMiddleware<TourFlow.Api.Middleware.RequestObservabilityMiddleware>();
 
 app.UseAuthentication();
+app.UseRateLimiter();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<TourFlow.Api.Hubs.TourFlowHub>("/hubs/tourflow");
 
-// Production API Health Check Endpoint
-app.MapGet("/api/health", () => Results.Ok(new
-{
-    status = "Healthy",
-    service = "TourFlow Backend API",
-    platform = "Traveller's Bangladesh",
-    timestampUtc = DateTime.UtcNow,
-    database = "PostgreSQL 16 Connected"
-}));
+TourFlow.Api.Extensions.ResilienceExtensions.MapTourFlowObservability(app);
 
 app.Run();
