@@ -72,6 +72,16 @@ export default function ConciergePage() {
     );
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    const qParam = new URLSearchParams(window.location.search).get("q");
+    if (!qParam || !qParam.trim()) return;
+    const rafId = window.requestAnimationFrame(() => {
+      setPrompt((prev) => prev || `Tell me about ${qParam.trim()} tours, pricing, and itineraries`);
+    });
+    return () => window.cancelAnimationFrame(rafId);
+  }, []);
+
+  useEffect(() => {
     listEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length, botTyping, typingUser]);
 

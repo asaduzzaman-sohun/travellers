@@ -31,6 +31,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const TOKEN_KEY = "tourflow_jwt_token";
 const REFRESH_TOKEN_KEY = "tourflow_refresh_token";
+const SESSION_FLAG_KEY = "tourflow_has_session";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -56,29 +57,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const savedToken = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null;
         const savedRefreshToken = typeof window !== "undefined" ? localStorage.getItem(REFRESH_TOKEN_KEY) : null;
+        const hasSession = typeof window !== "undefined" ? localStorage.getItem(SESSION_FLAG_KEY) : null;
 
-        if (!savedToken) {
+        if (!savedToken && !savedRefreshToken && !hasSession) {
           setIsLoading(false);
           return;
         }
 
-        setToken(savedToken);
-        const res = await fetch(`${API_BASE}/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${savedToken}`,
-          },
-        });
+        if (savedToken) {
+          setToken(savedToken);
+        }
+
+        const res = savedToken
+          ? await fetch(`${API_BASE}/auth/me`, {
+              headers: {
+                Authorization: `Bearer ${savedToken}`,
+              },
+              credentials: "include",
+            })
+          : ({ ok: false } as Response);
 
         if (res.ok) {
           const userData: UserProfile = await res.json();
           setUser(userData);
-        } else if (savedRefreshToken) {
-          // Token expired - attempt seamless refresh
+          localStorage.setItem(SESSION_FLAG_KEY, "1");
+        } else if (savedRefreshToken || hasSession) {
+          // Token expired or memory cleared - attempt seamless HttpOnly cookie or token refresh
           try {
             const refreshRes = await fetch(`${API_BASE}/auth/refresh-token`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ token: savedToken, refreshToken: savedRefreshToken }),
+              credentials: "include",
+              body: JSON.stringify({
+                token: savedToken || "",
+                refreshToken: savedRefreshToken || "",
+              }),
             });
 
             if (refreshRes.ok) {
@@ -86,6 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               setToken(refreshData.token);
               setUser(refreshData.user);
               localStorage.setItem(TOKEN_KEY, refreshData.token);
+              localStorage.setItem(SESSION_FLAG_KEY, "1");
               if (refreshData.refreshToken) {
                 localStorage.setItem(REFRESH_TOKEN_KEY, refreshData.refreshToken);
               }
@@ -93,18 +107,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               // Refresh token invalid or expired
               localStorage.removeItem(TOKEN_KEY);
               localStorage.removeItem(REFRESH_TOKEN_KEY);
+              localStorage.removeItem(SESSION_FLAG_KEY);
               setToken(null);
               setUser(null);
             }
           } catch {
             localStorage.removeItem(TOKEN_KEY);
             localStorage.removeItem(REFRESH_TOKEN_KEY);
+            localStorage.removeItem(SESSION_FLAG_KEY);
             setToken(null);
             setUser(null);
           }
         } else {
           localStorage.removeItem(TOKEN_KEY);
           localStorage.removeItem(REFRESH_TOKEN_KEY);
+          localStorage.removeItem(SESSION_FLAG_KEY);
           setToken(null);
           setUser(null);
         }
@@ -123,6 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
@@ -136,6 +154,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(authData.token);
       setUser(authData.user);
       localStorage.setItem(TOKEN_KEY, authData.token);
+      localStorage.setItem(SESSION_FLAG_KEY, "1");
       if (authData.refreshToken) {
         localStorage.setItem(REFRESH_TOKEN_KEY, authData.refreshToken);
       }
@@ -158,6 +177,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await fetch(`${API_BASE}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ fullName, email, password, phoneNumber, homeCity }),
       });
 
@@ -171,6 +191,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(authData.token);
       setUser(authData.user);
       localStorage.setItem(TOKEN_KEY, authData.token);
+      localStorage.setItem(SESSION_FLAG_KEY, "1");
       if (authData.refreshToken) {
         localStorage.setItem(REFRESH_TOKEN_KEY, authData.refreshToken);
       }
@@ -184,18 +205,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     const savedToken = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null;
-    if (savedToken) {
-      fetch(`${API_BASE}/auth/revoke-token`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${savedToken}` },
-      }).catch(() => {});
-    }
+    fetch(`${API_BASE}/auth/revoke-token`, {
+      method: "POST",
+      credentials: "include",
+      headers: savedToken ? { Authorization: `Bearer ${savedToken}` } : undefined,
+    }).catch(() => {});
 
     setUser(null);
     setToken(null);
     if (typeof window !== "undefined") {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(REFRESH_TOKEN_KEY);
+      localStorage.removeItem(SESSION_FLAG_KEY);
     }
   };
 

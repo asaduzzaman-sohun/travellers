@@ -34,8 +34,8 @@ public record AuthResponseDto(
 );
 
 public record RefreshTokenRequestDto(
-    string Token,
-    string RefreshToken
+    string? Token = null,
+    string? RefreshToken = null
 );
 
 public record UpdateProfileDto(

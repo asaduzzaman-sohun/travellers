@@ -19,10 +19,13 @@ import {
   Crown,
   Compass,
   BookOpen,
-  LayoutDashboard
+  LayoutDashboard,
+  Search
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { forgotPasswordRequest, resetPasswordRequest } from "@/lib/api";
 import { NotificationBell } from "@/components/realtime/NotificationBell";
+import GlobalSearchModal from "@/components/GlobalSearchModal";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -46,13 +49,17 @@ export default function Navbar() {
   const [avatarError, setAvatarError] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Form states for login/register inside modal
+  // Form states for login/register/recovery inside modal
   const [authEmail, setAuthEmail] = useState("");
   const [authPassword, setAuthPassword] = useState("");
   const [authFullName, setAuthFullName] = useState("");
   const [authPhone, setAuthPhone] = useState("");
   const [authError, setAuthError] = useState<string | null>(null);
+  const [authInfo, setAuthInfo] = useState<string | null>(null);
+  const [recoveryStep, setRecoveryStep] = useState<"none" | "forgot" | "reset">("none");
+  const [resetToken, setResetToken] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -65,23 +72,66 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // If on dashboard, do not render public marketing navbar
+  // Global Cmd+K / Ctrl+K shortcut for instant cross-catalog search
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen((prev) => !prev);
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const handleCloseModal = () => {
+    setRecoveryStep("none");
+    setAuthError(null);
+    setAuthInfo(null);
+    setResetToken("");
+    closeAuthModal();
+  };
+
+  // If on dashboard, do not render public marketing navbar (keep Cmd+K modal active)
   if (isDashboardRoute) {
-    return null;
+    return <GlobalSearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />;
   }
 
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError(null);
+    setAuthInfo(null);
     setAuthLoading(true);
 
     try {
-      if (authModalMode === "login") {
+      if (recoveryStep === "forgot") {
+        const res = await forgotPasswordRequest(authEmail);
+        setAuthInfo(
+          res.resetTokenPreview
+            ? `${res.message} Sandbox Reset Code: ${res.resetTokenPreview}`
+            : res.message
+        );
+        if (res.resetTokenPreview) {
+          setResetToken(res.resetTokenPreview);
+        }
+        setRecoveryStep("reset");
+      } else if (recoveryStep === "reset") {
+        const res = await resetPasswordRequest({
+          email: authEmail,
+          token: resetToken,
+          newPassword: authPassword,
+        });
+        setAuthInfo(res.message);
+        setAuthPassword("");
+        setResetToken("");
+        setRecoveryStep("none");
+        openAuthModal("login");
+      } else if (authModalMode === "login") {
         const result = await login(authEmail, authPassword);
         if (!result.success) {
           setAuthError(result.error || "Invalid email or password.");
         } else {
-          closeAuthModal();
+          handleCloseModal();
           setAuthEmail("");
           setAuthPassword("");
         }
@@ -90,15 +140,17 @@ export default function Navbar() {
         if (!result.success) {
           setAuthError(result.error || "Registration failed.");
         } else {
-          closeAuthModal();
+          handleCloseModal();
           setAuthEmail("");
           setAuthPassword("");
           setAuthFullName("");
           setAuthPhone("");
         }
       }
-    } catch {
-      setAuthError("An unexpected error occurred. Please try again.");
+    } catch (err: unknown) {
+      setAuthError(
+        err instanceof Error ? err.message : "An unexpected error occurred. Please try again."
+      );
     } finally {
       setAuthLoading(false);
     }
@@ -130,7 +182,7 @@ export default function Navbar() {
       if (!result.success) {
         setAuthError(result.error || "Authentication failed.");
       } else {
-        closeAuthModal();
+        handleCloseModal();
       }
     } catch {
       setAuthError("An unexpected error occurred.");
@@ -197,6 +249,18 @@ export default function Navbar() {
 
             {/* Desktop Action Area */}
             <div className="hidden lg:flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setSearchOpen(true)}
+                className="inline-flex items-center gap-2 rounded-full border border-[#E5DFD3] bg-[#FAF8F5] hover:border-stone-400 px-3 py-1.5 text-xs font-medium text-stone-600 hover:text-stone-950 transition-colors cursor-pointer"
+                aria-label="Open global search"
+              >
+                <Search className="h-3.5 w-3.5 text-stone-500" />
+                <span className="inline-block">Search</span>
+                <kbd className="rounded border border-stone-200 bg-white px-1.5 py-0.5 text-[10px] font-mono text-stone-500">
+                  Ctrl+K
+                </kbd>
+              </button>
               {!isLoggedIn ? (
                 /* Logged Out State: Login | Register */
                 <div className="flex items-center gap-2 text-xs xl:text-sm font-semibold">
@@ -387,7 +451,7 @@ export default function Navbar() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs">
           <div className="bg-white border border-[#EBE6DC] rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
             <button
-              onClick={closeAuthModal}
+              onClick={handleCloseModal}
               className="absolute top-5 right-5 h-8 w-8 rounded-full bg-stone-100 text-stone-400 hover:text-stone-800 flex items-center justify-center transition-colors"
             >
               <X className="h-4 w-4" />
@@ -398,14 +462,30 @@ export default function Navbar() {
                 Traveller&apos;s
               </span>
               <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
-                {authModalMode === "login" ? "Traveler Sign In" : "Join Bangladeshi Explorers"}
+                {recoveryStep === "forgot"
+                  ? "Recover Account Access"
+                  : recoveryStep === "reset"
+                  ? "Set a New Password"
+                  : authModalMode === "login"
+                  ? "Traveler Sign In"
+                  : "Join Bangladeshi Explorers"}
               </h3>
               <p className="text-xs sm:text-sm text-stone-500">
-                {authModalMode === "login"
+                {recoveryStep === "forgot"
+                  ? "Enter your account email to generate a 15-minute cryptographic reset token."
+                  : recoveryStep === "reset"
+                  ? "Enter your reset token and choose a strong password (min 8 chars + number)."
+                  : authModalMode === "login"
                   ? "Sign in to access your saved itineraries, vouchers, and stories."
                   : "Create your free traveler account to share field stories and reviews."}
               </p>
             </div>
+
+            {authInfo && (
+              <div className="mb-4 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm break-all">
+                {authInfo}
+              </div>
+            )}
 
             {authError && (
               <div className="mb-4 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs sm:text-sm flex items-center gap-2.5">
@@ -415,7 +495,7 @@ export default function Navbar() {
             )}
 
             <form onSubmit={handleAuthSubmit} className="space-y-4 text-xs sm:text-sm">
-              {authModalMode === "register" && (
+              {recoveryStep === "none" && authModalMode === "register" && (
                 <>
                   <div className="space-y-1">
                     <label className="block text-stone-700 font-semibold">Full Name</label>
@@ -453,17 +533,50 @@ export default function Navbar() {
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="block text-stone-700 font-semibold">Password</label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  value={authPassword}
-                  onChange={(e) => setAuthPassword(e.target.value)}
-                  className="w-full bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 transition-colors"
-                  required
-                />
-              </div>
+              {recoveryStep === "reset" && (
+                <div className="space-y-1">
+                  <label className="block text-stone-700 font-semibold">Reset Token</label>
+                  <input
+                    type="text"
+                    placeholder="Paste your hex reset token"
+                    value={resetToken}
+                    onChange={(e) => setResetToken(e.target.value)}
+                    className="w-full font-mono bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 transition-colors"
+                    required
+                  />
+                </div>
+              )}
+
+              {recoveryStep !== "forgot" && (
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-stone-700 font-semibold">
+                      {recoveryStep === "reset" ? "New Password" : "Password"}
+                    </label>
+                    {recoveryStep === "none" && authModalMode === "login" && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAuthError(null);
+                          setAuthInfo(null);
+                          setRecoveryStep("forgot");
+                        }}
+                        className="text-xs font-semibold text-stone-600 hover:text-stone-950 underline cursor-pointer"
+                      >
+                        Forgot password?
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    type="password"
+                    placeholder="••••••••"
+                    value={authPassword}
+                    onChange={(e) => setAuthPassword(e.target.value)}
+                    className="w-full bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 transition-colors"
+                    required
+                  />
+                </div>
+              )}
 
               <button
                 type="submit"
@@ -472,27 +585,46 @@ export default function Navbar() {
               >
                 {authLoading
                   ? "Processing..."
+                  : recoveryStep === "forgot"
+                  ? "Send Reset Token"
+                  : recoveryStep === "reset"
+                  ? "Reset Password"
                   : authModalMode === "login"
                   ? "Sign In"
                   : "Create Traveler Account"}
               </button>
 
-              <div className="text-center pt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAuthError(null);
-                    openAuthModal(authModalMode === "login" ? "register" : "login");
-                  }}
-                  className="text-xs sm:text-sm text-stone-600 hover:text-stone-950 font-medium"
-                >
-                  {authModalMode === "login"
-                    ? "New traveler? Create an account here"
-                    : "Already registered? Sign in here"}
-                </button>
+              <div className="text-center pt-2 space-x-3">
+                {recoveryStep !== "none" ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthError(null);
+                      setAuthInfo(null);
+                      setRecoveryStep("none");
+                    }}
+                    className="text-xs sm:text-sm text-stone-600 hover:text-stone-950 font-medium cursor-pointer"
+                  >
+                    Back to Sign In
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthError(null);
+                      setAuthInfo(null);
+                      openAuthModal(authModalMode === "login" ? "register" : "login");
+                    }}
+                    className="text-xs sm:text-sm text-stone-600 hover:text-stone-950 font-medium cursor-pointer"
+                  >
+                    {authModalMode === "login"
+                      ? "New traveler? Create an account here"
+                      : "Already registered? Sign in here"}
+                  </button>
+                )}
               </div>
 
-              {isDevEnvironment && authModalMode === "login" && (
+              {isDevEnvironment && recoveryStep === "none" && authModalMode === "login" && (
                 <div className="pt-3 border-t border-[#F0EBE1] space-y-2.5">
                   <span className="block text-[11px] font-semibold text-stone-500 uppercase tracking-wider text-center">
                     Developer Quick Access
@@ -529,6 +661,8 @@ export default function Navbar() {
           </div>
         </div>
       )}
+
+      <GlobalSearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 }

@@ -20,6 +20,7 @@ public class InitiatePaymentResponseDto
     public decimal Amount { get; set; }
     public string PaymentMethod { get; set; } = string.Empty;
     public string GatewayUrl { get; set; } = string.Empty;
+    public string GatewaySignature { get; set; } = string.Empty;
     public DateTime ExpiresAtUtc { get; set; }
     public string Message { get; set; } = string.Empty;
 }
@@ -33,6 +34,8 @@ public class VerifyPaymentRequestDto
     public string TransactionId { get; set; } = string.Empty;
 
     public string PaymentMethod { get; set; } = "bkash";
+
+    public string? GatewaySignature { get; set; }
 }
 
 public class PaymentReceiptDto

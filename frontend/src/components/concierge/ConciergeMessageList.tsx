@@ -7,8 +7,10 @@ import {
   Calendar,
   Check,
   Copy,
+  Heart,
   Hotel,
   MapPin,
+  Scale,
   ShieldCheck,
   Sparkles,
   Tag,
@@ -17,6 +19,8 @@ import {
 } from "lucide-react";
 import { ChatMessageDto } from "@/lib/api";
 import { useToast } from "@/lib/toast-context";
+import { useWishlist } from "@/lib/wishlist";
+import { useTourCompare } from "@/lib/compare";
 
 interface ConciergeMessageListProps {
   messages: ChatMessageDto[];
@@ -103,6 +107,8 @@ export function ConciergeMessageList({
   onSelectFollowUp,
 }: ConciergeMessageListProps) {
   const { toast } = useToast();
+  const { isSaved, toggleWishlist } = useWishlist();
+  const { isInCompare, toggleCompare, maxItems } = useTourCompare();
   const [copiedCode, setCopiedCode] = React.useState<string | null>(null);
 
   const handleCopyPromo = (code: string) => {
@@ -233,13 +239,14 @@ export function ConciergeMessageList({
                   >
                     {meta.tours.map((t) => {
                       const nextDate = formatShortDate(t.nextStartDate);
+                      const saved = isSaved(t.id);
+                      const compared = isInCompare(t.id);
                       return (
-                        <Link
+                        <div
                           key={t.id}
-                          href={`/tours/${t.slug}`}
                           className="group min-w-0 flex flex-col justify-between rounded-xl border border-[#EBE6DC] bg-white p-3 hover:border-stone-400 hover:shadow-sm transition-all"
                         >
-                          <div className="min-w-0">
+                          <Link href={`/tours/${t.slug}`} className="min-w-0 block">
                             <div className="flex items-center justify-between gap-2 text-[10px] font-semibold uppercase tracking-wider text-emerald-800">
                               <span className="inline-flex items-center gap-1 truncate">
                                 <MapPin className="h-3 w-3 shrink-0" />
@@ -252,23 +259,101 @@ export function ConciergeMessageList({
                             <h4 className="mt-1 text-xs font-semibold text-stone-950 group-hover:text-emerald-900 truncate">
                               {t.title}
                             </h4>
-                          </div>
-                          <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-stone-100 pt-2">
-                            <span className="text-xs font-bold text-stone-950">
-                              BDT {t.effectivePrice.toLocaleString()}
-                            </span>
-                            {nextDate ? (
-                              <span className="inline-flex items-center gap-1 text-[10px] text-stone-500">
-                                <Calendar className="h-3 w-3" />
-                                {nextDate} ({t.nextAvailableSeats ?? 0} left)
+                            <div className="mt-2 flex items-center justify-between gap-2 text-[10px] text-stone-500">
+                              <span className="text-xs font-bold text-stone-950">
+                                BDT {t.effectivePrice.toLocaleString()}
                               </span>
-                            ) : (
-                              <span className="text-[10px] text-stone-500">
-                                View Itinerary &rarr;
-                              </span>
-                            )}
+                              {nextDate ? (
+                                <span className="inline-flex items-center gap-1">
+                                  <Calendar className="h-3 w-3" />
+                                  {nextDate} ({t.nextAvailableSeats ?? 0} left)
+                                </span>
+                              ) : (
+                                <span>View Itinerary &rarr;</span>
+                              )}
+                            </div>
+                          </Link>
+
+                          <div className="mt-2 flex items-center justify-end gap-1.5 border-t border-stone-100 pt-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const nowSaved = toggleWishlist({
+                                  id: t.id,
+                                  slug: t.slug,
+                                  title: t.title,
+                                  destination: t.destination,
+                                  country: "Bangladesh",
+                                  coverImageUrl: t.coverImageUrl || "",
+                                  basePrice: t.effectivePrice,
+                                  discountPrice: null,
+                                  durationDays: t.durationDays,
+                                  durationNights: t.durationNights,
+                                  averageRating: 4.9,
+                                  reviewCount: 0,
+                                  category: t.region || "Curated Tour",
+                                  difficulty: "Easy",
+                                });
+                                toast.success(
+                                  nowSaved ? "Saved to Wishlist" : "Removed from Wishlist",
+                                  t.title
+                                );
+                              }}
+                              aria-label={saved ? "Remove from wishlist" : "Save to wishlist"}
+                              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold border transition-colors cursor-pointer ${
+                                saved
+                                  ? "bg-rose-50 text-rose-700 border-rose-200"
+                                  : "bg-stone-50 text-stone-600 border-stone-200 hover:text-stone-950"
+                              }`}
+                            >
+                              <Heart className={`h-2.5 w-2.5 ${saved ? "fill-rose-600 text-rose-600" : ""}`} />
+                              <span>{saved ? "Saved" : "Save"}</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const res = toggleCompare({
+                                  id: t.id,
+                                  slug: t.slug,
+                                  title: t.title,
+                                  destination: t.destination,
+                                  coverImageUrl: t.coverImageUrl || "",
+                                  basePrice: t.effectivePrice,
+                                  discountPrice: null,
+                                  depositAmount: Math.round(t.effectivePrice * 0.25),
+                                  durationDays: t.durationDays,
+                                  durationNights: t.durationNights,
+                                  maxGroupSize: 16,
+                                  difficulty: "Moderate",
+                                  category: t.region || "Expedition",
+                                  idealSeason: "Oct - Mar",
+                                  startCity: "Dhaka",
+                                  averageRating: 4.9,
+                                  reviewCount: 0,
+                                  highlights: [],
+                                });
+                                if (res.limitReached) {
+                                  toast.info("Compare Limit", `You can compare up to ${maxItems} tours at once.`);
+                                } else {
+                                  toast.success(
+                                    res.added ? "Added to Compare" : "Removed from Compare",
+                                    t.title
+                                  );
+                                }
+                              }}
+                              aria-label="Compare tour"
+                              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold border transition-colors cursor-pointer ${
+                                compared
+                                  ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                                  : "bg-stone-50 text-stone-600 border-stone-200 hover:text-stone-950"
+                              }`}
+                            >
+                              <Scale className="h-2.5 w-2.5" />
+                              <span>{compared ? "Comparing" : "Compare"}</span>
+                            </button>
                           </div>
-                        </Link>
+                        </div>
                       );
                     })}
                   </div>

@@ -380,8 +380,16 @@ export async function updateUserRole(userId: string, role: string, token: string
   return res.json();
 }
 
-export async function fetchAllBookings(): Promise<BookingRecord[]> {
-  const res = await fetch(`${API_BASE}/bookings`);
+export async function fetchAllBookings(token?: string | null): Promise<BookingRecord[]> {
+  const resolvedToken =
+    token ??
+    (typeof window !== "undefined" ? localStorage.getItem("tourflow_jwt_token") : null);
+  const headers: Record<string, string> = {};
+  if (resolvedToken) {
+    headers.Authorization = `Bearer ${resolvedToken}`;
+  }
+
+  const res = await fetch(`${API_BASE}/bookings`, { headers });
   if (!res.ok) throw new Error("Failed to load bookings");
   return res.json();
 }
@@ -528,6 +536,7 @@ export async function initiatePayment(
   const res = await fetch(`${API_BASE}/payments/initiate`, {
     method: "POST",
     headers,
+    credentials: "include",
     body: JSON.stringify({ bookingId, paymentMethod }),
   });
   if (!res.ok) {
@@ -541,7 +550,8 @@ export async function verifyPayment(
   bookingId: string,
   transactionId: string,
   paymentMethod: string = "bkash",
-  token?: string | null
+  token?: string | null,
+  gatewaySignature?: string | null
 ): Promise<any> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (token) headers.Authorization = `Bearer ${token}`;
@@ -549,7 +559,13 @@ export async function verifyPayment(
   const res = await fetch(`${API_BASE}/payments/verify`, {
     method: "POST",
     headers,
-    body: JSON.stringify({ bookingId, transactionId, paymentMethod }),
+    credentials: "include",
+    body: JSON.stringify({
+      bookingId,
+      transactionId,
+      paymentMethod,
+      ...(gatewaySignature ? { gatewaySignature } : {}),
+    }),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
@@ -1009,6 +1025,158 @@ export async function sendAdminBroadcast(
   }
   return res.json();
 }
+
+// ==========================================
+// AUTH RECOVERY, GLOBAL SEARCH & WISHLIST
+// ==========================================
+
+export async function forgotPasswordRequest(
+  email: string
+): Promise<{ accepted: boolean; message: string; resetTokenPreview?: string | null }> {
+  const res = await fetch(`${API_BASE}/auth/forgot-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.message || "Unable to request password reset");
+  }
+  return res.json();
+}
+
+export async function resetPasswordRequest(payload: {
+  email: string;
+  token: string;
+  newPassword: string;
+}): Promise<{ message: string }> {
+  const res = await fetch(`${API_BASE}/auth/reset-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.message || "Password reset failed");
+  }
+  return res.json();
+}
+
+export interface GlobalSearchResponse {
+  query: string;
+  tours: Array<{
+    id: string;
+    slug: string;
+    title: string;
+    destination: string;
+    region: string;
+    durationDays: number;
+    durationNights: number;
+    effectivePrice: number;
+    coverImageUrl: string;
+  }>;
+  hotels: Array<{
+    id: string;
+    slug: string;
+    name: string;
+    location: string;
+    tier: string;
+    priceNumeric: number;
+    rating: number;
+    coverImage: string;
+    relatedTourSlug?: string | null;
+  }>;
+  tips: Array<{
+    id: string;
+    slug: string;
+    title: string;
+    division: string;
+    category: string;
+    readingTime: string;
+    summary: string;
+  }>;
+  stories: Array<{
+    id: string;
+    slug: string;
+    title: string;
+    division: string;
+    category: string;
+    authorName: string;
+    summary: string;
+  }>;
+}
+
+export async function searchGlobalCatalog(
+  query: string,
+  limit = 5
+): Promise<GlobalSearchResponse> {
+  const res = await fetch(
+    `${API_BASE}/search?q=${encodeURIComponent(query)}&limit=${limit}`
+  );
+  if (!res.ok) throw new Error("Search failed");
+  return res.json();
+}
+
+export interface WishlistApiItem {
+  id: string;
+  slug: string;
+  title: string;
+  destination: string;
+  region: string;
+  durationDays: number;
+  durationNights: number;
+  basePrice: number;
+  discountPrice?: number | null;
+  effectivePrice: number;
+  coverImageUrl: string;
+  averageRating: number;
+  savedAtUtc: string;
+}
+
+export async function fetchWishlistApi(token: string): Promise<WishlistApiItem[]> {
+  const res = await fetch(`${API_BASE}/wishlist`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to load saved wishlist");
+  return res.json();
+}
+
+export async function toggleWishlistApi(
+  tourPackageId: string,
+  token: string
+): Promise<{ saved: boolean; tourPackageId: string }> {
+  const res = await fetch(`${API_BASE}/wishlist/toggle/${encodeURIComponent(tourPackageId)}`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to update wishlist");
+  return res.json();
+}
+
+export async function syncWishlistApi(
+  tourPackageIds: string[],
+  token: string
+): Promise<WishlistApiItem[]> {
+  const res = await fetch(`${API_BASE}/wishlist/sync`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ tourPackageIds }),
+  });
+  if (!res.ok) throw new Error("Failed to sync wishlist");
+  return res.json();
+}
+
+export async function clearWishlistApi(token: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/wishlist`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to clear wishlist");
+}
+
 
 
 

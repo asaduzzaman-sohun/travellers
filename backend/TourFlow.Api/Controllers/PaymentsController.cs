@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -121,10 +123,11 @@ public class PaymentsController : ControllerBase
         var txId = $"TRX-{prefix}-{Guid.NewGuid().ToString("N")[..8].ToUpper()}";
         var amountDue = booking.BalanceRemaining > 0 ? booking.BalanceRemaining : booking.TotalAmount;
         var frontendUrl = (_configuration["FrontendUrl"] ?? "http://localhost:3000").TrimEnd('/');
+        var gatewaySignature = ComputeGatewaySignature(booking.Id, txId, amountDue, methodNormalized);
 
-        // In production, this would call bKash / SSLCommerz merchant API to create checkout URL.
-        // In local/sandbox mode, we generate the simulated gateway redirection session.
-        var checkoutUrl = $"{frontendUrl}/booking/payment?bookingId={booking.Id}&trx={txId}&method={methodNormalized}";
+        // In production, this calls the gateway merchant API to create a signed checkout URL.
+        // In sandbox mode, we generate an HMAC-signed redirection URL for /booking/payment.
+        var checkoutUrl = $"{frontendUrl}/booking/payment?bookingId={booking.Id}&trx={txId}&method={methodNormalized}&sig={Uri.EscapeDataString(gatewaySignature)}";
 
         booking.PaymentTransactionId = txId;
         booking.UpdatedAtUtc = DateTime.UtcNow;
@@ -139,6 +142,7 @@ public class PaymentsController : ControllerBase
             Amount = amountDue,
             PaymentMethod = request.PaymentMethod,
             GatewayUrl = checkoutUrl,
+            GatewaySignature = gatewaySignature,
             ExpiresAtUtc = DateTime.UtcNow.AddMinutes(20),
             Message = $"Payment session initialized successfully for booking {booking.BookingReference}."
         });
@@ -170,21 +174,7 @@ public class PaymentsController : ControllerBase
 
         if (booking.PaymentStatus == PaymentStatus.Paid && booking.BalanceRemaining <= 0)
         {
-            return Ok(new PaymentReceiptDto
-            {
-                Success = true,
-                BookingId = booking.Id,
-                BookingReference = booking.BookingReference,
-                TransactionId = booking.PaymentTransactionId ?? request.TransactionId,
-                PaymentStatus = booking.PaymentStatus.ToString(),
-                BookingStatus = booking.Status.ToString(),
-                TotalAmount = booking.TotalAmount,
-                AmountPaid = booking.DepositPaid,
-                PaidAtUtc = booking.UpdatedAtUtc ?? DateTime.UtcNow,
-                CustomerName = booking.CustomerName,
-                CustomerEmail = booking.CustomerEmail,
-                TourTitle = booking.TourPackage?.Title ?? "Tour Package"
-            });
+            return Ok(BuildReceipt(booking, booking.PaymentTransactionId ?? request.TransactionId, booking.DepositPaid));
         }
 
         var submittedTxId = request.TransactionId.Trim();
@@ -194,6 +184,65 @@ public class PaymentsController : ControllerBase
             return BadRequest(new { message = "Invalid or uninitiated payment transaction reference." });
         }
 
+        var expectedAmount = booking.BalanceRemaining > 0 ? booking.BalanceRemaining : booking.TotalAmount;
+        if (!string.IsNullOrWhiteSpace(request.GatewaySignature)
+            && !IsGatewaySignatureValid(booking.Id, submittedTxId, expectedAmount, request.PaymentMethod, request.GatewaySignature))
+        {
+            return BadRequest(new { message = "Invalid payment gateway HMAC signature." });
+        }
+
+        return await FinalizeVerifiedPaymentAsync(booking);
+    }
+
+    /// <summary>
+    /// Cryptographically authenticated payment webhook endpoint validated via HMAC-SHA256.
+    /// </summary>
+    [AllowAnonymous]
+    [EnableRateLimiting("booking")]
+    [HttpPost("webhook")]
+    public async Task<IActionResult> HandleGatewayWebhook([FromBody] VerifyPaymentRequestDto request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        if (string.IsNullOrWhiteSpace(request.GatewaySignature))
+        {
+            return Unauthorized(new { message = "Missing gateway HMAC signature." });
+        }
+
+        var booking = await _context.Bookings
+            .Include(b => b.TourPackage)
+            .FirstOrDefaultAsync(b => b.Id == request.BookingId && !b.IsDeleted);
+
+        if (booking == null)
+        {
+            return NotFound(new { message = "Booking not found." });
+        }
+
+        if (booking.PaymentStatus == PaymentStatus.Paid && booking.BalanceRemaining <= 0)
+        {
+            return Ok(BuildReceipt(booking, booking.PaymentTransactionId ?? request.TransactionId, booking.DepositPaid));
+        }
+
+        var submittedTxId = request.TransactionId.Trim();
+        if (!string.Equals(booking.PaymentTransactionId, submittedTxId, StringComparison.Ordinal))
+        {
+            return BadRequest(new { message = "Transaction ID does not match initiated session." });
+        }
+
+        var expectedAmount = booking.BalanceRemaining > 0 ? booking.BalanceRemaining : booking.TotalAmount;
+        if (!IsGatewaySignatureValid(booking.Id, submittedTxId, expectedAmount, request.PaymentMethod, request.GatewaySignature))
+        {
+            return Unauthorized(new { message = "Invalid payment gateway HMAC signature." });
+        }
+
+        return await FinalizeVerifiedPaymentAsync(booking);
+    }
+
+    private async Task<IActionResult> FinalizeVerifiedPaymentAsync(Booking booking)
+    {
         // Apply payment confirmation
         booking.PaymentStatus = PaymentStatus.Paid;
         booking.Status = BookingStatus.Confirmed;
@@ -213,21 +262,56 @@ public class PaymentsController : ControllerBase
             ActionUrl: "/profile?tab=bookings"
         ));
 
-        return Ok(new PaymentReceiptDto
+        return Ok(BuildReceipt(booking, booking.PaymentTransactionId ?? string.Empty, booking.TotalAmount));
+    }
+
+    private static PaymentReceiptDto BuildReceipt(Booking booking, string transactionId, decimal amountPaid) =>
+        new()
         {
             Success = true,
             BookingId = booking.Id,
             BookingReference = booking.BookingReference,
-            TransactionId = booking.PaymentTransactionId,
+            TransactionId = transactionId,
             PaymentStatus = booking.PaymentStatus.ToString(),
             BookingStatus = booking.Status.ToString(),
             TotalAmount = booking.TotalAmount,
-            AmountPaid = booking.TotalAmount,
-            PaidAtUtc = booking.UpdatedAtUtc.Value,
+            AmountPaid = amountPaid,
+            PaidAtUtc = booking.UpdatedAtUtc ?? DateTime.UtcNow,
             CustomerName = booking.CustomerName,
             CustomerEmail = booking.CustomerEmail,
             TourTitle = booking.TourPackage?.Title ?? "Tour Package"
-        });
+        };
+
+    private string ComputeGatewaySignature(Guid bookingId, string transactionId, decimal amount, string paymentMethod)
+    {
+        var secret = _configuration["PaymentGateway:HmacSecret"];
+        if (string.IsNullOrWhiteSpace(secret))
+        {
+            secret = _configuration["Jwt:Secret"];
+        }
+        if (string.IsNullOrWhiteSpace(secret))
+        {
+            secret = "tourflow-sandbox-payment-hmac-secret-2026";
+        }
+
+        var canonicalPayload = $"{bookingId:N}|{transactionId.Trim()}|{amount:F2}|{paymentMethod.Trim().ToLowerInvariant()}";
+        using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
+        var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(canonicalPayload));
+        return Convert.ToHexStringLower(hash);
+    }
+
+    private bool IsGatewaySignatureValid(
+        Guid bookingId,
+        string transactionId,
+        decimal amount,
+        string paymentMethod,
+        string providedSignature)
+    {
+        var expected = ComputeGatewaySignature(bookingId, transactionId, amount, paymentMethod);
+        var expectedBytes = Encoding.UTF8.GetBytes(expected);
+        var providedBytes = Encoding.UTF8.GetBytes(providedSignature.Trim().ToLowerInvariant());
+        return expectedBytes.Length == providedBytes.Length
+            && CryptographicOperations.FixedTimeEquals(expectedBytes, providedBytes);
     }
 
     private bool CanCallerAccessBooking(Booking booking)

@@ -264,6 +264,15 @@ public partial class TourFlowChatbotService : ITourFlowChatbotService
                 ? await QueryRelevantTipsAsync(signals, ct)
                 : new List<TravelTip>();
 
+            var itineraryDays = (signals.WantsItinerary && tours.Count > 0)
+                ? await _context.ItineraryDays
+                    .AsNoTracking()
+                    .Where(d => d.TourPackageId == tours[0].Id)
+                    .OrderBy(d => d.DayNumber)
+                    .Take(5)
+                    .ToListAsync(ct)
+                : new List<ItineraryDay>();
+
             var geminiReply = await TryGenerateGeminiReplyAsync(
                 cleanPrompt,
                 session.OwnerName,
@@ -275,6 +284,7 @@ public partial class TourFlowChatbotService : ITourFlowChatbotService
                 promoSummaryLines,
                 bookings,
                 tips,
+                itineraryDays,
                 ct);
 
             var finalReplyText = !string.IsNullOrWhiteSpace(geminiReply)
@@ -287,7 +297,8 @@ public partial class TourFlowChatbotService : ITourFlowChatbotService
                     promos,
                     promoSummaryLines,
                     bookings,
-                    tips);
+                    tips,
+                    itineraryDays);
 
             var suggestions = BuildFollowUpSuggestions(signals, tours, promos, bookings);
 
@@ -408,14 +419,77 @@ public partial class TourFlowChatbotService : ITourFlowChatbotService
         return MapSessionDto(session, count, TruncatePreview(dto.Message));
     }
 
+    private static readonly (string Pattern, string Replacement)[] LocalizedKeywordAliases =
+    [
+        ("\u09B8\u09BF\u09B2\u09C7\u099F", " sylhet "),
+        ("\u09B6\u09CD\u09B0\u09C0\u09AE\u0999\u09CD\u0997\u09B2", " sreemangal "),
+        ("\u09AC\u09BE\u09A8\u09CD\u09A6\u09B0\u09AC\u09BE\u09A8", " bandarban "),
+        ("\u09B0\u09BE\u0999\u09CD\u0997\u09BE\u09AE\u09BE\u099F\u09BF", " rangamati "),
+        ("\u09B0\u09BE\u0999\u09BE\u09AE\u09BE\u099F\u09BF", " rangamati "),
+        ("\u09B8\u09BE\u099C\u09C7\u0995", " sajek "),
+        ("\u09B8\u09C1\u09A8\u09CD\u09A6\u09B0\u09AC\u09A8", " sundarban "),
+        ("\u0995\u0995\u09CD\u09B8\u09AC\u09BE\u099C\u09BE\u09B0", " cox bazar "),
+        ("\u0995\u09C1\u09AF\u09BC\u09BE\u0995\u09BE\u099F\u09BE", " kuakata "),
+        ("\u09B8\u09C7\u09A8\u09CD\u099F\u09AE\u09BE\u09B0\u09CD\u099F\u09BF\u09A8", " saint martin "),
+        ("\u09B9\u09BE\u099C\u09BE\u09B0", "k "),
+        ("\u099F\u09BE\u0995\u09BE", " bdt "),
+        ("\u099C\u09A8", " travelers "),
+        ("\u09AC\u09C1\u0995\u09BF\u0982", " booking "),
+        ("\u09B9\u09CB\u099F\u09C7\u09B2", " hotel "),
+        ("\u09B0\u09BF\u09B8\u09CB\u09B0\u09CD\u099F", " resort "),
+        ("\u09AA\u09CD\u09B0\u09CB\u09AE\u09CB", " promo "),
+        ("\u09A1\u09BF\u09B8\u0995\u09BE\u0989\u09A8\u09CD\u099F", " discount "),
+        ("\u09AA\u09CD\u09B2\u09CD\u09AF\u09BE\u09A8", " itinerary "),
+        ("\u099F\u09BF\u09AA\u09B8", " tips "),
+        ("\u099F\u09CD\u09AF\u09C1\u09B0", " tour "),
+        ("\u09AD\u09CD\u09B0\u09AE\u09A3", " tour "),
+        ("\u09AC\u09BE\u099C\u09C7\u099F", " budget "),
+        ("hazar", "k "),
+        ("hajar", "k "),
+        ("bajeet", " budget "),
+        ("bujet", " budget ")
+    ];
+
+    private static string NormalizeLocalizedTravelTerms(string raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw)) return string.Empty;
+
+        var sb = new StringBuilder(raw.Length);
+        foreach (var ch in raw)
+        {
+            // Normalize Bengali Unicode numerals U+09E6..U+09EF to ASCII 0..9.
+            if (ch is >= '\u09E6' and <= '\u09EF')
+            {
+                sb.Append((char)('0' + (ch - '\u09E6')));
+            }
+            else
+            {
+                sb.Append(ch);
+            }
+        }
+
+        var normalized = sb.ToString().ToLowerInvariant();
+        foreach (var (pattern, replacement) in LocalizedKeywordAliases)
+        {
+            normalized = normalized.Replace(pattern, replacement, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // Word-boundary Banglish aliases so tokens like "4 jon" normalize without touching unrelated words.
+        normalized = Regex.Replace(normalized, @"\bjon\b", "travelers");
+        // Collapse whitespace between digits and 'k' (e.g. "15 k" -> "15k") so BudgetRegex parses it directly.
+        normalized = Regex.Replace(normalized, @"(\d)\s+k\b", "$1k");
+        normalized = Regex.Replace(normalized, @"\s+", " ").Trim();
+        return normalized;
+    }
+
     private static ConversationSignals ExtractSignals(string message, IReadOnlyList<ChatMessage> recentHistory)
     {
-        var lower = message.ToLowerInvariant();
+        var lower = NormalizeLocalizedTravelTerms(message);
         var recentUserTurns = string.Join(
             " ",
             recentHistory
                 .Where(m => !string.Equals(m.SenderRole, BotRole, StringComparison.OrdinalIgnoreCase))
-                .Select(m => m.Message.ToLowerInvariant()));
+                .Select(m => NormalizeLocalizedTravelTerms(m.Message)));
 
         // Combine current prompt with recent user context when the prompt looks like a follow-up.
         var combined = $"{lower} {recentUserTurns}".Trim();
@@ -718,6 +792,7 @@ public partial class TourFlowChatbotService : ITourFlowChatbotService
         IReadOnlyList<string> promoSavings,
         IReadOnlyList<ChatBookingCardDto> bookings,
         IReadOnlyList<TravelTip> tips,
+        IReadOnlyList<ItineraryDay> itineraryDays,
         CancellationToken ct)
     {
         var apiKey = _configuration["Gemini:ApiKey"] ?? Environment.GetEnvironmentVariable("GEMINI_API_KEY");
@@ -734,6 +809,7 @@ public partial class TourFlowChatbotService : ITourFlowChatbotService
                 detectedTravelerCount = signals.TravelerCount,
                 detectedBudgetBdt = signals.BudgetCeiling,
                 matchedTours = tours,
+                topTourItinerary = itineraryDays.Select(d => new { d.DayNumber, d.Title, d.Description, d.MealsIncluded, d.Accommodation }),
                 matchedHotels = hotels,
                 activePromos = promos,
                 promoCalculations = promoSavings,
@@ -809,7 +885,8 @@ public partial class TourFlowChatbotService : ITourFlowChatbotService
         IReadOnlyList<ChatPromoChipDto> promos,
         IReadOnlyList<string> promoSavings,
         IReadOnlyList<ChatBookingCardDto> bookings,
-        IReadOnlyList<TravelTip> tips)
+        IReadOnlyList<TravelTip> tips,
+        IReadOnlyList<ItineraryDay> itineraryDays)
     {
         if (signals.IsGreetingOnly)
         {
@@ -854,6 +931,16 @@ public partial class TourFlowChatbotService : ITourFlowChatbotService
         else if (!signals.WantsBookings && !signals.WantsHotels && !signals.WantsPromos && !signals.WantsTips)
         {
             sb.AppendLine($"No exact tour matched **BDT {signals.BudgetCeiling ?? 0:N0}** for those criteria right now — try raising your budget slightly or switching regions (Sylhet, Bandarban, Sundarbans, Cox's Bazar).");
+        }
+
+        if (itineraryDays.Count > 0 && tours.Count > 0)
+        {
+            sb.AppendLine();
+            sb.AppendLine($"**Day-by-Day Itinerary Preview ({tours[0].Title}):**");
+            foreach (var day in itineraryDays)
+            {
+                sb.AppendLine($"- **Day {day.DayNumber}: {day.Title}** — {Truncate(day.Description, 140)}");
+            }
         }
 
         if (hotels.Count > 0 && (signals.WantsHotels || tours.Count == 0))

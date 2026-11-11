@@ -378,14 +378,22 @@ export function BookingsTab({
                         </select>
                       ) : (
                         b.paymentStatus !== "Paid" && (
-                          <button
-                            onClick={() => handlePayNow(b)}
-                            disabled={payingBookingId === b.id}
-                            className="px-2.5 py-1 bg-[#111827] hover:bg-black text-white text-[11px] font-medium rounded transition-colors inline-flex items-center gap-1 shadow-xs"
-                          >
-                            <CreditCard className="h-3 w-3" />
-                            <span>{payingBookingId === b.id ? "Processing..." : "Pay bKash"}</span>
-                          </button>
+                          <div className="inline-flex items-center gap-1.5">
+                            <Link
+                              href={`/booking/payment?bookingId=${b.id}`}
+                              className="px-2.5 py-1 bg-white border border-stone-300 hover:border-stone-900 text-stone-900 text-[11px] font-medium rounded transition-colors inline-flex items-center gap-1"
+                            >
+                              <CreditCard className="h-3 w-3" />
+                              <span>Checkout</span>
+                            </Link>
+                            <button
+                              onClick={() => handlePayNow(b)}
+                              disabled={payingBookingId === b.id}
+                              className="px-2.5 py-1 bg-[#111827] hover:bg-black text-white text-[11px] font-medium rounded transition-colors inline-flex items-center gap-1 shadow-xs"
+                            >
+                              <span>{payingBookingId === b.id ? "Processing..." : "Pay bKash"}</span>
+                            </button>
+                          </div>
                         )
                       )}
                     </div>

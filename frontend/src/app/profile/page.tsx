@@ -10,6 +10,7 @@ import {
   Compass,
   FileText,
   Bookmark,
+  Headset,
   Settings,
   Lock,
   Plus,
@@ -43,6 +44,7 @@ import {
 import { DashboardSidebar, NavItem } from "@/components/dashboard/DashboardSidebar";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { OverviewTab } from "@/components/dashboard/OverviewTab";
+import { SupportInboxTab } from "@/components/dashboard/SupportInboxTab";
 import { UsersTab } from "@/components/dashboard/UsersTab";
 import { BookingsTab } from "@/components/dashboard/BookingsTab";
 import { ToursTab } from "@/components/dashboard/ToursTab";
@@ -501,6 +503,15 @@ function DashboardContent() {
       label: !isTraveller ? "Story Moderation" : "My Travel Stories",
       icon: FileText,
     },
+    ...(!isTraveller
+      ? [
+          {
+            id: "support",
+            label: "Support Inbox",
+            icon: Headset,
+          },
+        ]
+      : []),
     ...(isTraveller
       ? [
           {
@@ -639,6 +650,10 @@ function DashboardContent() {
               setCreateStoryOpen={setCreateStoryOpen}
               handleDeleteStory={handleDeleteStory}
             />
+          )}
+
+          {activeTab === "support" && !isTraveller && (
+            <SupportInboxTab />
           )}
 
           {activeTab === "saved" && isTraveller && (

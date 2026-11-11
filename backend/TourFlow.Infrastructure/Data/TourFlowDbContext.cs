@@ -25,6 +25,7 @@ public class TourFlowDbContext : DbContext, ITourFlowDbContext
     public DbSet<ChatSession> ChatSessions => Set<ChatSession>();
     public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
     public DbSet<RealtimeNotification> RealtimeNotifications => Set<RealtimeNotification>();
+    public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -178,6 +179,7 @@ public class TourFlowDbContext : DbContext, ITourFlowDbContext
             entity.Property(e => e.NidOrPassport).HasMaxLength(100);
             entity.Property(e => e.AvatarUrl).HasMaxLength(500);
             entity.Property(e => e.RefreshToken).HasMaxLength(256);
+            entity.Property(e => e.PasswordResetTokenHash).HasMaxLength(128);
         });
 
         // BlogPost
@@ -264,6 +266,22 @@ public class TourFlowDbContext : DbContext, ITourFlowDbContext
             entity.Property(e => e.ReadByUsers).HasMaxLength(4000);
             entity.HasIndex(e => new { e.TargetEmail, e.IsRead, e.CreatedAtUtc });
             entity.HasIndex(e => new { e.TargetRole, e.CreatedAtUtc });
+            entity.HasQueryFilter(e => !e.IsDeleted);
+        });
+
+        // WishlistItem (Database-synced Saved Tours)
+        modelBuilder.Entity<WishlistItem>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.UserId, e.TourPackageId }).IsUnique();
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.TourPackage)
+                .WithMany()
+                .HasForeignKey(e => e.TourPackageId)
+                .OnDelete(DeleteBehavior.Cascade);
             entity.HasQueryFilter(e => !e.IsDeleted);
         });
     }

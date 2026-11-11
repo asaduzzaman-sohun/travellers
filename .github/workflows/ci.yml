@@ -1,0 +1,60 @@
+name: TourFlow CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  backend:
+    name: .NET Backend & Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            10.0.x
+
+      - name: Restore dependencies
+        run: |
+          dotnet restore backend/TourFlow.Api/TourFlow.Api.csproj
+          dotnet restore backend/TourFlow.Tests/TourFlow.Tests.csproj
+
+      - name: Build solution
+        run: |
+          dotnet build backend/TourFlow.Api/TourFlow.Api.csproj --configuration Release --no-restore
+          dotnet build backend/TourFlow.Tests/TourFlow.Tests.csproj --configuration Release --no-restore
+
+      - name: Run unit and integration tests
+        run: dotnet test backend/TourFlow.Tests/TourFlow.Tests.csproj --configuration Release --no-build --verbosity normal
+
+  frontend:
+    name: Next.js Typecheck & Production Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: TypeScript typecheck
+        working-directory: frontend
+        run: npx tsc --noEmit
+
+      - name: Production build
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:5000/api
+        run: npm run build

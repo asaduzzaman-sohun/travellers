@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -78,6 +80,7 @@ public class AuthController : ControllerBase
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
+        SetRefreshTokenCookie(refreshToken, user.RefreshTokenExpiryTime.Value);
         var token = _jwtTokenService.GenerateToken(user);
         var userDto = MapToDto(user);
 
@@ -100,11 +103,31 @@ public class AuthController : ControllerBase
             return Unauthorized(new { message = "Invalid email or password." });
         }
 
+        if (user.LockoutEndUtc.HasValue && user.LockoutEndUtc.Value > DateTime.UtcNow)
+        {
+            var remainingSeconds = Math.Max(1, (int)Math.Ceiling((user.LockoutEndUtc.Value - DateTime.UtcNow).TotalSeconds));
+            return StatusCode(StatusCodes.Status429TooManyRequests, new
+            {
+                message = $"Account temporarily locked due to repeated failed attempts. Try again in {Math.Ceiling(remainingSeconds / 60.0)} minute(s).",
+                retryAfterSeconds = remainingSeconds
+            });
+        }
+
         bool valid = _passwordHasher.VerifyPassword(dto.Password, user.PasswordHash);
         if (!valid)
         {
+            user.FailedLoginAttempts += 1;
+            if (user.FailedLoginAttempts >= 5)
+            {
+                user.LockoutEndUtc = DateTime.UtcNow.AddMinutes(5);
+                user.FailedLoginAttempts = 0;
+            }
+            await _context.SaveChangesAsync();
             return Unauthorized(new { message = "Invalid email or password." });
         }
+
+        user.FailedLoginAttempts = 0;
+        user.LockoutEndUtc = null;
 
         var token = _jwtTokenService.GenerateToken(user);
         var refreshToken = _jwtTokenService.GenerateRefreshToken();
@@ -113,34 +136,53 @@ public class AuthController : ControllerBase
         user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
         await _context.SaveChangesAsync();
 
+        SetRefreshTokenCookie(refreshToken, user.RefreshTokenExpiryTime.Value);
         var userDto = MapToDto(user);
 
         return Ok(new AuthResponseDto(token, userDto, refreshToken));
     }
 
+    private const string RefreshCookieName = "tourflow_refresh_token";
+
     [HttpPost("refresh-token")]
-    public async Task<ActionResult<AuthResponseDto>> RefreshToken([FromBody] RefreshTokenRequestDto dto)
+    public async Task<ActionResult<AuthResponseDto>> RefreshToken(
+        [FromBody(EmptyBodyBehavior = Microsoft.AspNetCore.Mvc.ModelBinding.EmptyBodyBehavior.Allow)] RefreshTokenRequestDto? dto = null)
     {
-        if (string.IsNullOrWhiteSpace(dto.Token) || string.IsNullOrWhiteSpace(dto.RefreshToken))
+        var cookieRefreshToken = HttpContext?.Request?.Cookies[RefreshCookieName];
+        var submittedRefreshToken = !string.IsNullOrWhiteSpace(dto?.RefreshToken)
+            ? dto.RefreshToken.Trim()
+            : cookieRefreshToken;
+
+        if (string.IsNullOrWhiteSpace(submittedRefreshToken))
         {
-            return BadRequest(new { message = "Token and refresh token are required." });
+            return BadRequest(new { message = "Refresh token is required." });
         }
 
-        var principal = _jwtTokenService.GetPrincipalFromExpiredToken(dto.Token);
-        if (principal == null)
+        User? user = null;
+        if (!string.IsNullOrWhiteSpace(dto?.Token))
         {
-            return BadRequest(new { message = "Invalid access token." });
+            var principal = _jwtTokenService.GetPrincipalFromExpiredToken(dto.Token);
+            if (principal == null)
+            {
+                return BadRequest(new { message = "Invalid access token." });
+            }
+
+            var userIdStr = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userIdStr, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid user identifier in token." });
+            }
+
+            user = await _context.Users.FindAsync(userId);
+        }
+        else
+        {
+            user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == submittedRefreshToken);
         }
 
-        var userIdStr = principal.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (!Guid.TryParse(userIdStr, out var userId))
+        if (user == null || user.RefreshToken != submittedRefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
         {
-            return Unauthorized(new { message = "Invalid user identifier in token." });
-        }
-
-        var user = await _context.Users.FindAsync(userId);
-        if (user == null || user.RefreshToken != dto.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
-        {
+            ClearRefreshTokenCookie();
             return Unauthorized(new { message = "Invalid or expired refresh token." });
         }
 
@@ -151,25 +193,159 @@ public class AuthController : ControllerBase
         user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
         await _context.SaveChangesAsync();
 
+        SetRefreshTokenCookie(newRefreshToken, user.RefreshTokenExpiryTime.Value);
         return Ok(new AuthResponseDto(newToken, MapToDto(user), newRefreshToken));
     }
 
-    [Authorize]
+    [AllowAnonymous]
     [HttpPost("revoke-token")]
     public async Task<IActionResult> RevokeToken()
     {
+        User? user = null;
         var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (Guid.TryParse(userIdStr, out var userId))
         {
-            var user = await _context.Users.FindAsync(userId);
-            if (user != null)
+            user = await _context.Users.FindAsync(userId);
+        }
+        else
+        {
+            var cookieRefresh = HttpContext?.Request?.Cookies[RefreshCookieName];
+            if (!string.IsNullOrWhiteSpace(cookieRefresh))
             {
-                user.RefreshToken = null;
-                user.RefreshTokenExpiryTime = null;
-                await _context.SaveChangesAsync();
+                user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == cookieRefresh);
             }
         }
+
+        if (user != null)
+        {
+            user.RefreshToken = null;
+            user.RefreshTokenExpiryTime = null;
+            await _context.SaveChangesAsync();
+        }
+
+        ClearRefreshTokenCookie();
         return Ok(new { message = "Token successfully revoked." });
+    }
+
+    [AllowAnonymous]
+    [HttpPost("forgot-password")]
+    public async Task<ActionResult<ForgotPasswordResponseDto>> ForgotPassword([FromBody] ForgotPasswordRequestDto dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var normalizedEmail = dto.Email.Trim().ToLowerInvariant();
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == normalizedEmail);
+        string? devPreview = null;
+
+        if (user != null)
+        {
+            var rawBytes = RandomNumberGenerator.GetBytes(24);
+            var rawToken = Convert.ToHexString(rawBytes);
+            user.PasswordResetTokenHash = HashResetToken(rawToken);
+            user.PasswordResetTokenExpiryUtc = DateTime.UtcNow.AddMinutes(15);
+            await _context.SaveChangesAsync();
+
+            var env = HttpContext?.RequestServices.GetService<IHostEnvironment>();
+            if (env?.IsDevelopment() == true)
+            {
+                devPreview = rawToken;
+            }
+
+            _logger.LogInformation("Password reset token generated for {Email}", normalizedEmail);
+        }
+
+        return Ok(new ForgotPasswordResponseDto(
+            Accepted: true,
+            Message: "If an account exists for that email, reset instructions have been generated (valid for 15 minutes).",
+            ResetTokenPreview: devPreview
+        ));
+    }
+
+    [AllowAnonymous]
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        if (dto.NewPassword.Length < 8 || !dto.NewPassword.Any(char.IsLetter) || !dto.NewPassword.Any(char.IsDigit))
+        {
+            return BadRequest(new { message = "New password must be at least 8 characters and include both letters and numbers." });
+        }
+
+        var normalizedEmail = dto.Email.Trim().ToLowerInvariant();
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == normalizedEmail);
+        if (user == null || string.IsNullOrWhiteSpace(user.PasswordResetTokenHash) || !user.PasswordResetTokenExpiryUtc.HasValue)
+        {
+            return BadRequest(new { message = "Invalid or expired password reset token." });
+        }
+
+        if (user.PasswordResetTokenExpiryUtc.Value <= DateTime.UtcNow)
+        {
+            return BadRequest(new { message = "Password reset token has expired. Please request a new one." });
+        }
+
+        var submittedHash = HashResetToken(dto.Token.Trim());
+        var expectedBytes = Encoding.UTF8.GetBytes(user.PasswordResetTokenHash);
+        var actualBytes = Encoding.UTF8.GetBytes(submittedHash);
+
+        if (expectedBytes.Length != actualBytes.Length || !CryptographicOperations.FixedTimeEquals(expectedBytes, actualBytes))
+        {
+            return BadRequest(new { message = "Invalid or expired password reset token." });
+        }
+
+        user.PasswordHash = _passwordHasher.HashPassword(dto.NewPassword);
+        user.PasswordResetTokenHash = null;
+        user.PasswordResetTokenExpiryUtc = null;
+        user.FailedLoginAttempts = 0;
+        user.LockoutEndUtc = null;
+        // Invalidate existing refresh tokens upon password recovery.
+        user.RefreshToken = null;
+        user.RefreshTokenExpiryTime = null;
+        user.UpdatedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+        ClearRefreshTokenCookie();
+
+        return Ok(new { message = "Password has been reset successfully. You may now sign in." });
+    }
+
+    private void SetRefreshTokenCookie(string refreshToken, DateTime expiresUtc)
+    {
+        if (HttpContext?.Response?.Cookies == null) return;
+
+        HttpContext.Response.Cookies.Append(RefreshCookieName, refreshToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = HttpContext.Request.IsHttps,
+            SameSite = SameSiteMode.Lax,
+            Expires = expiresUtc,
+            Path = "/api/auth"
+        });
+    }
+
+    private void ClearRefreshTokenCookie()
+    {
+        if (HttpContext?.Response?.Cookies == null) return;
+
+        HttpContext.Response.Cookies.Delete(RefreshCookieName, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = HttpContext.Request.IsHttps,
+            SameSite = SameSiteMode.Lax,
+            Path = "/api/auth"
+        });
+    }
+
+    private static string HashResetToken(string rawToken)
+    {
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(rawToken));
+        return Convert.ToHexStringLower(bytes);
     }
 
     [Authorize]

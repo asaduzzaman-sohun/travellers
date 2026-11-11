@@ -111,6 +111,23 @@ builder.Services.AddResponseCompression(options =>
 
 var app = builder.Build();
 
+// Fail fast in Production if critical cryptographic or database secrets are left blank.
+if (app.Environment.IsProduction())
+{
+    var prodConn = app.Configuration.GetConnectionString("DefaultConnection");
+    var prodJwtSecret = app.Configuration["Jwt:Secret"];
+    var prodPaymentHmac = app.Configuration["PaymentGateway:HmacSecret"];
+    if (string.IsNullOrWhiteSpace(prodConn)
+        || string.IsNullOrWhiteSpace(prodJwtSecret)
+        || prodJwtSecret.Length < 32
+        || string.IsNullOrWhiteSpace(prodPaymentHmac)
+        || prodPaymentHmac.Length < 16)
+    {
+        throw new InvalidOperationException(
+            "Production startup blocked: configure ConnectionStrings__DefaultConnection, Jwt__Secret (min 32 chars), and PaymentGateway__HmacSecret (min 16 chars) via environment variables.");
+    }
+}
+
 // Enable Response Compression & Security Headers early in pipeline
 app.UseResponseCompression();
 app.UseMiddleware<TourFlow.Api.Middleware.SecurityHeadersMiddleware>();
