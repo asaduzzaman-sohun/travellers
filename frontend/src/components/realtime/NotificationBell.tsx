@@ -33,24 +33,24 @@ function getCategoryMeta(category: string) {
   switch (category.toLowerCase()) {
     case "booking":
       return {
-        badge: "bg-emerald-50 text-emerald-700 border-emerald-200",
-        icon: <CalendarCheck2 className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />,
+        badge: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
+        icon: <CalendarCheck2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />,
       };
     case "review":
       return {
-        badge: "bg-amber-50 text-amber-700 border-amber-200",
-        icon: <Star className="h-3.5 w-3.5 text-amber-600" aria-hidden="true" />,
+        badge: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30",
+        icon: <Star className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" aria-hidden="true" />,
       };
     case "chat":
       return {
-        badge: "bg-sky-50 text-sky-700 border-sky-200",
-        icon: <MessageSquare className="h-3.5 w-3.5 text-sky-600" aria-hidden="true" />,
+        badge: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/30",
+        icon: <MessageSquare className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" aria-hidden="true" />,
       };
     case "announcement":
     default:
       return {
-        badge: "bg-stone-100 text-stone-700 border-stone-200",
-        icon: <Megaphone className="h-3.5 w-3.5 text-stone-700" aria-hidden="true" />,
+        badge: "bg-stone-500/10 text-stone-700 dark:text-stone-300 border-stone-500/30",
+        icon: <Megaphone className="h-3.5 w-3.5 text-stone-700 dark:text-stone-300" aria-hidden="true" />,
       };
   }
 }
@@ -113,8 +113,8 @@ export function NotificationBell({
 
   const triggerClasses =
     variant === "dashboard"
-      ? "relative inline-flex items-center justify-center min-w-[40px] min-h-[40px] p-2 rounded-lg border border-[#E5E7EB] bg-white text-[#4B5563] hover:text-[#111827] hover:bg-[#F9FAFB] transition-colors cursor-pointer"
-      : "relative inline-flex items-center justify-center min-w-[40px] min-h-[40px] h-10 w-10 rounded-full border border-[#EBE6DC] bg-white text-stone-700 hover:text-stone-950 hover:bg-[#F5F2EB] transition-all cursor-pointer shadow-2xs";
+      ? "relative inline-flex items-center justify-center min-w-[40px] min-h-[40px] p-2 rounded-lg border border-[#E5E7EB] dark:border-[#2a3142] bg-white dark:bg-[#141720] text-[#4B5563] dark:text-stone-300 hover:text-[#111827] dark:hover:text-white hover:bg-[#F9FAFB] dark:hover:bg-[#1c2230] transition-colors cursor-pointer"
+      : "relative inline-flex items-center justify-center min-w-[40px] min-h-[40px] h-10 w-10 rounded-full border border-[#EBE6DC] dark:border-[#262d3d] bg-white dark:bg-[#141720] text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-[#F5F2EB] dark:hover:bg-[#1c2230] transition-all cursor-pointer shadow-2xs";
 
   async function handleNotificationClick(
     id: string,
@@ -194,17 +194,17 @@ export function NotificationBell({
       {open && (
         <div
           id={panelId}
-          className="absolute right-0 mt-2.5 w-[min(calc(100vw-1.5rem),24rem)] bg-white border border-[#EBE6DC] rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150"
+          className="absolute right-0 mt-2.5 w-[min(calc(100vw-1.5rem),26rem)] sm:w-[420px] bg-white dark:bg-[#141720] border border-[#EBE6DC] dark:border-[#222836] rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150"
         >
           {/* Header */}
-          <div className="px-4 py-3 border-b border-[#F0EBE1] bg-[#FAF8F5] flex items-center justify-between gap-2">
+          <div className="px-4 py-3 border-b border-[#F0EBE1] dark:border-[#222836] bg-[#FAF8F5] dark:bg-[#0c0f16] flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
-              <span className="font-semibold text-sm text-stone-900 truncate">
+              <span className="font-bold text-sm text-stone-900 dark:text-stone-100 whitespace-nowrap">
                 Live Notifications
               </span>
-              <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white border border-[#E5DFD5] text-stone-600 shrink-0">
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white dark:bg-[#141720] border border-[#E5DFD5] dark:border-[#262d3d] text-stone-600 dark:text-stone-300 shrink-0">
                 <Radio
-                  className={`h-2.5 w-2.5 ${status === "connected" ? "text-emerald-600" : "text-amber-500"}`}
+                  className={`h-2.5 w-2.5 ${status === "connected" ? "text-emerald-600 dark:text-emerald-400" : "text-amber-500"}`}
                   aria-hidden="true"
                 />
                 {status === "connected" ? "SignalR Live" : status}
@@ -216,7 +216,7 @@ export function NotificationBell({
                 <button
                   type="button"
                   onClick={() => void markAllRead()}
-                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-stone-700 hover:text-stone-950 px-2 py-1 rounded-lg hover:bg-white transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white px-2 py-1 rounded-lg hover:bg-white dark:hover:bg-[#1a202c] transition-colors cursor-pointer"
                 >
                   <CheckCheck className="h-3.5 w-3.5" aria-hidden="true" />
                   <span>Mark all read</span>
@@ -226,7 +226,7 @@ export function NotificationBell({
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close notifications"
-                className="p-1.5 rounded-lg text-stone-500 hover:text-stone-900 hover:bg-white transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-white dark:hover:bg-[#1a202c] transition-colors cursor-pointer"
               >
                 <X className="h-4 w-4" aria-hidden="true" />
               </button>
@@ -235,20 +235,20 @@ export function NotificationBell({
 
           {/* Admin Quick Broadcast Composer */}
           {canBroadcast && (
-            <div className="px-4 py-2 border-b border-[#F0EBE1] bg-stone-50/70">
+            <div className="px-4 py-2.5 border-b border-[#F0EBE1] dark:border-[#222836] bg-stone-50/70 dark:bg-[#0f121a]">
               {!composerOpen ? (
                 <button
                   type="button"
                   onClick={() => setComposerOpen(true)}
-                  className="w-full py-1.5 px-3 rounded-lg text-xs font-semibold text-stone-700 hover:text-stone-950 hover:bg-white border border-dashed border-[#DCD6CC] flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  className="w-full py-2 px-3 rounded-xl text-xs font-semibold text-stone-800 dark:text-stone-200 hover:text-stone-950 dark:hover:text-white bg-white/80 dark:bg-[#161a25] hover:bg-white dark:hover:bg-[#1c2232] border border-dashed border-[#DCD6CC] dark:border-[#2e3748] flex items-center justify-center gap-2 shadow-2xs transition-colors cursor-pointer"
                 >
-                  <Megaphone className="h-3.5 w-3.5 text-amber-600" aria-hidden="true" />
+                  <Megaphone className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" aria-hidden="true" />
                   <span>Send Live SignalR Broadcast</span>
                 </button>
               ) : (
                 <form onSubmit={handleSendBroadcast} className="space-y-2 py-1">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] font-semibold text-stone-700">
+                    <span className="text-[11px] font-semibold text-stone-700 dark:text-stone-300">
                       New Announcement
                     </span>
                     <div className="flex items-center gap-1">
@@ -258,7 +258,7 @@ export function NotificationBell({
                           setBroadcastTarget(e.target.value as "All" | "Admin")
                         }
                         aria-label="Broadcast audience"
-                        className="text-[11px] px-2 py-1 rounded-md border border-[#E5DFD5] bg-white text-stone-800"
+                        className="text-[11px] px-2 py-1 rounded-md border border-[#E5DFD5] dark:border-[#2a3142] bg-white dark:bg-[#141720] text-stone-800 dark:text-stone-200"
                       >
                         <option value="All">All Travelers</option>
                         <option value="Admin">Admins Only</option>
@@ -267,7 +267,7 @@ export function NotificationBell({
                         type="button"
                         onClick={() => setComposerOpen(false)}
                         aria-label="Cancel broadcast"
-                        className="p-1 text-stone-500 hover:text-stone-800 cursor-pointer"
+                        className="p-1 text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 cursor-pointer"
                       >
                         <X className="h-3.5 w-3.5" aria-hidden="true" />
                       </button>
@@ -280,7 +280,7 @@ export function NotificationBell({
                     placeholder="Headline (e.g. Flash Deal Live)"
                     maxLength={120}
                     required
-                    className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-[#E5DFD5] bg-white text-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-300"
+                    className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-[#E5DFD5] dark:border-[#2a3142] bg-white dark:bg-[#141720] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
                   />
                   <textarea
                     value={broadcastMessage}
@@ -289,12 +289,12 @@ export function NotificationBell({
                     rows={2}
                     maxLength={400}
                     required
-                    className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-[#E5DFD5] bg-white text-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-300 resize-none"
+                    className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-[#E5DFD5] dark:border-[#2a3142] bg-white dark:bg-[#141720] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 resize-none"
                   />
                   <button
                     type="submit"
                     disabled={sendingBroadcast}
-                    className="w-full py-1.5 px-3 rounded-lg bg-stone-900 hover:bg-stone-800 disabled:opacity-50 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    className="w-full py-1.5 px-3 rounded-lg bg-stone-900 dark:bg-emerald-600 hover:bg-stone-800 dark:hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs"
                   >
                     <Send className="h-3.5 w-3.5" aria-hidden="true" />
                     <span>{sendingBroadcast ? "Broadcasting..." : "Push Live Alert"}</span>
@@ -305,17 +305,17 @@ export function NotificationBell({
           )}
 
           {/* Notification Feed */}
-          <div className="max-h-80 overflow-y-auto divide-y divide-[#F4EFE6]">
+          <div className="max-h-80 overflow-y-auto divide-y divide-[#F4EFE6] dark:divide-[#1e2434] bg-white dark:bg-[#141720]">
             {notifications.length === 0 ? (
               <div className="px-6 py-10 text-center">
                 <Bell
-                  className="h-7 w-7 text-stone-300 mx-auto mb-2"
+                  className="h-7 w-7 text-stone-300 dark:text-stone-600 mx-auto mb-2"
                   aria-hidden="true"
                 />
-                <p className="text-xs font-medium text-stone-600">
+                <p className="text-xs font-medium text-stone-600 dark:text-stone-400">
                   No notifications yet
                 </p>
-                <p className="text-[11px] text-stone-400 mt-1">
+                <p className="text-[11px] text-stone-400 dark:text-stone-500 mt-1">
                   Booking updates, concierge replies, and announcements appear here instantly.
                 </p>
               </div>
@@ -333,8 +333,10 @@ export function NotificationBell({
                         item.actionUrl
                       )
                     }
-                    className={`w-full text-left px-4 py-3 hover:bg-[#FAF8F5] transition-colors flex items-start gap-3 cursor-pointer ${
-                      !item.isRead ? "bg-amber-50/35" : "bg-white"
+                    className={`w-full text-left px-4 py-3 transition-colors flex items-start gap-3 cursor-pointer ${
+                      !item.isRead
+                        ? "bg-amber-500/10 dark:bg-amber-500/15 hover:bg-amber-500/15 dark:hover:bg-amber-500/25"
+                        : "bg-white dark:bg-[#141720] hover:bg-[#FAF8F5] dark:hover:bg-[#191e2b]"
                     }`}
                   >
                     <div
@@ -347,8 +349,8 @@ export function NotificationBell({
                         <p
                           className={`text-xs leading-snug [overflow-wrap:anywhere] ${
                             !item.isRead
-                              ? "font-bold text-stone-900"
-                              : "font-semibold text-stone-700"
+                              ? "font-bold text-stone-900 dark:text-amber-200"
+                              : "font-semibold text-stone-700 dark:text-stone-200"
                           }`}
                         >
                           {item.title}
@@ -360,10 +362,10 @@ export function NotificationBell({
                           />
                         )}
                       </div>
-                      <p className="text-[11px] text-stone-600 mt-0.5 leading-relaxed [overflow-wrap:anywhere]">
+                      <p className="text-[11px] text-stone-600 dark:text-stone-300 mt-0.5 leading-relaxed [overflow-wrap:anywhere]">
                         {item.message}
                       </p>
-                      <div className="mt-1 flex items-center gap-2 text-[10px] text-stone-400 font-medium">
+                      <div className="mt-1 flex items-center gap-2 text-[10px] text-stone-400 dark:text-stone-500 font-medium">
                         <span className="capitalize">{item.category}</span>
                         <span>•</span>
                         <span>{formatRelativeTime(item.createdAtUtc)}</span>

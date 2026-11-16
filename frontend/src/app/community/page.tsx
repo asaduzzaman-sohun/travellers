@@ -413,7 +413,7 @@ export default function CommunityPage() {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute top-4 left-4 flex gap-2">
-                      <span className="px-3 py-1 rounded-full bg-white/95 dark:bg-stone-900/90 backdrop-blur-md text-xs font-semibold text-stone-900 dark:text-stone-100 shadow-sm border border-stone-200/60 dark:border-white/15">
+                      <span className="px-3 py-1 rounded-full bg-stone-900/80 backdrop-blur-md text-xs font-semibold text-stone-100 shadow-sm border border-white/20">
                         {post.category}
                       </span>
                       {post.division && post.division !== "All" && (
@@ -555,34 +555,34 @@ export default function CommunityPage() {
       {/* Story Details & Discussion Modal */}
       {activePost && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-stone-900/50 backdrop-blur-xs"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-stone-900/60 dark:bg-black/80 backdrop-blur-xs"
           onClick={() => setActivePost(null)}
         >
           <div
-            className="bg-white rounded-3xl border border-[#EBE6DC] max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 sm:p-10 space-y-6"
+            className="bg-white dark:bg-[#141720] rounded-3xl border border-[#EBE6DC] dark:border-[#222836] max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 sm:p-10 space-y-6"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header info */}
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-xs sm:text-sm text-stone-500">
-                  <span className="font-semibold text-stone-900">{activePost.category}</span>
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-stone-500 dark:text-stone-400">
+                  <span className="font-semibold text-stone-900 dark:text-stone-100">{activePost.category}</span>
                   <span>•</span>
                   <span>{activePost.division}</span>
                   <span>•</span>
                   <span>{formatDate(activePost.createdAtUtc)}</span>
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 leading-snug">
+                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 dark:text-stone-100 leading-snug">
                   {activePost.title}
                 </h2>
-                <p className="text-xs sm:text-sm text-stone-500">
-                  Written by <strong className="text-stone-800">{activePost.authorName}</strong>
+                <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400">
+                  Written by <strong className="text-stone-800 dark:text-stone-200">{activePost.authorName}</strong>
                 </p>
               </div>
 
               <button
                 onClick={() => setActivePost(null)}
-                className="px-4 py-1.5 rounded-full text-xs font-semibold bg-stone-100 hover:bg-stone-200 text-stone-700 transition-colors"
+                className="px-4 py-1.5 rounded-full text-xs font-semibold bg-stone-100 dark:bg-[#1c2230] hover:bg-stone-200 dark:hover:bg-[#252e40] text-stone-700 dark:text-stone-300 dark:hover:text-white transition-colors cursor-pointer"
               >
                 Close
               </button>
@@ -590,7 +590,7 @@ export default function CommunityPage() {
 
             {/* Cover image if available */}
             {activePost.coverImageUrl && (
-              <div className="h-72 rounded-2xl overflow-hidden bg-stone-100 border border-stone-200">
+              <div className="h-72 rounded-2xl overflow-hidden bg-stone-100 dark:bg-[#0c0f16] border border-stone-200 dark:border-[#222836]">
                 <ImageWithFallback
                   src={activePost.coverImageUrl}
                   fallbackSrc="https://images.unsplash.com/photo-1596895111956-bf1cf0599ce5?auto=format&fit=crop&w=1200&q=80"
@@ -601,20 +601,20 @@ export default function CommunityPage() {
             )}
 
             {/* Full text content */}
-            <div className="prose prose-stone text-sm sm:text-base text-stone-700 leading-relaxed whitespace-pre-line border-b border-[#F0EBE1] pb-6">
+            <div className="prose prose-stone text-sm sm:text-base text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-line border-b border-[#F0EBE1] dark:border-[#222836] pb-6">
               {activePost.content}
             </div>
 
             {/* Post actions: Upvote & View count */}
-            <div className="flex items-center justify-between text-sm text-stone-500">
+            <div className="flex items-center justify-between text-sm text-stone-500 dark:text-stone-400">
               <div className="flex items-center gap-4">
                 <button
                   type="button"
                   onClick={(e) => handleUpvote(activePost.id, e)}
-                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border transition-colors ${
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border transition-colors cursor-pointer ${
                     upvotedIds.has(activePost.id)
-                      ? "bg-amber-100 border-amber-300 text-amber-900 font-bold"
-                      : "border-stone-200 hover:bg-stone-50 text-stone-700"
+                      ? "bg-amber-100 dark:bg-amber-950/40 border-amber-300 dark:border-amber-500/50 text-amber-900 dark:text-amber-300 font-bold"
+                      : "border-stone-200 dark:border-[#2a3142] hover:bg-stone-50 dark:hover:bg-[#1c2230] text-stone-700 dark:text-stone-300"
                   }`}
                 >
                   <ThumbsUp className="h-4 w-4" />
@@ -631,14 +631,14 @@ export default function CommunityPage() {
                 <div className="flex items-center gap-2">
                   <Link
                     href={`/write-post?edit=${activePost.id}`}
-                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold"
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-stone-100 dark:bg-[#1c2230] hover:bg-stone-200 dark:hover:bg-[#252e40] text-stone-800 dark:text-stone-200 text-xs font-semibold"
                   >
                     <Edit3 className="h-3.5 w-3.5" />
                     <span>Edit</span>
                   </Link>
                   <button
                     onClick={(e) => handleDeletePost(activePost.id, e)}
-                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold"
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 dark:hover:bg-rose-950/50 text-rose-700 dark:text-rose-300 text-xs font-semibold cursor-pointer"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                     <span>Delete</span>
@@ -648,9 +648,9 @@ export default function CommunityPage() {
             </div>
 
             {/* Discussion / Comments Section */}
-            <div className="space-y-5 pt-4 border-t border-[#F0EBE1]">
-              <h3 className="text-base sm:text-lg font-serif font-bold text-stone-900 flex items-center gap-2">
-                <MessageSquare className="h-5 w-5 text-amber-800" />
+            <div className="space-y-5 pt-4 border-t border-[#F0EBE1] dark:border-[#222836]">
+              <h3 className="text-base sm:text-lg font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-amber-700 dark:text-amber-400" />
                 <span>Discussion ({activePost.comments?.length || 0})</span>
               </h3>
 
@@ -666,12 +666,12 @@ export default function CommunityPage() {
                       : "Please login to leave a comment"
                   }
                   disabled={!isLoggedIn}
-                  className="flex-1 px-4 py-3 rounded-2xl bg-[#FAF8F5] border border-[#E5DFD5] text-sm text-stone-900 focus:outline-none focus:border-stone-900"
+                  className="flex-1 px-4 py-3 rounded-2xl bg-[#FAF8F5] dark:bg-[#0c0f16] border border-[#E5DFD5] dark:border-[#2a3142] text-sm text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:border-stone-900 dark:focus:border-amber-400"
                 />
                 <button
                   type="submit"
                   disabled={submittingComment || !commentText.trim() || !isLoggedIn}
-                  className="px-5 py-3 rounded-2xl bg-stone-900 hover:bg-stone-800 text-white text-sm font-semibold transition-all disabled:opacity-50 inline-flex items-center gap-2"
+                  className="px-5 py-3 rounded-2xl bg-stone-900 dark:bg-emerald-600 hover:bg-stone-800 dark:hover:bg-emerald-500 text-white text-sm font-semibold transition-all disabled:opacity-50 inline-flex items-center gap-2 cursor-pointer shadow-xs"
                 >
                   {submittingComment ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -688,29 +688,29 @@ export default function CommunityPage() {
                   activePost.comments.map((comment) => (
                     <div
                       key={comment.id}
-                      className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#E5DFD5] space-y-1.5 text-sm"
+                      className="p-4 rounded-2xl bg-[#FAF8F5] dark:bg-[#0c0f16] border border-[#E5DFD5] dark:border-[#2a3142] space-y-1.5 text-sm"
                     >
-                      <div className="flex items-center justify-between text-stone-500">
+                      <div className="flex items-center justify-between text-stone-500 dark:text-stone-400">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-stone-900">{comment.authorName}</span>
+                          <span className="font-semibold text-stone-900 dark:text-stone-100">{comment.authorName}</span>
                           <span>•</span>
                           <span>{formatDate(comment.createdAtUtc)}</span>
                         </div>
                         {(user?.email === comment.authorEmail || user?.role === "Admin") && (
                           <button
                             onClick={() => handleDeleteComment(comment.id)}
-                            className="text-stone-400 hover:text-rose-600 transition-colors"
+                            className="text-stone-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors cursor-pointer"
                             title="Remove comment"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
                         )}
                       </div>
-                      <p className="text-stone-700 leading-relaxed">{comment.content}</p>
+                      <p className="text-stone-700 dark:text-stone-300 leading-relaxed">{comment.content}</p>
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-stone-400 italic py-2">
+                  <p className="text-sm text-stone-400 dark:text-stone-500 italic py-2">
                     No comments yet. Start the conversation!
                   </p>
                 )}

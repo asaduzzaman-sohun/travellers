@@ -49,21 +49,21 @@ export function CreateTourModal({
   if (!createTourOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-lg max-w-lg w-full p-6 text-xs space-y-4 shadow-xl">
-        <div className="flex items-center justify-between pb-3 border-b border-[#E5E7EB]">
+    <div className="fixed inset-0 z-50 bg-black/60 dark:bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="bg-[#FFFFFF] dark:bg-[#141720] border border-[#E5E7EB] dark:border-[#222836] rounded-2xl max-w-lg w-full p-6 text-xs space-y-4 shadow-2xl">
+        <div className="flex items-center justify-between pb-3 border-b border-[#E5E7EB] dark:border-[#222836]">
           <div>
-            <h3 className="font-semibold text-sm text-[#111827] flex items-center gap-1.5">
-              <Compass className="h-4 w-4 text-stone-700" />
+            <h3 className="font-semibold text-sm text-[#111827] dark:text-stone-100 flex items-center gap-1.5">
+              <Compass className="h-4 w-4 text-stone-700 dark:text-emerald-400" />
               <span>Create New Tour Expedition</span>
             </h3>
-            <p className="text-[11px] text-[#6B7280]">
+            <p className="text-[11px] text-[#6B7280] dark:text-stone-400">
               Add a new curated domestic travel package to the public catalog.
             </p>
           </div>
           <button
             onClick={() => setCreateTourOpen(false)}
-            className="text-[#6B7280] hover:text-[#111827] p-1 rounded transition-colors"
+            className="text-[#6B7280] dark:text-stone-400 hover:text-[#111827] dark:hover:text-white p-1 rounded-lg transition-colors cursor-pointer"
           >
             <X className="h-4 w-4" />
           </button>
@@ -71,14 +71,14 @@ export function CreateTourModal({
 
         <form onSubmit={handleCreateTour} className="space-y-3.5">
           <div className="space-y-1">
-            <label className="font-medium text-[#111827]">Tour Package Title *</label>
+            <label className="font-medium text-[#111827] dark:text-stone-300">Tour Package Title *</label>
             <input
               type="text"
               required
               placeholder="e.g. Sajek Valley Cloud Trail Expedition"
               value={newTourTitle}
               onChange={(e) => setNewTourTitle(e.target.value)}
-              className="w-full bg-[#FFFFFF] border border-[#D1D5DB] rounded-md p-2 text-xs focus:outline-none focus:border-[#111827]"
+              className="w-full bg-[#FFFFFF] dark:bg-[#0c0f16] border border-[#D1D5DB] dark:border-[#2a3142] rounded-xl p-2.5 text-xs text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:border-[#111827] dark:focus:border-amber-400"
             />
           </div>
 
@@ -147,28 +147,28 @@ export function CreateTourModal({
           </div>
 
           <div className="space-y-1">
-            <label className="font-medium text-[#111827]">Overview Description</label>
+            <label className="font-medium text-[#111827] dark:text-stone-300">Overview Description</label>
             <textarea
               rows={3}
               placeholder="Outline key logistics, scenic points, and schedule..."
               value={newTourDescription}
               onChange={(e) => setNewTourDescription(e.target.value)}
-              className="w-full bg-[#FFFFFF] border border-[#D1D5DB] rounded-md p-2 text-xs focus:outline-none focus:border-[#111827]"
+              className="w-full bg-[#FFFFFF] dark:bg-[#0c0f16] border border-[#D1D5DB] dark:border-[#2a3142] rounded-xl p-2.5 text-xs text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:border-[#111827] dark:focus:border-amber-400 resize-none"
             />
           </div>
 
-          <div className="pt-3 border-t border-[#E5E7EB] flex items-center justify-end gap-2">
+          <div className="pt-3 border-t border-[#E5E7EB] dark:border-[#222836] flex items-center justify-end gap-2">
             <button
               type="button"
               onClick={() => setCreateTourOpen(false)}
-              className="px-3.5 py-1.5 border border-[#D1D5DB] rounded-md text-[#4B5563] hover:text-[#111827] transition-colors"
+              className="px-3.5 py-1.5 border border-[#D1D5DB] dark:border-[#2a3142] rounded-xl text-[#4B5563] dark:text-stone-300 hover:text-[#111827] dark:hover:text-white hover:bg-stone-50 dark:hover:bg-[#1c2232] transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={creatingTour}
-              className="px-4 py-1.5 bg-[#111827] hover:bg-black text-white font-semibold rounded-md transition-colors disabled:opacity-50"
+              className="px-4 py-1.5 bg-[#111827] dark:bg-emerald-600 hover:bg-black dark:hover:bg-emerald-500 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 cursor-pointer"
             >
               {creatingTour ? "Creating..." : "Save Expedition"}
             </button>

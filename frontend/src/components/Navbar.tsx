@@ -249,13 +249,13 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setSearchOpen(true)}
-                className="inline-flex items-center gap-1.5 xl:gap-2 rounded-full border border-[#E5DFD3] bg-[#FAF8F5] hover:border-stone-400 p-2 xl:px-3 xl:py-1.5 text-xs font-medium text-stone-600 hover:text-stone-950 transition-colors cursor-pointer whitespace-nowrap shrink-0"
+                className="inline-flex items-center gap-1.5 xl:gap-2 rounded-full border border-[#E5DFD3] dark:border-[#2a3142] bg-[#FAF8F5] dark:bg-[#12151d] hover:border-stone-400 dark:hover:border-stone-600 p-2 xl:px-3 xl:py-1.5 text-xs font-medium text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white transition-colors cursor-pointer whitespace-nowrap shrink-0"
                 aria-label="Open global search"
                 title="Global Search (Ctrl+K)"
               >
-                <Search className="h-3.5 w-3.5 text-stone-500 shrink-0" />
+                <Search className="h-3.5 w-3.5 text-stone-500 dark:text-stone-400 shrink-0" />
                 <span className="hidden xl:inline-block">Search</span>
-                <kbd className="hidden xl:inline-block rounded border border-stone-200 bg-white px-1.5 py-0.5 text-[10px] font-mono text-stone-500">
+                <kbd className="hidden xl:inline-block rounded border border-stone-200 dark:border-[#2a3142] bg-white dark:bg-[#1a202c] px-1.5 py-0.5 text-[10px] font-mono text-stone-500 dark:text-stone-400">
                   Ctrl+K
                 </kbd>
               </button>
@@ -265,13 +265,13 @@ export default function Navbar() {
                 <div className="flex items-center gap-1.5 xl:gap-2 text-xs xl:text-sm font-semibold shrink-0">
                   <Link
                     href="/login"
-                    className="px-3 xl:px-4 py-1.5 xl:py-2 rounded-full text-stone-700 hover:text-stone-900 hover:bg-[#F5F2EB] border border-transparent hover:border-[#E5DFD5] transition-all font-medium whitespace-nowrap"
+                    className="px-3 xl:px-4 py-1.5 xl:py-2 rounded-full text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-[#F5F2EB] dark:hover:bg-[#1c2230] border border-transparent hover:border-[#E5DFD5] dark:hover:border-[#2a3142] transition-all font-medium whitespace-nowrap"
                   >
                     Login
                   </Link>
                   <Link
                     href="/register"
-                    className="px-3.5 xl:px-5 py-2 xl:py-2.5 rounded-full bg-stone-900 hover:bg-stone-800 text-stone-50 font-semibold transition-all shadow-xs whitespace-nowrap"
+                    className="px-3.5 xl:px-5 py-2 xl:py-2.5 rounded-full bg-stone-900 dark:bg-emerald-600 hover:bg-stone-800 dark:hover:bg-emerald-500 text-stone-50 font-semibold transition-all shadow-xs whitespace-nowrap"
                   >
                     Register
                   </Link>
@@ -281,7 +281,7 @@ export default function Navbar() {
                 <div className="flex items-center gap-2.5">
                   <Link
                     href="/write-post"
-                    className="px-3.5 xl:px-4 py-2 rounded-full bg-stone-900 hover:bg-stone-800 text-stone-50 text-xs xl:text-sm font-semibold flex items-center gap-2 transition-all shadow-xs shrink-0"
+                    className="px-3.5 xl:px-4 py-2 rounded-full bg-stone-900 dark:bg-emerald-600 hover:bg-stone-800 dark:hover:bg-emerald-500 text-stone-50 text-xs xl:text-sm font-semibold flex items-center gap-2 transition-all shadow-xs shrink-0"
                   >
                     <PenSquare className="h-4 w-4" />
                     <span>Write a Story</span>
@@ -294,7 +294,7 @@ export default function Navbar() {
                     <button
                       type="button"
                       onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                      className="h-9 w-9 sm:h-10 sm:w-10 rounded-full border border-[#EBE6DC] bg-white overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-stone-400 transition-all cursor-pointer shadow-2xs"
+                      className="h-9 w-9 sm:h-10 sm:w-10 rounded-full border border-[#EBE6DC] dark:border-[#2a3142] bg-white dark:bg-[#141720] overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-stone-400 dark:hover:ring-stone-600 transition-all cursor-pointer shadow-2xs"
                       aria-label="User Account Menu"
                     >
                       {user?.avatarUrl && !avatarError ? (
@@ -313,13 +313,13 @@ export default function Navbar() {
 
                     {/* Simple Dropdown: Dashboard & Log Out */}
                     {profileDropdownOpen && (
-                      <div className="absolute right-0 mt-2.5 w-56 bg-white border border-[#EBE6DC] rounded-2xl shadow-xl py-1.5 z-50 divide-y divide-[#F0EBE1] text-xs sm:text-sm animate-in fade-in slide-in-from-top-2 duration-150">
+                      <div className="absolute right-0 mt-2.5 w-56 bg-white dark:bg-[#141720] border border-[#EBE6DC] dark:border-[#222836] rounded-2xl shadow-xl py-1.5 z-50 divide-y divide-[#F0EBE1] dark:divide-[#222836] text-xs sm:text-sm animate-in fade-in slide-in-from-top-2 duration-150">
                         {/* User Identity Mini-Header */}
                         <div className="px-4 py-2.5">
-                          <div className="font-bold text-stone-900 truncate">
+                          <div className="font-bold text-stone-900 dark:text-stone-100 truncate">
                             {user?.fullName || "User"}
                           </div>
-                          <div className="text-xs text-stone-500 truncate mt-0.5">
+                          <div className="text-xs text-stone-500 dark:text-stone-400 truncate mt-0.5">
                             {user?.email}
                           </div>
                         </div>
@@ -329,9 +329,9 @@ export default function Navbar() {
                           <Link
                             href="/profile"
                             onClick={() => setProfileDropdownOpen(false)}
-                            className="flex items-center gap-2.5 px-4 py-2 text-stone-700 hover:bg-[#FAF8F5] hover:text-stone-950 font-medium transition-colors"
+                            className="flex items-center gap-2.5 px-4 py-2 text-stone-700 dark:text-stone-200 hover:bg-[#FAF8F5] dark:hover:bg-[#181d28] hover:text-stone-950 dark:hover:text-white font-medium transition-colors"
                           >
-                            <LayoutDashboard className="h-4 w-4 text-stone-500" />
+                            <LayoutDashboard className="h-4 w-4 text-stone-500 dark:text-stone-400" />
                             <span>Dashboard</span>
                           </Link>
                         </div>
@@ -344,9 +344,9 @@ export default function Navbar() {
                               logout();
                               setProfileDropdownOpen(false);
                             }}
-                            className="w-full flex items-center gap-2.5 px-4 py-2 text-rose-600 hover:bg-rose-50 text-left font-medium transition-colors cursor-pointer"
+                            className="w-full flex items-center gap-2.5 px-4 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-left font-medium transition-colors cursor-pointer"
                           >
-                            <LogOut className="h-4 w-4 text-rose-500" />
+                            <LogOut className="h-4 w-4 text-rose-500 dark:text-rose-400" />
                             <span>Log Out</span>
                           </button>
                         </div>
@@ -374,8 +374,8 @@ export default function Navbar() {
 
         {/* Mobile Navigation Dropdown */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-[#EBE6DC] bg-[#FAF8F5] px-6 py-6 space-y-4 shadow-lg animate-in slide-in-from-top-2">
-            <nav className="flex flex-col space-y-2 text-sm font-medium text-stone-700">
+          <div className="lg:hidden border-t border-[#EBE6DC] dark:border-[#222836] bg-[#FAF8F5] dark:bg-[#0c0f16] px-6 py-6 space-y-4 shadow-lg animate-in slide-in-from-top-2">
+            <nav className="flex flex-col space-y-2 text-sm font-medium text-stone-700 dark:text-stone-300">
               {navLinks.map((item) => {
                 const isActive = isRouteActive(item.href);
                 return (
@@ -385,8 +385,8 @@ export default function Navbar() {
                     onClick={() => setMobileMenuOpen(false)}
                     className={`px-4 py-2.5 rounded-xl transition-all border ${
                       isActive
-                        ? "bg-[#F5F2EB] text-stone-900 font-semibold border-[#E5DFD5]"
-                        : "border-transparent hover:bg-white text-stone-700"
+                        ? "bg-[#F5F2EB] dark:bg-[#1a202c] text-stone-900 dark:text-stone-100 font-semibold border-[#E5DFD5] dark:border-[#2a3142]"
+                        : "border-transparent hover:bg-white dark:hover:bg-[#141720] text-stone-700 dark:text-stone-300"
                     }`}
                   >
                     {item.label}
@@ -395,20 +395,20 @@ export default function Navbar() {
               })}
             </nav>
 
-            <div className="pt-4 border-t border-[#EBE6DC] space-y-3">
+            <div className="pt-4 border-t border-[#EBE6DC] dark:border-[#222836] space-y-3">
               {!isLoggedIn ? (
                 <div className="grid grid-cols-2 gap-3 text-sm font-semibold">
                   <Link
                     href="/login"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="w-full py-2.5 rounded-full border border-[#E5DFD5] bg-white text-stone-800 text-center hover:bg-stone-50 block"
+                    className="w-full py-2.5 rounded-full border border-[#E5DFD5] dark:border-[#2a3142] bg-white dark:bg-[#141720] text-stone-800 dark:text-stone-200 text-center hover:bg-stone-50 dark:hover:bg-[#1c2232] block"
                   >
                     Login
                   </Link>
                   <Link
                     href="/register"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="w-full py-2.5 rounded-full bg-stone-900 text-stone-50 text-center hover:bg-stone-800 block"
+                    className="w-full py-2.5 rounded-full bg-stone-900 dark:bg-emerald-600 text-stone-50 text-center hover:bg-stone-800 dark:hover:bg-emerald-500 block"
                   >
                     Register
                   </Link>
@@ -418,7 +418,7 @@ export default function Navbar() {
                   <Link
                     href="/write-post"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="w-full py-2.5 rounded-full bg-stone-900 text-stone-50 font-semibold text-center block hover:bg-stone-800 transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-2.5 rounded-full bg-stone-900 dark:bg-emerald-600 text-stone-50 font-semibold text-center block hover:bg-stone-800 dark:hover:bg-emerald-500 transition-colors flex items-center justify-center gap-2"
                   >
                     <PenSquare className="h-4 w-4" />
                     <span>Write a Story</span>
@@ -426,7 +426,7 @@ export default function Navbar() {
                   <Link
                     href="/profile"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="w-full py-2.5 rounded-full bg-white border border-[#EBE6DC] text-stone-800 font-semibold text-center block"
+                    className="w-full py-2.5 rounded-full bg-white dark:bg-[#141720] border border-[#EBE6DC] dark:border-[#222836] text-stone-800 dark:text-stone-200 font-semibold text-center block"
                   >
                     Dashboard
                   </Link>
@@ -435,7 +435,7 @@ export default function Navbar() {
                       logout();
                       setMobileMenuOpen(false);
                     }}
-                    className="w-full py-2.5 rounded-full bg-rose-50 text-rose-700 font-semibold text-center hover:bg-rose-100 block cursor-pointer"
+                    className="w-full py-2.5 rounded-full bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 font-semibold text-center hover:bg-rose-100 dark:hover:bg-rose-950/50 block cursor-pointer"
                   >
                     Log Out
                   </button>
@@ -448,20 +448,20 @@ export default function Navbar() {
 
       {/* Global Authentication Modal */}
       {authModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs">
-          <div className="bg-white border border-[#EBE6DC] rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 dark:bg-black/80 backdrop-blur-xs">
+          <div className="bg-white dark:bg-[#141720] border border-[#EBE6DC] dark:border-[#222836] rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
             <button
               onClick={handleCloseModal}
-              className="absolute top-5 right-5 h-8 w-8 rounded-full bg-stone-100 text-stone-400 hover:text-stone-800 flex items-center justify-center transition-colors"
+              className="absolute top-5 right-5 h-8 w-8 rounded-full bg-stone-100 dark:bg-[#1c2230] text-stone-400 dark:text-stone-300 hover:text-stone-800 dark:hover:text-white flex items-center justify-center transition-colors cursor-pointer"
             >
               <X className="h-4 w-4" />
             </button>
 
             <div className="text-center space-y-1 mb-6">
-              <span className="font-serif text-2xl font-bold tracking-tight text-stone-900 block">
+              <span className="font-serif text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-100 block">
                 Traveller&apos;s
               </span>
-              <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
+              <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100">
                 {recoveryStep === "forgot"
                   ? "Recover Account Access"
                   : recoveryStep === "reset"
@@ -470,7 +470,7 @@ export default function Navbar() {
                   ? "Traveler Sign In"
                   : "Join Bangladeshi Explorers"}
               </h3>
-              <p className="text-xs sm:text-sm text-stone-500">
+              <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400">
                 {recoveryStep === "forgot"
                   ? "Enter your account email to generate a 15-minute cryptographic reset token."
                   : recoveryStep === "reset"
@@ -482,13 +482,13 @@ export default function Navbar() {
             </div>
 
             {authInfo && (
-              <div className="mb-4 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm break-all">
+              <div className="mb-4 p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs sm:text-sm break-all">
                 {authInfo}
               </div>
             )}
 
             {authError && (
-              <div className="mb-4 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs sm:text-sm flex items-center gap-2.5">
+              <div className="mb-4 p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs sm:text-sm flex items-center gap-2.5">
                 <AlertCircle className="h-4 w-4 shrink-0" />
                 <span>{authError}</span>
               </div>
@@ -498,50 +498,50 @@ export default function Navbar() {
               {recoveryStep === "none" && authModalMode === "register" && (
                 <>
                   <div className="space-y-1">
-                    <label className="block text-stone-700 font-semibold">Full Name</label>
+                    <label className="block text-stone-700 dark:text-stone-300 font-semibold">Full Name</label>
                     <input
                       type="text"
                       placeholder="e.g. Tanvir Ahmed"
                       value={authFullName}
                       onChange={(e) => setAuthFullName(e.target.value)}
-                      className="w-full bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 transition-colors"
+                      className="w-full bg-[#FAF8F5] dark:bg-[#0c0f16] border border-[#E5DFD5] dark:border-[#2a3142] rounded-2xl px-4 py-3 text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-900 dark:focus:border-amber-400 transition-colors"
                       required
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="block text-stone-700 font-semibold">Phone Number (bKash / WhatsApp)</label>
+                    <label className="block text-stone-700 dark:text-stone-300 font-semibold">Phone Number (bKash / WhatsApp)</label>
                     <input
                       type="tel"
                       placeholder="+880 1711-234567"
                       value={authPhone}
                       onChange={(e) => setAuthPhone(e.target.value)}
-                      className="w-full bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 transition-colors"
+                      className="w-full bg-[#FAF8F5] dark:bg-[#0c0f16] border border-[#E5DFD5] dark:border-[#2a3142] rounded-2xl px-4 py-3 text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-900 dark:focus:border-amber-400 transition-colors"
                     />
                   </div>
                 </>
               )}
 
               <div className="space-y-1">
-                <label className="block text-stone-700 font-semibold">Email Address</label>
+                <label className="block text-stone-700 dark:text-stone-300 font-semibold">Email Address</label>
                 <input
                   type="email"
                   placeholder="tanvir@example.com"
                   value={authEmail}
                   onChange={(e) => setAuthEmail(e.target.value)}
-                  className="w-full bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 transition-colors"
+                  className="w-full bg-[#FAF8F5] dark:bg-[#0c0f16] border border-[#E5DFD5] dark:border-[#2a3142] rounded-2xl px-4 py-3 text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-900 dark:focus:border-amber-400 transition-colors"
                   required
                 />
               </div>
 
               {recoveryStep === "reset" && (
                 <div className="space-y-1">
-                  <label className="block text-stone-700 font-semibold">Reset Token</label>
+                  <label className="block text-stone-700 dark:text-stone-300 font-semibold">Reset Token</label>
                   <input
                     type="text"
                     placeholder="Paste your hex reset token"
                     value={resetToken}
                     onChange={(e) => setResetToken(e.target.value)}
-                    className="w-full font-mono bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 transition-colors"
+                    className="w-full font-mono bg-[#FAF8F5] dark:bg-[#0c0f16] border border-[#E5DFD5] dark:border-[#2a3142] rounded-2xl px-4 py-3 text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-900 dark:focus:border-amber-400 transition-colors"
                     required
                   />
                 </div>
@@ -550,7 +550,7 @@ export default function Navbar() {
               {recoveryStep !== "forgot" && (
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
-                    <label className="block text-stone-700 font-semibold">
+                    <label className="block text-stone-700 dark:text-stone-300 font-semibold">
                       {recoveryStep === "reset" ? "New Password" : "Password"}
                     </label>
                     {recoveryStep === "none" && authModalMode === "login" && (
@@ -561,7 +561,7 @@ export default function Navbar() {
                           setAuthInfo(null);
                           setRecoveryStep("forgot");
                         }}
-                        className="text-xs font-semibold text-stone-600 hover:text-stone-950 underline cursor-pointer"
+                        className="text-xs font-semibold text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-white underline cursor-pointer"
                       >
                         Forgot password?
                       </button>
@@ -572,7 +572,7 @@ export default function Navbar() {
                     placeholder="••••••••"
                     value={authPassword}
                     onChange={(e) => setAuthPassword(e.target.value)}
-                    className="w-full bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 transition-colors"
+                    className="w-full bg-[#FAF8F5] dark:bg-[#0c0f16] border border-[#E5DFD5] dark:border-[#2a3142] rounded-2xl px-4 py-3 text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-900 dark:focus:border-amber-400 transition-colors"
                     required
                   />
                 </div>
@@ -581,7 +581,7 @@ export default function Navbar() {
               <button
                 type="submit"
                 disabled={authLoading}
-                className="w-full py-3.5 rounded-full bg-stone-900 hover:bg-stone-800 text-stone-50 font-semibold text-sm shadow-xs transition-all mt-2 disabled:opacity-50"
+                className="w-full py-3.5 rounded-full bg-stone-900 dark:bg-emerald-600 hover:bg-stone-800 dark:hover:bg-emerald-500 text-stone-50 font-semibold text-sm shadow-xs transition-all mt-2 disabled:opacity-50 cursor-pointer"
               >
                 {authLoading
                   ? "Processing..."
@@ -603,7 +603,7 @@ export default function Navbar() {
                       setAuthInfo(null);
                       setRecoveryStep("none");
                     }}
-                    className="text-xs sm:text-sm text-stone-600 hover:text-stone-950 font-medium cursor-pointer"
+                    className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-white font-medium cursor-pointer"
                   >
                     Back to Sign In
                   </button>
@@ -615,7 +615,7 @@ export default function Navbar() {
                       setAuthInfo(null);
                       openAuthModal(authModalMode === "login" ? "register" : "login");
                     }}
-                    className="text-xs sm:text-sm text-stone-600 hover:text-stone-950 font-medium cursor-pointer"
+                    className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-white font-medium cursor-pointer"
                   >
                     {authModalMode === "login"
                       ? "New traveler? Create an account here"
@@ -625,16 +625,16 @@ export default function Navbar() {
               </div>
 
               {isDevEnvironment && recoveryStep === "none" && authModalMode === "login" && (
-                <div className="pt-3 border-t border-[#F0EBE1] space-y-2.5">
-                  <span className="block text-[11px] font-semibold text-stone-500 uppercase tracking-wider text-center">
+                <div className="pt-3 border-t border-[#F0EBE1] dark:border-[#222836] space-y-2.5">
+                  <span className="block text-[11px] font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider text-center">
                     Developer Quick Access
                   </span>
-                  <div className="flex items-center justify-between gap-2 p-1.5 rounded-2xl bg-[#FAF8F5] border border-[#EBE6DC]">
+                  <div className="flex items-center justify-between gap-2 p-1.5 rounded-2xl bg-[#FAF8F5] dark:bg-[#0c0f16] border border-[#EBE6DC] dark:border-[#222836]">
                     <button
                       type="button"
                       disabled={authLoading}
                       onClick={() => handleRoleQuickLogin("superadmin")}
-                      className="flex-1 py-2 px-1.5 rounded-xl bg-white border border-[#EBE6DC] hover:border-stone-400 hover:bg-stone-50 text-xs font-semibold text-stone-900 transition-all disabled:opacity-50 text-center cursor-pointer shadow-2xs"
+                      className="flex-1 py-2 px-1.5 rounded-xl bg-white dark:bg-[#141720] border border-[#EBE6DC] dark:border-[#222836] hover:border-stone-400 dark:hover:border-stone-600 text-xs font-semibold text-stone-900 dark:text-stone-100 transition-all disabled:opacity-50 text-center cursor-pointer shadow-2xs"
                     >
                       Super Admin
                     </button>
@@ -642,7 +642,7 @@ export default function Navbar() {
                       type="button"
                       disabled={authLoading}
                       onClick={() => handleRoleQuickLogin("admin")}
-                      className="flex-1 py-2 px-1.5 rounded-xl bg-white border border-[#EBE6DC] hover:border-stone-400 hover:bg-stone-50 text-xs font-semibold text-stone-900 transition-all disabled:opacity-50 text-center cursor-pointer shadow-2xs"
+                      className="flex-1 py-2 px-1.5 rounded-xl bg-white dark:bg-[#141720] border border-[#EBE6DC] dark:border-[#222836] hover:border-stone-400 dark:hover:border-stone-600 text-xs font-semibold text-stone-900 dark:text-stone-100 transition-all disabled:opacity-50 text-center cursor-pointer shadow-2xs"
                     >
                       Admin
                     </button>
@@ -650,7 +650,7 @@ export default function Navbar() {
                       type="button"
                       disabled={authLoading}
                       onClick={() => handleRoleQuickLogin("user")}
-                      className="flex-1 py-2 px-1.5 rounded-xl bg-white border border-[#EBE6DC] hover:border-stone-400 hover:bg-stone-50 text-xs font-semibold text-stone-900 transition-all disabled:opacity-50 text-center cursor-pointer shadow-2xs"
+                      className="flex-1 py-2 px-1.5 rounded-xl bg-white dark:bg-[#141720] border border-[#EBE6DC] dark:border-[#222836] hover:border-stone-400 dark:hover:border-stone-600 text-xs font-semibold text-stone-900 dark:text-stone-100 transition-all disabled:opacity-50 text-center cursor-pointer shadow-2xs"
                     >
                       User (Traveler)
                     </button>

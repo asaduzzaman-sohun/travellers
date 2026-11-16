@@ -242,8 +242,8 @@ export default function HotelsReviewPage() {
                     />
                   </Link>
                   <div className="absolute top-4 left-4">
-                    <span className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/95 dark:bg-stone-900/90 backdrop-blur-md text-stone-900 dark:text-stone-100 border border-stone-200/60 dark:border-white/15 shadow-sm flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5 text-amber-700 dark:text-amber-400" />
+                    <span className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-stone-900/80 backdrop-blur-md text-stone-100 border border-white/20 shadow-sm flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5 text-amber-400 shrink-0" />
                       {hotel.place}
                     </span>
                   </div>
