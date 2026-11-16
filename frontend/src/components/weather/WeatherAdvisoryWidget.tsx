@@ -165,25 +165,25 @@ export function WeatherAdvisoryWidget({ destination }: { destination?: string })
   const today = forecast[0];
 
   return (
-    <div className="bg-white border border-[#EBE6DC] rounded-3xl p-6 sm:p-7 shadow-sm space-y-6">
+    <div className="bg-white dark:bg-[#141720] border border-[#EBE6DC] dark:border-[#222836] rounded-3xl p-6 sm:p-7 shadow-xs space-y-6">
       {/* Top Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#F0EBE1] pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#F0EBE1] dark:border-[#222836] pb-4">
         <div>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800 flex items-center gap-1.5">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
             <Compass className="h-3.5 w-3.5" />
             Live Field Weather &amp; Advisory
           </span>
-          <h3 className="text-xl font-serif font-bold text-stone-900 mt-0.5">
+          <h3 className="text-xl font-serif font-bold text-stone-900 dark:text-stone-100 mt-0.5">
             {geo.name} Region
           </h3>
         </div>
 
         {today && (
-          <div className="flex items-center gap-2.5 bg-[#FAF8F5] border border-[#E5DFD5] px-3.5 py-1.5 rounded-2xl">
+          <div className="flex items-center gap-2.5 bg-[#FAF8F5] dark:bg-[#12151d] border border-[#E5DFD5] dark:border-[#2a3142] px-3.5 py-1.5 rounded-2xl">
             {getWeatherIcon(today.code)}
             <div>
-              <span className="font-bold text-sm text-stone-900">{today.maxTemp}°C</span>
-              <span className="text-[11px] text-stone-500 block leading-tight">{getWeatherConditionText(today.code)}</span>
+              <span className="font-bold text-sm text-stone-900 dark:text-stone-100">{today.maxTemp}°C</span>
+              <span className="text-[11px] text-stone-500 dark:text-stone-400 block leading-tight">{getWeatherConditionText(today.code)}</span>
             </div>
           </div>
         )}
@@ -191,26 +191,26 @@ export function WeatherAdvisoryWidget({ destination }: { destination?: string })
 
       {/* 5-Day Forecast Grid */}
       <div>
-        <h4 className="text-xs font-bold text-stone-700 uppercase tracking-wider mb-3">5-Day Outlook</h4>
+        <h4 className="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider mb-3">5-Day Outlook</h4>
         {loading ? (
           <div className="grid grid-cols-5 gap-2 animate-pulse">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="h-24 bg-[#FAF8F5] rounded-2xl" />
+              <div key={i} className="h-24 bg-[#FAF8F5] dark:bg-[#12151d] rounded-2xl" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-5 gap-2 text-center">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
             {forecast.map((d) => (
               <div
                 key={d.date}
-                className="bg-[#FAF8F5] border border-[#EAE4D9] rounded-2xl p-2.5 flex flex-col items-center justify-between space-y-1.5"
+                className="bg-[#FAF8F5] dark:bg-[#12151d] border border-[#EAE4D9] dark:border-[#222836] rounded-2xl p-2.5 flex flex-col items-center justify-between space-y-1.5 transition-all hover:border-amber-400/50"
               >
-                <span className="text-[11px] font-bold text-stone-700">{d.dayName}</span>
+                <span className="text-[11px] font-bold text-stone-700 dark:text-stone-300">{d.dayName}</span>
                 <div className="my-0.5">{getWeatherIcon(d.code)}</div>
-                <div className="text-xs font-semibold text-stone-900">
-                  {d.maxTemp}° <span className="text-stone-400 font-normal">{d.minTemp}°</span>
+                <div className="text-xs font-semibold text-stone-900 dark:text-stone-100">
+                  {d.maxTemp}° <span className="text-stone-400 dark:text-stone-500 font-normal">{d.minTemp}°</span>
                 </div>
-                <div className="flex items-center gap-1 text-[10px] text-blue-600 font-medium">
+                <div className="flex items-center gap-1 text-[10px] text-sky-600 dark:text-sky-400 font-medium">
                   <Droplets className="h-3 w-3" />
                   <span>{d.rainChance}%</span>
                 </div>
@@ -221,17 +221,17 @@ export function WeatherAdvisoryWidget({ destination }: { destination?: string })
       </div>
 
       {/* Seasonal Travel Advisory Callout */}
-      <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-2">
-        <div className="flex items-center gap-2 text-amber-900 font-bold text-xs">
-          <ShieldAlert className="h-4 w-4 text-amber-700 shrink-0" />
+      <div className="p-4 sm:p-5 rounded-2xl bg-amber-500/10 dark:bg-amber-950/30 border border-amber-500/30 dark:border-amber-500/30 space-y-2">
+        <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-bold text-xs">
+          <ShieldAlert className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
           <span>Regional Field Advisory</span>
         </div>
-        <p className="text-xs text-amber-950/80 leading-relaxed">
+        <p className="text-xs text-stone-700 dark:text-amber-100/90 leading-relaxed font-normal">
           {geo.advisory}
         </p>
-        <div className="pt-1 text-[11px] text-amber-800 font-medium flex items-center gap-1">
-          <Thermometer className="h-3 w-3 text-amber-700" />
-          <span>Best Travel Window: <strong>{geo.bestSeason}</strong></span>
+        <div className="pt-1 text-[11px] text-amber-800 dark:text-amber-300 font-medium flex items-center gap-1.5">
+          <Thermometer className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+          <span>Best Travel Window: <strong className="font-semibold text-stone-900 dark:text-white">{geo.bestSeason}</strong></span>
         </div>
       </div>
     </div>

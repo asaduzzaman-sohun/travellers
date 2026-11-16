@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #FAF8F5;
   --foreground: #1C1917;
@@ -178,18 +180,24 @@ html.dark select option {
 }
 
 /* 7. Primary Action Buttons & Inverted Elements */
-html.dark button.bg-stone-900:not(nav *),
+html.dark #live-chat-trigger {
+  background-color: #141720 !important;
+  color: #34d399 !important;
+  border-color: rgba(16, 185, 129, 0.5) !important;
+}
+
+html.dark button.bg-stone-900:not(nav *):not(#live-chat-trigger),
 html.dark a.bg-stone-900:not(nav *),
-html.dark button.bg-\[\#111827\]:not(nav *),
+html.dark button.bg-\[\#111827\]:not(nav *):not(#live-chat-trigger),
 html.dark a.bg-\[\#111827\]:not(nav *) {
   background-color: #f8fafc !important;
   color: #0b0d11 !important;
   font-weight: 600 !important;
 }
 
-html.dark button.bg-stone-900:not(nav *):hover,
+html.dark button.bg-stone-900:not(nav *):not(#live-chat-trigger):hover,
 html.dark a.bg-stone-900:not(nav *):hover,
-html.dark button.bg-\[\#111827\]:not(nav *):hover,
+html.dark button.bg-\[\#111827\]:not(nav *):not(#live-chat-trigger):hover,
 html.dark a.bg-\[\#111827\]:not(nav *):hover {
   background-color: #e2e8f0 !important;
   color: #000000 !important;
@@ -235,6 +243,27 @@ html.dark .bg-sky-50 {
   background-color: rgba(56, 189, 248, 0.15) !important;
   border-color: rgba(56, 189, 248, 0.3) !important;
   color: #38bdf8 !important;
+}
+
+/* 9b. Dark-mode text contrast protection for amber, gold and emerald badges */
+html.dark .text-amber-900,
+html.dark .text-amber-950,
+html.dark .text-amber-950\/80,
+html.dark .text-amber-800 {
+  color: #fde68a !important;
+}
+
+html.dark .text-amber-700 {
+  color: #f59e0b !important;
+}
+
+html.dark .text-emerald-900,
+html.dark .text-emerald-950 {
+  color: #a7f3d0 !important;
+}
+
+html.dark .text-emerald-800 {
+  color: #34d399 !important;
 }
 
 /* 10. Dashboard Sidebar & Layout */

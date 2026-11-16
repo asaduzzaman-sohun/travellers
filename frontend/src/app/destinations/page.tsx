@@ -281,27 +281,30 @@ function DestinationsContent() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent opacity-90" />
 
-                {/* Location Badge */}
-                <div className="absolute top-4 left-4">
-                  <span className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/95 dark:bg-stone-900/90 backdrop-blur-md text-stone-900 dark:text-stone-100 border border-stone-200/60 dark:border-white/15 shadow-sm flex items-center gap-1.5">
-                    <MapPin className="h-3.5 w-3.5 text-amber-700 dark:text-amber-400" />
-                    {tour.destination}
-                  </span>
-                </div>
-
-                {/* Difficulty, Featured Badge & Quick Actions */}
-                <div className="absolute top-4 right-4 flex flex-col items-end gap-2">
-                  <div className="flex items-center gap-1.5">
-                    {tour.isFeatured && (
-                      <span className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-amber-600 text-white shadow-xs">
-                        Featured
+                {/* Top Overlay: Location on Left + Badges & Quick Actions on Right (Never Collides) */}
+                <div className="absolute top-3.5 left-3.5 right-3.5 flex items-start justify-between gap-2 z-10 pointer-events-none">
+                  <div className="min-w-0 flex-1 pr-1 pointer-events-auto">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-stone-900/80 backdrop-blur-md text-stone-100 border border-white/20 shadow-sm max-w-full">
+                      <MapPin className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                      <span className="truncate" title={tour.destination}>
+                        {tour.destination}
                       </span>
-                    )}
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-stone-900/80 backdrop-blur-sm text-stone-100 border border-white/20 shadow-xs">
-                      {tour.difficulty}
                     </span>
                   </div>
-                  <TourQuickActions tour={tour} />
+
+                  <div className="flex flex-col items-end gap-2 shrink-0 pointer-events-auto">
+                    <div className="flex items-center gap-1.5">
+                      {tour.isFeatured && (
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500 text-stone-950 shadow-xs whitespace-nowrap">
+                          Featured
+                        </span>
+                      )}
+                      <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-stone-900/80 backdrop-blur-sm text-stone-100 border border-white/20 shadow-xs whitespace-nowrap">
+                        {tour.difficulty}
+                      </span>
+                    </div>
+                    <TourQuickActions tour={tour} />
+                  </div>
                 </div>
 
                 {/* Duration & Group Size Overlay */}
