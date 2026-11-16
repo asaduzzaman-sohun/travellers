@@ -120,14 +120,14 @@ export default function HomePage() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent" />
 
-              <div className="absolute bottom-6 left-6 right-6 p-5 rounded-2xl bg-white/95 backdrop-blur-md border border-stone-200/80 shadow-sm space-y-1">
+              <div className="absolute bottom-6 left-6 right-6 p-5 rounded-2xl bg-white/95 dark:bg-stone-900/90 backdrop-blur-md border border-stone-200/80 dark:border-white/15 shadow-sm space-y-1">
                 <div className="flex items-center justify-between text-sm sm:text-base">
-                  <span className="text-stone-900 font-bold">Sajek Valley, Rangamati</span>
-                  <span className="text-amber-800 font-bold flex items-center gap-1">
+                  <span className="text-stone-900 dark:text-stone-100 font-bold">Sajek Valley, Rangamati</span>
+                  <span className="text-amber-800 dark:text-amber-400 font-bold flex items-center gap-1">
                     <Star className="h-4 w-4 fill-amber-500 text-amber-500" /> 4.9
                   </span>
                 </div>
-                <p className="text-xs sm:text-sm text-stone-600 line-clamp-1">
+                <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 line-clamp-1">
                   Misty hill tracts touching morning clouds above Ruilui and Konglak Para.
                 </p>
               </div>
@@ -210,8 +210,8 @@ export default function HomePage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent opacity-90" />
 
                   <div className="absolute top-4 left-4">
-                    <span className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/95 backdrop-blur-md text-stone-900 border border-stone-200/60 shadow-sm flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5 text-amber-700" />
+                    <span className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/95 dark:bg-stone-900/90 backdrop-blur-md text-stone-900 dark:text-stone-100 border border-stone-200/60 dark:border-white/15 shadow-sm flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5 text-amber-700 dark:text-amber-400" />
                       {tour.destination}
                     </span>
                   </div>

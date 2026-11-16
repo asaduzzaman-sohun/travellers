@@ -413,7 +413,7 @@ export default function CommunityPage() {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute top-4 left-4 flex gap-2">
-                      <span className="px-3 py-1 rounded-full bg-white/95 backdrop-blur-md text-xs font-semibold text-stone-900 shadow-sm border border-stone-200/60">
+                      <span className="px-3 py-1 rounded-full bg-white/95 dark:bg-stone-900/90 backdrop-blur-md text-xs font-semibold text-stone-900 dark:text-stone-100 shadow-sm border border-stone-200/60 dark:border-white/15">
                         {post.category}
                       </span>
                       {post.division && post.division !== "All" && (

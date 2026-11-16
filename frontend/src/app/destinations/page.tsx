@@ -283,8 +283,8 @@ function DestinationsContent() {
 
                 {/* Location Badge */}
                 <div className="absolute top-4 left-4">
-                  <span className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/95 backdrop-blur-md text-stone-900 border border-stone-200/60 shadow-sm flex items-center gap-1.5">
-                    <MapPin className="h-3.5 w-3.5 text-amber-700" />
+                  <span className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/95 dark:bg-stone-900/90 backdrop-blur-md text-stone-900 dark:text-stone-100 border border-stone-200/60 dark:border-white/15 shadow-sm flex items-center gap-1.5">
+                    <MapPin className="h-3.5 w-3.5 text-amber-700 dark:text-amber-400" />
                     {tour.destination}
                   </span>
                 </div>

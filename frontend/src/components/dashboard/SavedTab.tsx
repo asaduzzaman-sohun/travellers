@@ -77,7 +77,7 @@ export function SavedTab(_props: SavedTabProps) {
                     type="button"
                     onClick={() => removeFromWishlist(tour.id)}
                     aria-label={`Remove ${tour.title} from wishlist`}
-                    className="absolute top-2.5 right-2.5 h-7 w-7 rounded-full bg-white/95 text-rose-500 hover:bg-rose-50 flex items-center justify-center shadow-sm transition cursor-pointer"
+                    className="absolute top-2.5 right-2.5 h-7 w-7 rounded-full bg-white/95 dark:bg-stone-900/90 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-stone-200/60 dark:border-white/15 flex items-center justify-center shadow-sm transition cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>

@@ -140,7 +140,7 @@ export default function CompareFloatingBar() {
                             <button
                               type="button"
                               onClick={() => removeFromCompare(tour.id)}
-                              className="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/90 text-slate-500 hover:text-rose-600 flex items-center justify-center shadow-sm"
+                              className="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/90 dark:bg-stone-900/90 text-slate-500 dark:text-stone-300 hover:text-rose-600 dark:hover:text-rose-400 border border-slate-200 dark:border-white/15 flex items-center justify-center shadow-sm"
                               aria-label={`Remove ${tour.title}`}
                             >
                               <X className="w-3.5 h-3.5" />

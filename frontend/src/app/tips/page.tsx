@@ -242,7 +242,7 @@ export default function TravelTipsPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent opacity-90" />
 
                     <div className="absolute top-4 left-4 flex items-center gap-2">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md bg-white/95 text-stone-900 shadow-xs border border-white/40`}>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md bg-white/95 dark:bg-stone-900/90 text-stone-900 dark:text-stone-100 shadow-xs border border-white/40 dark:border-white/15`}>
                         {item.category}
                       </span>
                       <span className="px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md bg-stone-900/80 text-stone-100 shadow-xs">

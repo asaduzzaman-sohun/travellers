@@ -151,7 +151,7 @@ export default function TourQuickActions({
         className={`h-8 w-8 rounded-full flex items-center justify-center backdrop-blur-md border transition-all cursor-pointer shadow-xs ${
           compared
             ? "bg-teal-600 border-teal-400 text-white"
-            : "bg-white/90 border-white/60 text-stone-700 hover:bg-white hover:text-teal-700"
+            : "bg-white/90 dark:bg-stone-900/90 border-white/60 dark:border-white/20 text-stone-700 dark:text-stone-200 hover:bg-white dark:hover:bg-stone-800 hover:text-teal-700 dark:hover:text-teal-300"
         }`}
       >
         <Scale className="w-3.5 h-3.5" />
@@ -165,7 +165,7 @@ export default function TourQuickActions({
         className={`h-8 w-8 rounded-full flex items-center justify-center backdrop-blur-md border transition-all cursor-pointer shadow-xs ${
           saved
             ? "bg-rose-500 border-rose-400 text-white"
-            : "bg-white/90 border-white/60 text-stone-700 hover:bg-white hover:text-rose-600"
+            : "bg-white/90 dark:bg-stone-900/90 border-white/60 dark:border-white/20 text-stone-700 dark:text-stone-200 hover:bg-white dark:hover:bg-stone-800 hover:text-rose-600 dark:hover:text-rose-400"
         }`}
       >
         <Heart className={`w-3.5 h-3.5 ${saved ? "fill-white" : ""}`} />

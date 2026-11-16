@@ -71,20 +71,20 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((item) => {
           const typeStyles = {
             success: {
-              border: "border-emerald-200 bg-white/95 text-stone-900 shadow-emerald-500/5",
-              icon: <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />,
+              border: "border-emerald-200 dark:border-emerald-500/30 bg-white/95 dark:bg-[#141720]/95 text-stone-900 dark:text-stone-100 shadow-emerald-500/5",
+              icon: <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />,
             },
             error: {
-              border: "border-rose-200 bg-white/95 text-stone-900 shadow-rose-500/5",
-              icon: <AlertCircle className="h-4 w-4 text-rose-600 mt-0.5 shrink-0" />,
+              border: "border-rose-200 dark:border-rose-500/30 bg-white/95 dark:bg-[#141720]/95 text-stone-900 dark:text-stone-100 shadow-rose-500/5",
+              icon: <AlertCircle className="h-4 w-4 text-rose-600 dark:text-rose-400 mt-0.5 shrink-0" />,
             },
             warning: {
-              border: "border-amber-200 bg-white/95 text-stone-900 shadow-amber-500/5",
-              icon: <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />,
+              border: "border-amber-200 dark:border-amber-500/30 bg-white/95 dark:bg-[#141720]/95 text-stone-900 dark:text-stone-100 shadow-amber-500/5",
+              icon: <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />,
             },
             info: {
-              border: "border-stone-200 bg-white/95 text-stone-900 shadow-stone-500/5",
-              icon: <Info className="h-4 w-4 text-stone-600 mt-0.5 shrink-0" />,
+              border: "border-stone-200 dark:border-stone-700 bg-white/95 dark:bg-[#141720]/95 text-stone-900 dark:text-stone-100 shadow-stone-500/5",
+              icon: <Info className="h-4 w-4 text-stone-600 dark:text-stone-300 mt-0.5 shrink-0" />,
             },
           }[item.type];
 

@@ -232,8 +232,8 @@ function ToursCatalogContent() {
                 <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent opacity-90" />
 
                 <div className="absolute top-4 left-4">
-                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/95 backdrop-blur-md text-stone-900 border border-stone-200 shadow-2xs flex items-center gap-1.5">
-                    <MapPin className="h-3 w-3 text-amber-800" />
+                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/95 dark:bg-stone-900/90 backdrop-blur-md text-stone-900 dark:text-stone-100 border border-stone-200 dark:border-white/15 shadow-2xs flex items-center gap-1.5">
+                    <MapPin className="h-3 w-3 text-amber-800 dark:text-amber-400" />
                     {tour.destination}
                   </span>
                 </div>

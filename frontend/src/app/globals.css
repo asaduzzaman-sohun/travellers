@@ -69,6 +69,40 @@ html.dark .bg-stone-100 {
   background-color: #141720 !important;
 }
 
+/* 2b. Semi-transparent Image Overlay Pills & Floating Action Buttons */
+html.dark .bg-white\/95,
+html.dark .bg-white\/90,
+html.dark .bg-white\/85,
+html.dark .bg-white\/80,
+html.dark .bg-white\/75,
+html.dark .bg-white\/70,
+html.dark .bg-white\/60,
+html.dark .bg-white\/50,
+html.dark .bg-white\/40 {
+  background-color: rgba(18, 21, 29, 0.92) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  color: #f8fafc !important;
+}
+
+html.dark .bg-white\/95 *,
+html.dark .bg-white\/90 *,
+html.dark .bg-white\/80 * {
+  color: inherit;
+}
+
+/* Make sure location pin icons and rating stars pop cleanly on dark pills */
+html.dark .bg-white\/95 .text-amber-700,
+html.dark .bg-white\/95 .text-amber-800,
+html.dark .bg-white\/90 .text-amber-700,
+html.dark .bg-white\/90 .text-amber-800 {
+  color: #f59e0b !important;
+}
+
+html.dark nav.bg-white\/95 {
+  background-color: rgba(11, 13, 17, 0.95) !important;
+  border-top-color: #1e2430 !important;
+}
+
 /* 3. Subtle Inner Sections / Wells */
 html.dark .bg-\[\#F3F4F6\],
 html.dark .bg-stone-200\/60,
