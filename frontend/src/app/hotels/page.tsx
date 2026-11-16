@@ -100,22 +100,22 @@ export default function HotelsReviewPage() {
       {/* Main Content */}
       <div className="w-full max-w-[1720px] mx-auto px-6 sm:px-10 lg:px-14 2xl:px-20 mt-10 space-y-10">
         {/* Controls Card */}
-        <div className="bg-white border border-[#EBE6DC] rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
+        <div className="bg-white dark:bg-[#141720] border border-[#EBE6DC] dark:border-[#1e2434] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
           {/* Search & Sort Controls */}
           <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
             <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-stone-400" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-stone-400 dark:text-stone-500" />
               <input
                 type="text"
                 placeholder="Search resort by name, location or amenity (e.g. Sayeman, Sairu, infinity pool, tea estate)..."
                 value={searchQuery}
                 onChange={(e) => handleFilterChange(setSearchQuery, e.target.value)}
-                className="w-full bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl pl-12 pr-10 py-3.5 text-sm sm:text-base text-stone-900 placeholder:text-stone-400 focus:bg-white focus:outline-none focus:border-stone-900 transition-all"
+                className="w-full bg-[#FAF8F5] dark:bg-[#10131c] border border-[#E5DFD5] dark:border-[#262d3d] rounded-2xl pl-12 pr-10 py-3.5 text-sm sm:text-base text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:bg-white dark:focus:bg-[#10131c] focus:outline-none focus:border-emerald-500 transition-all"
               />
               {searchQuery && (
                 <button
                   onClick={() => handleFilterChange(setSearchQuery, "")}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 p-1"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 p-1 cursor-pointer"
                   aria-label="Clear search"
                 >
                   <X className="h-4 w-4" />
@@ -125,16 +125,16 @@ export default function HotelsReviewPage() {
 
             <div className="flex flex-wrap items-center gap-3">
               {/* Price Tier */}
-              <div className="flex items-center gap-2 bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl px-4 py-2.5">
-                <Building2 className="h-4 w-4 text-stone-500 shrink-0" />
-                <span className="text-xs sm:text-sm font-medium text-stone-500">Tier:</span>
+              <div className="flex items-center gap-2 bg-[#FAF8F5] dark:bg-[#10131c] border border-[#E5DFD5] dark:border-[#262d3d] rounded-2xl px-4 py-2.5">
+                <Building2 className="h-4 w-4 text-stone-500 dark:text-stone-400 shrink-0" />
+                <span className="text-xs sm:text-sm font-medium text-stone-500 dark:text-stone-400">Tier:</span>
                 <select
                   value={selectedTier}
                   onChange={(e) => handleFilterChange(setSelectedTier, e.target.value)}
-                  className="bg-transparent text-xs sm:text-sm font-semibold text-stone-900 focus:outline-none cursor-pointer"
+                  className="bg-transparent text-xs sm:text-sm font-semibold text-stone-900 dark:text-stone-100 focus:outline-none cursor-pointer"
                 >
                   {priceTiers.map((t) => (
-                    <option key={t} value={t}>
+                    <option key={t} value={t} className="bg-white dark:bg-[#10131c] text-stone-900 dark:text-stone-100">
                       {t === "All" ? "All Price Tiers" : t}
                     </option>
                   ))}
@@ -142,35 +142,35 @@ export default function HotelsReviewPage() {
               </div>
 
               {/* Sort Dropdown */}
-              <div className="flex items-center gap-2 bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl px-4 py-2.5">
-                <ArrowUpDown className="h-4 w-4 text-stone-500 shrink-0" />
-                <span className="text-xs sm:text-sm font-medium text-stone-500">Sort:</span>
+              <div className="flex items-center gap-2 bg-[#FAF8F5] dark:bg-[#10131c] border border-[#E5DFD5] dark:border-[#262d3d] rounded-2xl px-4 py-2.5">
+                <ArrowUpDown className="h-4 w-4 text-stone-500 dark:text-stone-400 shrink-0" />
+                <span className="text-xs sm:text-sm font-medium text-stone-500 dark:text-stone-400">Sort:</span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="bg-transparent text-xs sm:text-sm font-semibold text-stone-900 focus:outline-none cursor-pointer"
+                  className="bg-transparent text-xs sm:text-sm font-semibold text-stone-900 dark:text-stone-100 focus:outline-none cursor-pointer"
                 >
-                  <option value="rating">Highest Rated</option>
-                  <option value="reviews">Most Reviewed</option>
-                  <option value="price-asc">Price: Low to High</option>
-                  <option value="price-desc">Price: High to Low</option>
+                  <option value="rating" className="bg-white dark:bg-[#10131c] text-stone-900 dark:text-stone-100">Highest Rated</option>
+                  <option value="reviews" className="bg-white dark:bg-[#10131c] text-stone-900 dark:text-stone-100">Most Reviewed</option>
+                  <option value="price-asc" className="bg-white dark:bg-[#10131c] text-stone-900 dark:text-stone-100">Price: Low to High</option>
+                  <option value="price-desc" className="bg-white dark:bg-[#10131c] text-stone-900 dark:text-stone-100">Price: High to Low</option>
                 </select>
               </div>
             </div>
           </div>
 
           {/* Location Tabs */}
-          <div className="pt-2 border-t border-[#F0EBE1] flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <div className="pt-2 border-t border-[#F0EBE1] dark:border-[#1e2434] flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
             {places.map((place) => {
               const active = selectedPlace === place;
               return (
                 <button
                   key={place}
                   onClick={() => handleFilterChange(setSelectedPlace, place)}
-                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
+                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer ${
                     active
-                      ? "bg-stone-900 text-stone-50 shadow-xs"
-                      : "bg-[#FAF8F5] text-stone-700 border border-[#E5DFD5] hover:bg-stone-100 hover:text-stone-900"
+                      ? "bg-emerald-600 text-white shadow-xs"
+                      : "bg-[#FAF8F5] dark:bg-[#10131c] text-stone-700 dark:text-stone-300 border border-[#E5DFD5] dark:border-[#262d3d] hover:bg-stone-100 dark:hover:bg-[#181d2a] hover:text-stone-900 dark:hover:text-white"
                   }`}
                 >
                   {place === "All" ? "All Locations" : place}
@@ -219,7 +219,7 @@ export default function HotelsReviewPage() {
                 setSelectedPlace("All");
                 setSelectedTier("All");
               }}
-              className="px-6 py-2.5 rounded-full bg-stone-900 text-stone-50 text-sm font-semibold hover:bg-stone-800 transition-colors"
+              className="px-6 py-2.5 rounded-full bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-500 transition-colors shadow-xs cursor-pointer"
             >
               Clear Filters
             </button>
@@ -229,10 +229,10 @@ export default function HotelsReviewPage() {
             {paginatedHotels.map((hotel) => (
               <div
                 key={hotel.id}
-                className="bg-white border border-[#EBE6DC] rounded-3xl overflow-hidden shadow-xs hover:border-[#C4BAA9] hover-lift transition-smooth flex flex-col lg:flex-row"
+                className="bg-white dark:bg-[#141720] border border-[#EBE6DC] dark:border-[#1e2434] rounded-3xl overflow-hidden shadow-xs hover:border-emerald-500/40 dark:hover:border-emerald-500/40 hover-lift transition-smooth flex flex-col lg:flex-row"
               >
                 {/* Image Box */}
-                <div className="lg:w-2/5 min-h-[260px] lg:min-h-full relative bg-stone-100 shrink-0 group">
+                <div className="lg:w-2/5 min-h-[260px] lg:min-h-full relative bg-stone-100 dark:bg-stone-900 shrink-0 group">
                   <Link href={`/hotels/${hotel.id}`} className="block w-full h-full">
                     <ImageWithFallback
                       src={hotel.coverImage}
@@ -258,51 +258,51 @@ export default function HotelsReviewPage() {
                 <div className="p-6 sm:p-8 lg:p-10 flex-1 flex flex-col justify-between space-y-6">
                   <div className="space-y-4">
                     <div className="flex flex-wrap items-center justify-between gap-3">
-                      <Link href={`/hotels/${hotel.id}`} className="hover:text-amber-800 transition-colors">
-                        <h3 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 hover:text-amber-800 transition-colors">
+                      <Link href={`/hotels/${hotel.id}`} className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                        <h3 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 dark:text-stone-100 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
                           {hotel.name}
                         </h3>
                       </Link>
-                      <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-50 border border-amber-200/80 text-amber-900 text-xs sm:text-sm font-bold">
+                      <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-500/30 text-amber-900 dark:text-amber-300 text-xs sm:text-sm font-bold">
                         <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
                         <span>{(hotel.rating ?? 4.8).toFixed(1)}</span>
-                        <span className="text-stone-400 font-normal">({hotel.reviewsCount ?? 120} verified reviews)</span>
+                        <span className="text-stone-400 dark:text-stone-400 font-normal">({hotel.reviewsCount ?? 120} verified reviews)</span>
                       </div>
                     </div>
 
-                    <div className="text-xs sm:text-sm text-stone-500 flex items-center gap-1.5">
-                      <MapPin className="h-4 w-4 text-amber-800 shrink-0" />
+                    <div className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 flex items-center gap-1.5">
+                      <MapPin className="h-4 w-4 text-amber-800 dark:text-amber-400 shrink-0" />
                       <span>{hotel.location}</span>
                     </div>
 
-                    <p className="text-sm sm:text-base text-stone-600 leading-relaxed">
+                    <p className="text-sm sm:text-base text-stone-600 dark:text-stone-300 leading-relaxed">
                       {hotel.description}
                     </p>
 
                     {/* Pros & Cons Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                      <div className="bg-[#FAF8F5] border border-emerald-200/60 rounded-2xl p-4 sm:p-5 space-y-2.5">
-                        <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
-                          <Check className="h-4 w-4 text-emerald-600" /> What Guests Loved
+                      <div className="bg-[#FAF8F5] dark:bg-[#10131c] border border-emerald-500/30 dark:border-emerald-500/40 rounded-2xl p-4 sm:p-5 space-y-2.5">
+                        <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+                          <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" /> What Guests Loved
                         </span>
-                        <ul className="space-y-2 text-xs sm:text-sm text-stone-700">
+                        <ul className="space-y-2 text-xs sm:text-sm text-stone-700 dark:text-stone-300">
                           {hotel.pros.map((p, i) => (
                             <li key={i} className="flex items-start gap-2">
-                              <span className="text-emerald-700 font-bold shrink-0">•</span>
+                              <span className="text-emerald-700 dark:text-emerald-400 font-bold shrink-0">•</span>
                               <span>{p}</span>
                             </li>
                           ))}
                         </ul>
                       </div>
 
-                      <div className="bg-[#FAF8F5] border border-stone-200 rounded-2xl p-4 sm:p-5 space-y-2.5">
-                        <span className="text-xs font-bold uppercase tracking-wider text-stone-700 flex items-center gap-1.5">
+                      <div className="bg-[#FAF8F5] dark:bg-[#10131c] border border-stone-200 dark:border-[#262d3d] rounded-2xl p-4 sm:p-5 space-y-2.5">
+                        <span className="text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 flex items-center gap-1.5">
                           <X className="h-4 w-4 text-rose-500" /> Things to Keep in Mind
                         </span>
-                        <ul className="space-y-2 text-xs sm:text-sm text-stone-700">
+                        <ul className="space-y-2 text-xs sm:text-sm text-stone-700 dark:text-stone-300">
                           {hotel.cons.map((c, i) => (
                             <li key={i} className="flex items-start gap-2">
-                              <span className="text-stone-400 font-bold shrink-0">•</span>
+                              <span className="text-stone-400 dark:text-stone-500 font-bold shrink-0">•</span>
                               <span>{c}</span>
                             </li>
                           ))}
@@ -312,15 +312,15 @@ export default function HotelsReviewPage() {
                   </div>
 
                   {/* Price & Action Button */}
-                  <div className="pt-4 border-t border-[#F0EBE1] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="pt-4 border-t border-[#F0EBE1] dark:border-[#1e2434] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                      <span className="text-stone-500 text-xs uppercase font-semibold tracking-wider">Typical Nightly Rate</span>
-                      <div className="text-xl sm:text-2xl font-serif font-bold text-stone-900">{hotel.pricePerNight}</div>
+                      <span className="text-stone-500 dark:text-stone-400 text-xs uppercase font-semibold tracking-wider">Typical Nightly Rate</span>
+                      <div className="text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100">{hotel.pricePerNight}</div>
                     </div>
                     <div className="flex items-center gap-3">
                       <Link
                         href={`/hotels/${hotel.id}`}
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-stone-900 text-stone-50 text-xs sm:text-sm font-semibold hover:bg-stone-800 transition-all shadow-sm group"
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-semibold transition-all shadow-xs group cursor-pointer"
                       >
                         <span>View Property Details & Tariff</span>
                         <ChevronRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
@@ -335,20 +335,20 @@ export default function HotelsReviewPage() {
 
         {/* Pagination Controls */}
         {totalPages > 1 && (
-          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-[#EBE6DC]">
-            <span className="text-xs sm:text-sm text-stone-600">
-              Showing <strong className="text-stone-900 font-bold">{startIndex + 1}</strong> to{" "}
-              <strong className="text-stone-900 font-bold">
+          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-[#EBE6DC] dark:border-[#1e2434]">
+            <span className="text-xs sm:text-sm text-stone-600 dark:text-stone-400">
+              Showing <strong className="text-stone-900 dark:text-stone-100 font-bold">{startIndex + 1}</strong> to{" "}
+              <strong className="text-stone-900 dark:text-stone-100 font-bold">
                 {Math.min(startIndex + itemsPerPage, filteredHotels.length)}
               </strong>{" "}
-              of <strong className="text-stone-900 font-bold">{filteredHotels.length}</strong> properties
+              of <strong className="text-stone-900 dark:text-stone-100 font-bold">{filteredHotels.length}</strong> properties
             </span>
 
             <div className="flex items-center gap-1.5">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="px-3.5 py-2 rounded-xl bg-white border border-[#E5DFD5] text-stone-700 hover:bg-stone-50 disabled:opacity-40 disabled:pointer-events-none transition-colors flex items-center gap-1 text-xs sm:text-sm font-medium"
+                className="px-3.5 py-2 rounded-xl bg-white dark:bg-[#141720] border border-[#E5DFD5] dark:border-[#262d3d] text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-[#1c2232] disabled:opacity-40 disabled:pointer-events-none transition-colors flex items-center gap-1 text-xs sm:text-sm font-medium cursor-pointer shadow-2xs"
               >
                 <ChevronLeft className="h-4 w-4" />
                 <span>Previous</span>
@@ -358,10 +358,10 @@ export default function HotelsReviewPage() {
                 <button
                   key={pageNum}
                   onClick={() => handlePageChange(pageNum)}
-                  className={`h-9 w-9 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+                  className={`h-9 w-9 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                     currentPage === pageNum
-                      ? "bg-stone-900 text-stone-50 shadow-xs"
-                      : "bg-white border border-[#E5DFD5] text-stone-700 hover:bg-stone-50"
+                      ? "bg-emerald-600 text-white shadow-xs"
+                      : "bg-white dark:bg-[#141720] border border-[#E5DFD5] dark:border-[#262d3d] text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-[#1c2232] shadow-2xs"
                   }`}
                 >
                   {pageNum}
@@ -371,7 +371,7 @@ export default function HotelsReviewPage() {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="px-3.5 py-2 rounded-xl bg-white border border-[#E5DFD5] text-stone-700 hover:bg-stone-50 disabled:opacity-40 disabled:pointer-events-none transition-colors flex items-center gap-1 text-xs sm:text-sm font-medium"
+                className="px-3.5 py-2 rounded-xl bg-white dark:bg-[#141720] border border-[#E5DFD5] dark:border-[#262d3d] text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-[#1c2232] disabled:opacity-40 disabled:pointer-events-none transition-colors flex items-center gap-1 text-xs sm:text-sm font-medium cursor-pointer shadow-2xs"
               >
                 <span>Next</span>
                 <ChevronRight className="h-4 w-4" />

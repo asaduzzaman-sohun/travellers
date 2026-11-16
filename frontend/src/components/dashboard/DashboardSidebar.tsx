@@ -116,13 +116,13 @@ export function DashboardSidebar({
               <button
                 key={item.id}
                 onClick={() => handleTabChange(item.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-md transition-colors text-left cursor-pointer ${
+                className={`w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold rounded-xl transition-all text-left cursor-pointer border ${
                   isActive
-                    ? "bg-[#F3F4F6] dark:bg-[#1f2536] text-[#111827] dark:text-white font-semibold shadow-2xs"
-                    : "text-[#4B5563] dark:text-stone-300 hover:bg-[#F9FAFB] dark:hover:bg-[#161a25] hover:text-[#111827] dark:hover:text-white"
+                    ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-300 border-emerald-300/70 dark:border-emerald-500/40 shadow-xs"
+                    : "border-transparent text-stone-600 dark:text-stone-300 hover:bg-stone-100/80 dark:hover:bg-[#161a25] hover:text-stone-900 dark:hover:text-white"
                 }`}
               >
-                <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-[#111827] dark:text-amber-400" : "text-[#6B7280] dark:text-stone-400"}`} />
+                <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-emerald-700 dark:text-emerald-400" : "text-stone-400 dark:text-stone-400"}`} />
                 <span>{item.label}</span>
               </button>
             );

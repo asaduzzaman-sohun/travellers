@@ -91,37 +91,37 @@ export default function TravelTipsPage() {
       {/* Main Content Area */}
       <div className="w-full max-w-[1720px] mx-auto px-6 sm:px-10 lg:px-14 2xl:px-20 mt-10 space-y-12">
         {/* Search & Category Filter */}
-        <div className="bg-white border border-[#EBE6DC] rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
+        <div className="bg-white dark:bg-[#141720] border border-[#EBE6DC] dark:border-[#1e2434] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
           <div className="relative max-w-2xl">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-stone-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-stone-400 dark:text-stone-500" />
             <input
               type="text"
               placeholder="Search guidance (e.g. NID, Teletalk, life jacket, convoy, train, cash, coral)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#FAF8F5] border border-[#E5DFD5] rounded-2xl pl-12 pr-10 py-3.5 text-sm sm:text-base text-stone-900 placeholder:text-stone-400 focus:bg-white focus:outline-none focus:border-stone-900 transition-all"
+              className="w-full bg-[#FAF8F5] dark:bg-[#10131c] border border-[#E5DFD5] dark:border-[#262d3d] rounded-2xl pl-12 pr-10 py-3.5 text-sm sm:text-base text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:bg-white dark:focus:bg-[#10131c] focus:outline-none focus:border-emerald-500 transition-all"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 p-1 cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
             )}
           </div>
 
-          <div className="pt-2 border-t border-[#F0EBE1] flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <div className="pt-2 border-t border-[#F0EBE1] dark:border-[#1e2434] flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
             {categories.map((cat) => {
               const active = selectedCategory === cat;
               return (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
+                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer ${
                     active
-                      ? "bg-stone-900 text-stone-50 shadow-xs"
-                      : "bg-[#FAF8F5] text-stone-700 border border-[#E5DFD5] hover:bg-stone-100 hover:text-stone-900"
+                      ? "bg-emerald-600 text-white shadow-xs"
+                      : "bg-[#FAF8F5] dark:bg-[#10131c] text-stone-700 dark:text-stone-300 border border-[#E5DFD5] dark:border-[#262d3d] hover:bg-stone-100 dark:hover:bg-[#181d2a] hover:text-stone-900 dark:hover:text-white"
                   }`}
                 >
                   {cat === "All" ? "All Field Guides" : cat}
@@ -134,15 +134,15 @@ export default function TravelTipsPage() {
         {/* Interactive Checklists & Safety Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Packing Checklist (8 cols) */}
-          <div className="lg:col-span-8 bg-white border border-[#EBE6DC] rounded-3xl p-6 sm:p-8 space-y-5 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#F0EBE1] gap-2">
+          <div className="lg:col-span-8 bg-white dark:bg-[#141720] border border-[#EBE6DC] dark:border-[#1e2434] rounded-3xl p-6 sm:p-8 space-y-5 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#F0EBE1] dark:border-[#1e2434] gap-2">
               <div className="flex items-center gap-2.5">
-                <Luggage className="h-5 w-5 text-amber-800" />
-                <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
+                <Luggage className="h-5 w-5 text-amber-700 dark:text-amber-400" />
+                <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100">
                   Essential Trip Packing Checklist
                 </h2>
               </div>
-              <span className="text-xs sm:text-sm font-semibold text-stone-500">
+              <span className="text-xs sm:text-sm font-semibold text-stone-500 dark:text-stone-400">
                 {checkedCount} of {packingChecklist.length} packed
               </span>
             </div>
@@ -154,22 +154,22 @@ export default function TravelTipsPage() {
                   <button
                     key={item.id}
                     onClick={() => toggleCheck(item.id)}
-                    className={`flex items-start gap-3 p-3.5 rounded-2xl border text-left transition-all ${
+                    className={`flex items-start gap-3 p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
                       isChecked
-                        ? "bg-[#FAF8F5] border-stone-300 text-stone-400 line-through"
-                        : "bg-white border-[#E5DFD5] text-stone-800 hover:border-stone-400"
+                        ? "bg-[#FAF8F5] dark:bg-[#10131c]/60 border-stone-300 dark:border-[#262d3d] text-stone-400 dark:text-stone-500 line-through"
+                        : "bg-white dark:bg-[#10131c] border-[#E5DFD5] dark:border-[#262d3d] text-stone-800 dark:text-stone-200 hover:border-emerald-500/50"
                     }`}
                   >
-                    <div className="shrink-0 mt-0.5 text-stone-700">
+                    <div className="shrink-0 mt-0.5 text-stone-700 dark:text-stone-300">
                       {isChecked ? (
-                        <CheckSquare className="h-4 w-4 text-amber-800" />
+                        <CheckSquare className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                       ) : (
-                        <Square className="h-4 w-4 text-stone-400" />
+                        <Square className="h-4 w-4 text-stone-400 dark:text-stone-500" />
                       )}
                     </div>
                     <div className="space-y-0.5">
-                      <div className="text-xs sm:text-sm font-medium leading-snug">{item.item}</div>
-                      <span className="text-[10px] uppercase font-bold text-stone-400 tracking-wider">
+                      <div className={`text-xs sm:text-sm font-semibold leading-snug ${isChecked ? "text-stone-400 dark:text-stone-500" : "text-stone-900 dark:text-stone-100"}`}>{item.item}</div>
+                      <span className="text-[10px] uppercase font-bold text-stone-400 dark:text-stone-500 tracking-wider">
                         {item.tag}
                       </span>
                     </div>
@@ -180,35 +180,35 @@ export default function TravelTipsPage() {
           </div>
 
           {/* Emergency Helplines (4 cols) */}
-          <div className="lg:col-span-4 bg-white border border-[#EBE6DC] rounded-3xl p-6 sm:p-8 space-y-5 shadow-sm">
-            <h3 className="text-xl font-serif font-bold text-stone-900 flex items-center gap-2">
-              <ShieldCheck className="h-5 w-5 text-amber-800" />
+          <div className="lg:col-span-4 bg-white dark:bg-[#141720] border border-[#EBE6DC] dark:border-[#1e2434] rounded-3xl p-6 sm:p-8 space-y-5 shadow-xs">
+            <h3 className="text-xl font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+              <ShieldCheck className="h-5 w-5 text-amber-700 dark:text-amber-400" />
               <span>Tourist Police Hotlines</span>
             </h3>
-            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+            <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed">
               Save these official emergency numbers on your phone before embarking on your trip:
             </p>
 
             <div className="space-y-3 text-xs sm:text-sm">
-              <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#E5DFD5] space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
+              <div className="p-4 rounded-2xl bg-[#FAF8F5] dark:bg-[#10131c] border border-[#E5DFD5] dark:border-[#262d3d] space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
                   Tourist Police 24/7 Control
                 </span>
-                <div className="text-base font-bold font-mono text-stone-900">+880 1320-222222</div>
+                <div className="text-base font-bold font-mono text-stone-900 dark:text-stone-100">+880 1320-222222</div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#E5DFD5] space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
+              <div className="p-4 rounded-2xl bg-[#FAF8F5] dark:bg-[#10131c] border border-[#E5DFD5] dark:border-[#262d3d] space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
                   National Emergency
                 </span>
-                <div className="text-base font-bold font-mono text-stone-900">999</div>
+                <div className="text-base font-bold font-mono text-stone-900 dark:text-stone-100">999</div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#E5DFD5] space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
+              <div className="p-4 rounded-2xl bg-[#FAF8F5] dark:bg-[#10131c] border border-[#E5DFD5] dark:border-[#262d3d] space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
                   Tourist Police App
                 </span>
-                <div className="font-semibold text-stone-800">&quot;Hello Tourist Police&quot; on Play Store</div>
+                <div className="font-semibold text-stone-800 dark:text-stone-200">&quot;Hello Tourist Police&quot; on Play Store</div>
               </div>
             </div>
           </div>
@@ -229,11 +229,11 @@ export default function TravelTipsPage() {
             {filteredTips.map((item) => (
               <div
                 key={item.id}
-                className="group bg-white border border-[#EBE6DC] rounded-3xl overflow-hidden hover:border-[#C4BAA9] hover-lift transition-smooth flex flex-col justify-between shadow-xs"
+                className="group bg-white dark:bg-[#141720] border border-[#EBE6DC] dark:border-[#1e2434] rounded-3xl overflow-hidden hover:border-emerald-500/40 dark:hover:border-emerald-500/40 hover-lift transition-smooth flex flex-col justify-between shadow-xs"
               >
                 <div>
                   {/* Photo Header */}
-                  <Link href={`/tips/${item.id}`} className="block relative h-56 w-full overflow-hidden bg-stone-100">
+                  <Link href={`/tips/${item.id}`} className="block relative h-56 w-full overflow-hidden bg-stone-100 dark:bg-stone-900">
                     <ImageWithFallback
                       src={item.coverImage}
                       alt={item.title}
@@ -264,20 +264,20 @@ export default function TravelTipsPage() {
                   {/* Body Content */}
                   <div className="p-6 sm:p-8 space-y-4">
                     <Link href={`/tips/${item.id}`}>
-                      <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 group-hover:text-amber-800 transition-colors leading-snug">
+                      <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-snug">
                         {item.title}
                       </h2>
                     </Link>
 
-                    <p className="text-sm text-stone-600 leading-relaxed line-clamp-2">
+                    <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed line-clamp-2">
                       {item.summary}
                     </p>
 
                     {/* Bullet Highlights */}
-                    <ul className="space-y-2.5 text-xs sm:text-sm text-stone-600 pt-2 border-t border-[#F0EBE1]">
+                    <ul className="space-y-2.5 text-xs sm:text-sm text-stone-600 dark:text-stone-300 pt-2 border-t border-[#F0EBE1] dark:border-[#1e2434]">
                       {item.keyHighlights.slice(0, 3).map((point, i) => (
                         <li key={i} className="flex items-start gap-2.5 leading-relaxed">
-                          <CheckCircle2 className="h-4 w-4 text-amber-800 shrink-0 mt-0.5" />
+                          <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                           <span className="line-clamp-2">{point}</span>
                         </li>
                       ))}
@@ -287,15 +287,15 @@ export default function TravelTipsPage() {
 
                 {/* Footer Action */}
                 <div className="p-6 sm:p-8 pt-0">
-                  <div className="pt-4 border-t border-[#F0EBE1] flex items-center justify-between gap-4">
-                    <span className="text-xs text-stone-500 font-medium flex items-center gap-1">
-                      <Compass className="h-3.5 w-3.5 text-stone-400" />
+                  <div className="pt-4 border-t border-[#F0EBE1] dark:border-[#1e2434] flex items-center justify-between gap-4">
+                    <span className="text-xs text-stone-500 dark:text-stone-400 font-medium flex items-center gap-1">
+                      <Compass className="h-3.5 w-3.5 text-stone-400 dark:text-stone-500" />
                       Free Field Guide
                     </span>
 
                     <Link
                       href={`/tips/${item.id}`}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-stone-900 hover:bg-stone-800 text-stone-50 text-xs sm:text-sm font-semibold transition-all shadow-xs"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-semibold transition-all shadow-xs cursor-pointer"
                     >
                       <span>Read Field Guide &amp; Routes</span>
                       <ChevronRight className="h-4 w-4" />

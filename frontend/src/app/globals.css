@@ -188,21 +188,21 @@ html.dark #live-chat-trigger {
   border-color: rgba(16, 185, 129, 0.5) !important;
 }
 
-html.dark button.bg-stone-900:not(nav *):not(#live-chat-trigger):not(aside *):not(header *),
-html.dark a.bg-stone-900:not(nav *):not(aside *):not(header *),
-html.dark button.bg-\[\#111827\]:not(nav *):not(#live-chat-trigger):not(aside *):not(header *),
-html.dark a.bg-\[\#111827\]:not(nav *):not(aside *):not(header *) {
-  background-color: #f8fafc !important;
-  color: #0b0d11 !important;
+html.dark button.bg-stone-900:not(nav *):not(#live-chat-trigger):not(aside *):not(header *):not([class*="dark:bg-"]),
+html.dark a.bg-stone-900:not(nav *):not(aside *):not(header *):not([class*="dark:bg-"]),
+html.dark button.bg-\[\#111827\]:not(nav *):not(#live-chat-trigger):not(aside *):not(header *):not([class*="dark:bg-"]),
+html.dark a.bg-\[\#111827\]:not(nav *):not(aside *):not(header *):not([class*="dark:bg-"]) {
+  background-color: #059669 !important;
+  color: #ffffff !important;
   font-weight: 600 !important;
 }
 
-html.dark button.bg-stone-900:not(nav *):not(#live-chat-trigger):not(aside *):not(header *):hover,
-html.dark a.bg-stone-900:not(nav *):not(aside *):not(header *):hover,
-html.dark button.bg-\[\#111827\]:not(nav *):not(#live-chat-trigger):not(aside *):not(header *):hover,
-html.dark a.bg-\[\#111827\]:not(nav *):not(aside *):not(header *):hover {
-  background-color: #e2e8f0 !important;
-  color: #000000 !important;
+html.dark button.bg-stone-900:not(nav *):not(#live-chat-trigger):not(aside *):not(header *):not([class*="dark:bg-"]):hover,
+html.dark a.bg-stone-900:not(nav *):not(aside *):not(header *):not([class*="dark:bg-"]):hover,
+html.dark button.bg-\[\#111827\]:not(nav *):not(#live-chat-trigger):not(aside *):not(header *):not([class*="dark:bg-"]):hover,
+html.dark a.bg-\[\#111827\]:not(nav *):not(aside *):not(header *):not([class*="dark:bg-"]):hover {
+  background-color: #047857 !important;
+  color: #ffffff !important;
 }
 
 /* 8. Active Nav Pills in Header */

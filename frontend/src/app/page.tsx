@@ -153,10 +153,10 @@ export default function HomePage() {
               <button
                 key={div.value}
                 onClick={() => setSelectedDivision(div.value)}
-                className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
+                className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
                   selectedDivision === div.value
-                    ? "bg-stone-900 text-stone-50 shadow-xs"
-                    : "bg-white text-stone-700 border border-[#E5DFD5] hover:bg-[#F5F2EB] hover:text-stone-950"
+                    ? "bg-emerald-600 text-white shadow-xs"
+                    : "bg-white dark:bg-[#141720] text-stone-700 dark:text-stone-300 border border-[#E5DFD5] dark:border-[#262d3d] hover:bg-[#F5F2EB] dark:hover:bg-[#1a1f2e] hover:text-stone-950 dark:hover:text-white"
                 }`}
               >
                 {div.label}
@@ -178,15 +178,15 @@ export default function HomePage() {
             <TourCardSkeleton />
           </div>
         ) : filteredTours.length === 0 ? (
-          <div className="py-20 text-center bg-white rounded-3xl border border-[#EBE6DC] p-10 space-y-4 max-w-xl mx-auto shadow-sm">
-            <h3 className="text-xl font-serif font-bold text-stone-900">No tour packages match this selection</h3>
-            <p className="text-sm text-stone-600">Try choosing a different division or clearing your search term.</p>
+          <div className="py-20 text-center bg-white dark:bg-[#141720] rounded-3xl border border-[#EBE6DC] dark:border-[#1e2434] p-10 space-y-4 max-w-xl mx-auto shadow-sm">
+            <h3 className="text-xl font-serif font-bold text-stone-900 dark:text-stone-100">No tour packages match this selection</h3>
+            <p className="text-sm text-stone-600 dark:text-stone-400">Try choosing a different division or clearing your search term.</p>
             <button
               onClick={() => {
                 setSelectedDivision("All");
                 setSearchQuery("");
               }}
-              className="px-6 py-2.5 rounded-full bg-stone-900 text-stone-50 text-sm font-semibold"
+              className="px-6 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold transition-colors cursor-pointer shadow-xs"
             >
               Reset Filters
             </button>
@@ -197,17 +197,17 @@ export default function HomePage() {
               <Link
                 key={tour.id}
                 href={`/tours/${tour.slug}`}
-                className="group bg-white border border-[#EBE6DC] rounded-3xl overflow-hidden hover:border-[#C4BAA9] hover-lift transition-smooth flex flex-col shadow-xs"
+                className="group bg-white dark:bg-[#141720] border border-[#EBE6DC] dark:border-[#1e2434] rounded-3xl overflow-hidden hover:border-emerald-600/40 dark:hover:border-emerald-500/40 hover-lift transition-smooth flex flex-col shadow-xs"
               >
                 {/* Image Box */}
-                <div className="relative h-72 w-full overflow-hidden bg-stone-100">
+                <div className="relative h-72 w-full overflow-hidden bg-stone-100 dark:bg-stone-900">
                   <ImageWithFallback
                     src={tour.coverImageUrl}
                     fallbackSrc="https://images.unsplash.com/photo-1596895111956-bf1cf0599ce5?auto=format&fit=crop&w=1200&q=80"
                     alt={tour.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent opacity-90" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950/85 via-transparent to-transparent opacity-90" />
 
                   {/* Top Overlay: Location on Left + Badges & Quick Actions on Right (Never Collides) */}
                   <div className="absolute top-3.5 left-3.5 right-3.5 flex items-start justify-between gap-2 z-10 pointer-events-none">
@@ -230,7 +230,7 @@ export default function HomePage() {
 
                   <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-xs sm:text-sm text-white font-medium">
                     <span className="flex items-center gap-1.5 drop-shadow">
-                      <Clock className="h-4 w-4 text-amber-200" />
+                      <Clock className="h-4 w-4 text-amber-300" />
                       {tour.durationDays} Days / {tour.durationNights} Nights
                     </span>
                     <span className="flex items-center gap-1.5 drop-shadow">
@@ -244,40 +244,40 @@ export default function HomePage() {
                 <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between space-y-5">
                   <div className="space-y-3">
                     <div className="flex items-center justify-between text-xs sm:text-sm">
-                      <div className="flex items-center text-amber-600">
+                      <div className="flex items-center text-amber-600 dark:text-amber-400">
                         <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
-                        <span className="ml-1.5 font-bold text-stone-900">{(tour.averageRating ?? 4.9).toFixed(1)}</span>
+                        <span className="ml-1.5 font-bold text-stone-900 dark:text-stone-100">{(tour.averageRating ?? 4.9).toFixed(1)}</span>
                         <span className="text-stone-400 mx-1.5">•</span>
-                        <span className="text-stone-500">{tour.totalReviews ?? 14} reviews</span>
+                        <span className="text-stone-500 dark:text-stone-400">{tour.totalReviews ?? 14} reviews</span>
                       </div>
-                      <span className="text-stone-500 font-medium">{tour.region}</span>
+                      <span className="text-stone-500 dark:text-stone-400 font-medium">{tour.region}</span>
                     </div>
 
-                    <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 group-hover:text-amber-800 transition-colors line-clamp-2 leading-snug">
+                    <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
                       {tour.title}
                     </h3>
 
-                    <p className="text-sm text-stone-600 line-clamp-2 leading-relaxed">
+                    <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 leading-relaxed">
                       {tour.summary}
                     </p>
                   </div>
 
                   {tour.highlights && tour.highlights.length > 0 && (
-                    <div className="space-y-2 border-t border-[#F0EBE1] pt-3.5">
+                    <div className="space-y-2 border-t border-[#F0EBE1] dark:border-[#1e2434] pt-3.5">
                       {tour.highlights.slice(0, 2).map((hl, i) => (
-                        <div key={i} className="flex items-start gap-2 text-xs sm:text-sm text-stone-600">
-                          <CheckCircle2 className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
+                        <div key={i} className="flex items-start gap-2 text-xs sm:text-sm text-stone-600 dark:text-stone-300">
+                          <CheckCircle2 className="h-4 w-4 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
                           <span className="line-clamp-1">{hl}</span>
                         </div>
                       ))}
                     </div>
                   )}
 
-                  <div className="pt-4 border-t border-[#F0EBE1] flex items-center justify-between">
+                  <div className="pt-4 border-t border-[#F0EBE1] dark:border-[#1e2434] flex items-center justify-between">
                     <div>
-                      <div className="text-[11px] text-stone-500 uppercase font-semibold tracking-wider">Per Person From</div>
+                      <div className="text-[11px] text-stone-500 dark:text-stone-400 uppercase font-semibold tracking-wider">Per Person From</div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-2xl sm:text-3xl font-extrabold text-stone-900">
+                        <span className="text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-stone-100">
                           BDT {(tour.discountPrice ?? tour.basePrice).toLocaleString()}
                         </span>
                         {tour.discountPrice && (
@@ -288,7 +288,7 @@ export default function HomePage() {
                       </div>
                     </div>
 
-                    <span className="px-5 py-2.5 rounded-full bg-stone-900 group-hover:bg-stone-800 text-stone-50 text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1 shadow-xs">
+                    <span className="px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1 shadow-xs cursor-pointer">
                       View Package
                       <ChevronRight className="h-4 w-4" />
                     </span>

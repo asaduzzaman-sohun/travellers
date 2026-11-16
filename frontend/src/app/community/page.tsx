@@ -268,19 +268,19 @@ export default function CommunityPage() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#FAF8F5] pb-24">
+    <div className="w-full min-h-screen bg-[#FAF8F5] dark:bg-[#090b0e] pb-24">
       {/* Header Banner */}
-      <section className="border-b border-[#EBE6DC] bg-[#FAF8F5] py-14 sm:py-16">
+      <section className="border-b border-[#EBE6DC] dark:border-[#1e2434] bg-[#FAF8F5] dark:bg-[#0c0f16] py-14 sm:py-16">
         <div className="w-full max-w-[1720px] mx-auto px-6 sm:px-10 lg:px-14 2xl:px-20 space-y-4">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-3 max-w-3xl">
-              <span className="text-xs sm:text-sm font-semibold uppercase tracking-widest text-amber-800">
+              <span className="text-xs sm:text-sm font-semibold uppercase tracking-widest text-amber-700 dark:text-amber-400">
                 Traveller&apos;s Journal &amp; Community Forum
               </span>
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-stone-900 tracking-tight">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-stone-900 dark:text-stone-100 tracking-tight">
                 Authentic Travel Stories &amp; Insights
               </h1>
-              <p className="text-base sm:text-lg text-stone-600 leading-relaxed">
+              <p className="text-base sm:text-lg text-stone-600 dark:text-stone-300 leading-relaxed">
                 First-hand routes, packing advice, hidden waterways, and honest reviews written by domestic travelers exploring every division of Bangladesh.
               </p>
             </div>
@@ -289,7 +289,7 @@ export default function CommunityPage() {
             <div className="shrink-0">
               <Link
                 href="/write-post"
-                className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-stone-900 hover:bg-stone-800 text-stone-50 text-sm font-semibold transition-all shadow-sm"
+                className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold transition-all shadow-xs cursor-pointer"
               >
                 <PenSquare className="h-4 w-4" />
                 <span>Write a Story</span>
@@ -298,29 +298,29 @@ export default function CommunityPage() {
           </div>
 
           {/* Search & Filter Controls */}
-          <div className="mt-8 pt-6 border-t border-[#F0EBE1] flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
+          <div className="mt-8 pt-6 border-t border-[#F0EBE1] dark:border-[#1e2434] flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
             {/* Search */}
             <div className="relative flex-1 max-w-lg">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-stone-400" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-stone-400 dark:text-stone-500" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search stories, destinations, writers..."
-                className="w-full pl-12 pr-4 py-3 rounded-2xl bg-white border border-[#E5DFD5] text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-stone-900 transition-colors"
+                className="w-full pl-12 pr-4 py-3 rounded-2xl bg-white dark:bg-[#10131c] border border-[#E5DFD5] dark:border-[#262d3d] text-sm text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:border-emerald-500 transition-colors"
               />
             </div>
 
             {/* Division select */}
             <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-stone-500 whitespace-nowrap">Division:</span>
+              <span className="text-sm font-medium text-stone-500 dark:text-stone-400 whitespace-nowrap">Division:</span>
               <select
                 value={selectedDivision}
                 onChange={(e) => setSelectedDivision(e.target.value)}
-                className="px-4 py-2.5 rounded-2xl bg-white border border-[#E5DFD5] text-sm font-semibold text-stone-900 focus:outline-none cursor-pointer"
+                className="px-4 py-2.5 rounded-2xl bg-white dark:bg-[#10131c] border border-[#E5DFD5] dark:border-[#262d3d] text-sm font-semibold text-stone-900 dark:text-stone-100 focus:outline-none cursor-pointer"
               >
                 {divisions.map((d) => (
-                  <option key={d} value={d}>
+                  <option key={d} value={d} className="bg-white dark:bg-[#10131c] text-stone-900 dark:text-stone-100">
                     {d === "All" ? "All Divisions" : d}
                   </option>
                 ))}
@@ -336,10 +336,10 @@ export default function CommunityPage() {
                 <button
                   key={c}
                   onClick={() => setSelectedCategory(c)}
-                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
+                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
                     active
-                      ? "bg-stone-900 text-stone-50 shadow-xs"
-                      : "bg-white border border-[#E5DFD5] text-stone-700 hover:text-stone-900 hover:bg-stone-50"
+                      ? "bg-emerald-600 text-white shadow-xs"
+                      : "bg-white dark:bg-[#10131c] border border-[#E5DFD5] dark:border-[#262d3d] text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-50 dark:hover:bg-[#181d2a]"
                   }`}
                 >
                   {c}
@@ -402,10 +402,10 @@ export default function CommunityPage() {
               return (
                 <article
                   key={post.id}
-                  className="group bg-white rounded-3xl border border-[#EBE6DC] overflow-hidden hover:border-[#C4BAA9] hover-lift transition-smooth flex flex-col shadow-xs"
+                  className="group bg-white dark:bg-[#141720] rounded-3xl border border-[#EBE6DC] dark:border-[#1e2434] overflow-hidden hover:border-emerald-500/40 dark:hover:border-emerald-500/40 hover-lift transition-smooth flex flex-col shadow-xs"
                 >
                   {/* Image Cover */}
-                  <Link href={`/community/${post.id}`} className="relative h-60 w-full overflow-hidden bg-stone-100 block">
+                  <Link href={`/community/${post.id}`} className="relative h-60 w-full overflow-hidden bg-stone-100 dark:bg-stone-900 block">
                     <ImageWithFallback
                       src={post.coverImageUrl}
                       fallbackSrc="https://images.unsplash.com/photo-1596895111956-bf1cf0599ce5?auto=format&fit=crop&w=1200&q=80"
@@ -428,19 +428,19 @@ export default function CommunityPage() {
                   <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between space-y-4">
                     <div className="space-y-3">
                       <Link href={`/community/${post.id}`} className="block">
-                        <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 group-hover:text-amber-800 leading-snug line-clamp-2 transition-colors">
+                        <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 leading-snug line-clamp-2 transition-colors">
                           {post.title}
                         </h2>
                       </Link>
-                      <p className="text-sm text-stone-600 line-clamp-3 leading-relaxed">
+                      <p className="text-sm text-stone-600 dark:text-stone-300 line-clamp-3 leading-relaxed">
                         {post.summary}
                       </p>
                     </div>
 
                     {/* Metadata & Actions */}
-                    <div className="pt-4 border-t border-[#F0EBE1] flex items-center justify-between text-xs sm:text-sm text-stone-500">
+                    <div className="pt-4 border-t border-[#F0EBE1] dark:border-[#1e2434] flex items-center justify-between text-xs sm:text-sm text-stone-500 dark:text-stone-400">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-stone-800">{post.authorName}</span>
+                        <span className="font-semibold text-stone-800 dark:text-stone-200">{post.authorName}</span>
                         <span>•</span>
                         <span>{formatDate(post.createdAtUtc)}</span>
                       </div>
@@ -450,10 +450,10 @@ export default function CommunityPage() {
                         <button
                           type="button"
                           onClick={(e) => handleUpvote(post.id, e)}
-                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-colors ${
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-colors cursor-pointer ${
                             hasUpvoted
-                              ? "bg-amber-100 text-amber-900 font-bold"
-                              : "hover:bg-stone-100 text-stone-600"
+                              ? "bg-amber-100 dark:bg-amber-950/50 text-amber-900 dark:text-amber-300 font-bold"
+                              : "hover:bg-stone-100 dark:hover:bg-[#1a202c] text-stone-600 dark:text-stone-300"
                           }`}
                           title="Upvote story"
                         >
@@ -465,7 +465,7 @@ export default function CommunityPage() {
                         <button
                           type="button"
                           onClick={() => handleOpenComments(post)}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-stone-100 text-stone-600 transition-colors"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-stone-100 dark:hover:bg-[#1a202c] text-stone-600 dark:text-stone-300 transition-colors cursor-pointer"
                           title="Quick discussion"
                         >
                           <MessageSquare className="h-4 w-4" />
@@ -478,7 +478,7 @@ export default function CommunityPage() {
                             type="button"
                             disabled={deletingId === post.id}
                             onClick={(e) => handleDeletePost(post.id, e)}
-                            className="p-1 hover:text-rose-600 rounded transition-colors"
+                            className="p-1 hover:text-rose-600 dark:hover:text-rose-400 rounded transition-colors cursor-pointer"
                             title="Delete story"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -491,7 +491,7 @@ export default function CommunityPage() {
                     <div className="pt-2">
                       <Link
                         href={`/community/${post.id}`}
-                        className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-amber-900 hover:text-amber-800 transition-colors"
+                        className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-emerald-700 dark:text-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300 transition-colors"
                       >
                         <span>Read Full Story</span>
                         <span>&rarr;</span>
@@ -506,20 +506,20 @@ export default function CommunityPage() {
 
         {/* Pagination Controls */}
         {totalPages > 1 && (
-          <div className="mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-[#EBE6DC]">
-            <span className="text-xs sm:text-sm text-stone-600">
-              Showing <strong className="text-stone-900 font-bold">{startIndex + 1}</strong> to{" "}
-              <strong className="text-stone-900 font-bold">
+          <div className="mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-[#EBE6DC] dark:border-[#1e2434]">
+            <span className="text-xs sm:text-sm text-stone-600 dark:text-stone-400">
+              Showing <strong className="text-stone-900 dark:text-stone-100 font-bold">{startIndex + 1}</strong> to{" "}
+              <strong className="text-stone-900 dark:text-stone-100 font-bold">
                 {Math.min(startIndex + postsPerPage, posts.length)}
               </strong>{" "}
-              of <strong className="text-stone-900 font-bold">{posts.length}</strong> stories
+              of <strong className="text-stone-900 dark:text-stone-100 font-bold">{posts.length}</strong> stories
             </span>
 
             <div className="flex items-center gap-1.5">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="px-3.5 py-2 rounded-xl bg-white border border-[#E5DFD5] text-stone-700 hover:bg-stone-50 disabled:opacity-40 disabled:pointer-events-none transition-colors flex items-center gap-1 text-xs sm:text-sm font-medium"
+                className="px-3.5 py-2 rounded-xl bg-white dark:bg-[#141720] border border-[#E5DFD5] dark:border-[#262d3d] text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-[#1a202c] disabled:opacity-40 disabled:pointer-events-none transition-colors flex items-center gap-1 text-xs sm:text-sm font-medium cursor-pointer shadow-2xs"
               >
                 <ChevronLeft className="h-4 w-4" />
                 <span>Previous</span>
@@ -529,10 +529,10 @@ export default function CommunityPage() {
                 <button
                   key={pageNum}
                   onClick={() => handlePageChange(pageNum)}
-                  className={`h-9 w-9 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+                  className={`h-9 w-9 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                     currentPage === pageNum
-                      ? "bg-stone-900 text-stone-50 shadow-xs"
-                      : "bg-white border border-[#E5DFD5] text-stone-700 hover:bg-stone-50"
+                      ? "bg-emerald-600 text-white shadow-xs"
+                      : "bg-white dark:bg-[#141720] border border-[#E5DFD5] dark:border-[#262d3d] text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-[#1a202c] shadow-2xs"
                   }`}
                 >
                   {pageNum}
@@ -542,7 +542,7 @@ export default function CommunityPage() {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="px-3.5 py-2 rounded-xl bg-white border border-[#E5DFD5] text-stone-700 hover:bg-stone-50 disabled:opacity-40 disabled:pointer-events-none transition-colors flex items-center gap-1 text-xs sm:text-sm font-medium"
+                className="px-3.5 py-2 rounded-xl bg-white dark:bg-[#141720] border border-[#E5DFD5] dark:border-[#262d3d] text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-[#1a202c] disabled:opacity-40 disabled:pointer-events-none transition-colors flex items-center gap-1 text-xs sm:text-sm font-medium cursor-pointer shadow-2xs"
               >
                 <span>Next</span>
                 <ChevronRight className="h-4 w-4" />

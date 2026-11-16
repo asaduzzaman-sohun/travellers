@@ -447,25 +447,25 @@ function DashboardContent() {
 
   if (!isLoggedIn || !user) {
     return (
-      <div className="min-h-[80vh] bg-[#F9FAFB] flex items-center justify-center py-20 px-6">
-        <div className="max-w-md w-full bg-[#FFFFFF] border border-[#E5E7EB] rounded-lg p-8 text-center space-y-4">
-          <div className="h-12 w-12 mx-auto rounded-full bg-[#F3F4F6] border border-[#E5E7EB] flex items-center justify-center text-[#111827]">
-            <Lock className="h-6 w-6" />
+      <div className="min-h-[80vh] bg-[#F9FAFB] dark:bg-[#090b0e] flex items-center justify-center py-20 px-6">
+        <div className="max-w-md w-full bg-[#FFFFFF] dark:bg-[#141720] border border-[#E5E7EB] dark:border-[#1e2434] rounded-2xl p-8 text-center space-y-4 shadow-xl">
+          <div className="h-12 w-12 mx-auto rounded-full bg-[#F3F4F6] dark:bg-[#1a1f2e] border border-[#E5E7EB] dark:border-[#2a3142] flex items-center justify-center text-[#111827] dark:text-stone-100">
+            <Lock className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
           </div>
-          <h2 className="text-xl font-bold text-[#111827] tracking-tight">Authentication Required</h2>
-          <p className="text-xs text-[#4B5563]">
+          <h2 className="text-xl font-bold text-[#111827] dark:text-stone-100 tracking-tight">Authentication Required</h2>
+          <p className="text-xs text-[#4B5563] dark:text-stone-400">
             Please sign in with your authorized credentials to access your dashboard.
           </p>
           <div className="pt-2 flex flex-col gap-2">
             <Link
               href="/login"
-              className="w-full py-2.5 bg-[#111827] hover:bg-black text-white text-xs font-semibold rounded-md transition-colors"
+              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl transition-colors shadow-xs"
             >
               Sign In to Platform
             </Link>
             <Link
               href="/register"
-              className="w-full py-2.5 bg-[#FFFFFF] border border-[#D1D5DB] hover:bg-[#F9FAFB] text-[#111827] text-xs font-semibold rounded-md transition-colors"
+              className="w-full py-2.5 bg-[#FFFFFF] dark:bg-[#10131c] border border-[#D1D5DB] dark:border-[#262d3d] hover:bg-[#F9FAFB] dark:hover:bg-[#161a25] text-[#111827] dark:text-stone-100 text-xs font-semibold rounded-xl transition-colors"
             >
               Create Traveler Account
             </Link>

@@ -221,17 +221,17 @@ export function WeatherAdvisoryWidget({ destination }: { destination?: string })
       </div>
 
       {/* Seasonal Travel Advisory Callout */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-amber-500/10 dark:bg-amber-950/30 border border-amber-500/30 dark:border-amber-500/30 space-y-2">
+      <div className="p-4 sm:p-5 rounded-2xl bg-[#FAF8F5] dark:bg-[#10131c] border border-amber-500/30 dark:border-amber-400/30 space-y-2.5">
         <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-bold text-xs">
           <ShieldAlert className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
           <span>Regional Field Advisory</span>
         </div>
-        <p className="text-xs text-stone-700 dark:text-amber-100/90 leading-relaxed font-normal">
+        <p className="text-xs text-stone-700 dark:text-stone-200 leading-relaxed font-normal">
           {geo.advisory}
         </p>
         <div className="pt-1 text-[11px] text-amber-800 dark:text-amber-300 font-medium flex items-center gap-1.5">
           <Thermometer className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
-          <span>Best Travel Window: <strong className="font-semibold text-stone-900 dark:text-white">{geo.bestSeason}</strong></span>
+          <span>Best Travel Window: <strong className="font-semibold text-stone-900 dark:text-amber-200">{geo.bestSeason}</strong></span>
         </div>
       </div>
     </div>

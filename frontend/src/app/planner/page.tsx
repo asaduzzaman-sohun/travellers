@@ -112,18 +112,18 @@ export default function PlannerPage() {
   );
 
   return (
-    <div className="w-full min-h-screen bg-[#FAF8F5] pb-24">
+    <div className="w-full min-h-screen bg-[#FAF8F5] dark:bg-[#090b0e] pb-24">
       {/* Banner */}
-      <section className="border-b border-[#EBE6DC] bg-[#FAF8F5] py-12 sm:py-16">
+      <section className="border-b border-[#EBE6DC] dark:border-[#1e2434] bg-[#FAF8F5] dark:bg-[#090b0e] py-12 sm:py-16">
         <div className="w-full max-w-[1720px] mx-auto px-6 sm:px-10 lg:px-14 2xl:px-20 space-y-4">
-          <span className="text-xs sm:text-sm font-semibold tracking-widest uppercase text-amber-800 flex items-center gap-1.5">
+          <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold tracking-widest uppercase text-amber-800 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/40 px-3 py-1 rounded-full">
             <Sparkles className="h-4 w-4" />
             Group Tour Cost-Splitter &amp; Custom Quote Builder
           </span>
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-stone-900 tracking-tight">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-stone-900 dark:text-stone-100 tracking-tight">
             Plan Your Group Journey
           </h1>
-          <p className="text-base sm:text-lg text-stone-600 max-w-3xl leading-relaxed">
+          <p className="text-base sm:text-lg text-stone-600 dark:text-stone-300 max-w-3xl leading-relaxed">
             Customize dates, transport, stay tiers, and special activities for university batches, corporate getaways, or family trips across Bangladesh. Get live per-person cost breakdowns.
           </p>
         </div>
@@ -135,9 +135,9 @@ export default function PlannerPage() {
           {/* Left Column: Form Controls (7 cols) */}
           <div className="lg:col-span-7 space-y-8">
             {/* 1. Destination Picker */}
-            <div className="bg-white border border-[#EBE6DC] rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
-              <h3 className="text-lg font-serif font-bold text-stone-900 flex items-center gap-2">
-                <MapPin className="h-5 w-5 text-amber-800" />
+            <div className="bg-white dark:bg-[#141720] border border-[#EBE6DC] dark:border-[#1e2434] rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
+              <h3 className="text-lg font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-amber-800 dark:text-amber-400" />
                 1. Select Destination
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -146,14 +146,14 @@ export default function PlannerPage() {
                     key={d.id}
                     type="button"
                     onClick={() => setSelectedDest(d.id)}
-                    className={`p-4 rounded-2xl border text-left transition-all ${
+                    className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
                       selectedDest === d.id
-                        ? "border-stone-900 bg-stone-900 text-stone-50 shadow-sm"
-                        : "border-[#E5DFD5] bg-[#FAF8F5] text-stone-900 hover:border-stone-400"
+                        ? "border-emerald-600 dark:border-emerald-500 bg-emerald-600 text-white shadow-sm"
+                        : "border-[#E5DFD5] dark:border-[#262d3d] bg-[#FAF8F5] dark:bg-[#10131c] text-stone-900 dark:text-stone-100 hover:border-emerald-400"
                     }`}
                   >
                     <div className="font-bold text-sm">{d.name}</div>
-                    <div className={`text-xs mt-1 line-clamp-1 ${selectedDest === d.id ? "text-stone-300" : "text-stone-500"}`}>
+                    <div className={`text-xs mt-1 line-clamp-1 ${selectedDest === d.id ? "text-emerald-100" : "text-stone-500 dark:text-stone-400"}`}>
                       {d.highlight}
                     </div>
                   </button>
@@ -162,16 +162,16 @@ export default function PlannerPage() {
             </div>
 
             {/* 2. Group Size & Type */}
-            <div className="bg-white border border-[#EBE6DC] rounded-3xl p-6 sm:p-8 space-y-5 shadow-sm">
-              <h3 className="text-lg font-serif font-bold text-stone-900 flex items-center gap-2">
-                <Users className="h-5 w-5 text-amber-800" />
+            <div className="bg-white dark:bg-[#141720] border border-[#EBE6DC] dark:border-[#1e2434] rounded-3xl p-6 sm:p-8 space-y-5 shadow-sm">
+              <h3 className="text-lg font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                <Users className="h-5 w-5 text-amber-800 dark:text-amber-400" />
                 2. Group Size &amp; Duration
               </h3>
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="font-semibold text-stone-800">Travelers Count:</span>
-                  <span className="font-mono text-base font-bold text-stone-900 bg-[#FAF8F5] px-3.5 py-1 rounded-xl border border-[#E5DFD5]">
+                  <span className="font-semibold text-stone-800 dark:text-stone-200">Travelers Count:</span>
+                  <span className="font-mono text-base font-bold text-stone-900 dark:text-stone-100 bg-[#FAF8F5] dark:bg-[#10131c] px-3.5 py-1 rounded-xl border border-[#E5DFD5] dark:border-[#262d3d]">
                     {groupSize} Persons
                   </span>
                 </div>
@@ -181,7 +181,7 @@ export default function PlannerPage() {
                   max={40}
                   value={groupSize}
                   onChange={(e) => setGroupSize(Number(e.target.value))}
-                  className="w-full accent-stone-900 cursor-pointer"
+                  className="w-full accent-emerald-600 cursor-pointer"
                 />
                 <div className="flex justify-between text-[11px] text-stone-400">
                   <span>Couple (2)</span>
@@ -193,11 +193,11 @@ export default function PlannerPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-stone-700">Group Category</label>
+                  <label className="text-xs font-semibold text-stone-700 dark:text-stone-300">Group Category</label>
                   <select
                     value={groupType}
                     onChange={(e) => setGroupType(e.target.value)}
-                    className="w-full px-4 py-3 rounded-2xl bg-[#FAF8F5] border border-[#E5DFD5] text-sm font-medium text-stone-900 focus:outline-none focus:border-stone-900"
+                    className="w-full px-4 py-3 rounded-2xl bg-[#FAF8F5] dark:bg-[#10131c] border border-[#E5DFD5] dark:border-[#262d3d] text-sm font-medium text-stone-900 dark:text-stone-100 focus:outline-none focus:border-emerald-500 cursor-pointer"
                   >
                     <option value="Friends / University Batch">Friends / University Batch</option>
                     <option value="Corporate Retreat / Team Offsite">Corporate Retreat / Team Offsite</option>
@@ -207,11 +207,11 @@ export default function PlannerPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-stone-700">Trip Duration</label>
+                  <label className="text-xs font-semibold text-stone-700 dark:text-stone-300">Trip Duration</label>
                   <select
                     value={days}
                     onChange={(e) => setDays(Number(e.target.value))}
-                    className="w-full px-4 py-3 rounded-2xl bg-[#FAF8F5] border border-[#E5DFD5] text-sm font-medium text-stone-900 focus:outline-none focus:border-stone-900"
+                    className="w-full px-4 py-3 rounded-2xl bg-[#FAF8F5] dark:bg-[#10131c] border border-[#E5DFD5] dark:border-[#262d3d] text-sm font-medium text-stone-900 dark:text-stone-100 focus:outline-none focus:border-emerald-500 cursor-pointer"
                   >
                     <option value={2}>2 Days / 1 Night (Quick Weekend)</option>
                     <option value={3}>3 Days / 2 Nights (Recommended)</option>
@@ -223,28 +223,28 @@ export default function PlannerPage() {
             </div>
 
             {/* 3. Transport & Stay */}
-            <div className="bg-white border border-[#EBE6DC] rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-              <h3 className="text-lg font-serif font-bold text-stone-900 flex items-center gap-2">
-                <Bus className="h-5 w-5 text-amber-800" />
+            <div className="bg-white dark:bg-[#141720] border border-[#EBE6DC] dark:border-[#1e2434] rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
+              <h3 className="text-lg font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                <Bus className="h-5 w-5 text-amber-800 dark:text-amber-400" />
                 3. Transport &amp; Accommodation
               </h3>
 
               <div className="space-y-3">
-                <label className="text-xs font-semibold text-stone-700 block">Transport Fleet Preference</label>
+                <label className="text-xs font-semibold text-stone-700 dark:text-stone-300 block">Transport Fleet Preference</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {TRANSPORT_TIERS.map((t) => (
                     <button
                       key={t.id}
                       type="button"
                       onClick={() => setSelectedTransport(t.id)}
-                      className={`p-3.5 rounded-2xl border text-left transition-all ${
+                      className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
                         selectedTransport === t.id
-                          ? "border-stone-900 bg-stone-900 text-stone-50"
-                          : "border-[#E5DFD5] bg-[#FAF8F5] text-stone-900 hover:border-stone-400"
+                          ? "border-emerald-600 dark:border-emerald-500 bg-emerald-600 text-white shadow-xs"
+                          : "border-[#E5DFD5] dark:border-[#262d3d] bg-[#FAF8F5] dark:bg-[#10131c] text-stone-900 dark:text-stone-100 hover:border-emerald-400"
                       }`}
                     >
                       <div className="font-semibold text-xs sm:text-sm">{t.label}</div>
-                      <div className={`text-[11px] mt-0.5 ${selectedTransport === t.id ? "text-stone-300" : "text-stone-500"}`}>
+                      <div className={`text-[11px] mt-0.5 ${selectedTransport === t.id ? "text-emerald-100" : "text-stone-500 dark:text-stone-400"}`}>
                         {t.desc}
                       </div>
                     </button>
@@ -253,21 +253,21 @@ export default function PlannerPage() {
               </div>
 
               <div className="space-y-3 pt-2">
-                <label className="text-xs font-semibold text-stone-700 block">Hotel / Resort Tier</label>
+                <label className="text-xs font-semibold text-stone-700 dark:text-stone-300 block">Hotel / Resort Tier</label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   {STAY_TIERS.map((s) => (
                     <button
                       key={s.id}
                       type="button"
                       onClick={() => setSelectedStay(s.id)}
-                      className={`p-3.5 rounded-2xl border text-left transition-all ${
+                      className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
                         selectedStay === s.id
-                          ? "border-stone-900 bg-stone-900 text-stone-50"
-                          : "border-[#E5DFD5] bg-[#FAF8F5] text-stone-900 hover:border-stone-400"
+                          ? "border-emerald-600 dark:border-emerald-500 bg-emerald-600 text-white shadow-xs"
+                          : "border-[#E5DFD5] dark:border-[#262d3d] bg-[#FAF8F5] dark:bg-[#10131c] text-stone-900 dark:text-stone-100 hover:border-emerald-400"
                       }`}
                     >
                       <div className="font-semibold text-xs sm:text-sm">{s.label}</div>
-                      <div className={`text-[11px] mt-0.5 ${selectedStay === s.id ? "text-stone-300" : "text-stone-500"}`}>
+                      <div className={`text-[11px] mt-0.5 ${selectedStay === s.id ? "text-emerald-100" : "text-stone-500 dark:text-stone-400"}`}>
                         {s.desc}
                       </div>
                     </button>
@@ -276,22 +276,22 @@ export default function PlannerPage() {
               </div>
 
               {/* Add-on toggles */}
-              <div className="pt-4 border-t border-[#F0EBE1] flex flex-wrap gap-4 text-xs font-semibold text-stone-800">
-                <label className="flex items-center gap-2 cursor-pointer bg-[#FAF8F5] border border-[#E5DFD5] px-3.5 py-2.5 rounded-xl">
+              <div className="pt-4 border-t border-[#F0EBE1] dark:border-[#1e2434] flex flex-wrap gap-4 text-xs font-semibold text-stone-800 dark:text-stone-200">
+                <label className="flex items-center gap-2 cursor-pointer bg-[#FAF8F5] dark:bg-[#10131c] border border-[#E5DFD5] dark:border-[#262d3d] px-3.5 py-2.5 rounded-xl">
                   <input
                     type="checkbox"
                     checked={includeBbq}
                     onChange={(e) => setIncludeBbq(e.target.checked)}
-                    className="accent-stone-900"
+                    className="accent-emerald-600"
                   />
                   <span>BBQ Night / Campfire Feast</span>
                 </label>
-                <label className="flex items-center gap-2 cursor-pointer bg-[#FAF8F5] border border-[#E5DFD5] px-3.5 py-2.5 rounded-xl">
+                <label className="flex items-center gap-2 cursor-pointer bg-[#FAF8F5] dark:bg-[#10131c] border border-[#E5DFD5] dark:border-[#262d3d] px-3.5 py-2.5 rounded-xl">
                   <input
                     type="checkbox"
                     checked={includeGuide}
                     onChange={(e) => setIncludeGuide(e.target.checked)}
-                    className="accent-stone-900"
+                    className="accent-emerald-600"
                   />
                   <span>Dedicated Certified Field Guide</span>
                 </label>
@@ -302,46 +302,46 @@ export default function PlannerPage() {
           {/* Right Column: Live Estimate & Quote Request (5 cols) */}
           <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-28">
             {/* Live Pricing Breakdown Card */}
-            <div className="bg-white border border-[#EBE6DC] rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800 block">
+            <div className="bg-white dark:bg-[#141720] border border-[#EBE6DC] dark:border-[#1e2434] rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400 block">
                 Live Group Cost Splitter
               </span>
 
-              <div className="p-5 rounded-2xl bg-[#FAF8F5] border border-[#E5DFD5] space-y-3">
+              <div className="p-5 rounded-2xl bg-[#FAF8F5] dark:bg-[#10131c] border border-[#E5DFD5] dark:border-[#262d3d] space-y-3">
                 <div className="flex items-baseline justify-between">
-                  <span className="text-xs text-stone-500">Per Person Fare (Split):</span>
-                  <span className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
+                  <span className="text-xs text-stone-500 dark:text-stone-400">Per Person Fare (Split):</span>
+                  <span className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 dark:text-stone-100">
                     BDT {perPersonCost.toLocaleString()}
                   </span>
                 </div>
-                <div className="flex items-baseline justify-between border-t border-[#EAE4D9] pt-2 text-xs">
-                  <span className="text-stone-500">Total Group Estimate ({groupSize} guests):</span>
-                  <span className="font-semibold text-stone-800">BDT {totalCost.toLocaleString()}</span>
+                <div className="flex items-baseline justify-between border-t border-[#EAE4D9] dark:border-[#1e2434] pt-2 text-xs">
+                  <span className="text-stone-500 dark:text-stone-400">Total Group Estimate ({groupSize} guests):</span>
+                  <span className="font-semibold text-stone-800 dark:text-stone-200">BDT {totalCost.toLocaleString()}</span>
                 </div>
                 {groupSize >= 10 && (
-                  <div className="text-[11px] text-emerald-800 font-bold bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg inline-block">
+                  <div className="text-[11px] text-emerald-800 dark:text-emerald-300 font-bold bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 px-2.5 py-1 rounded-lg inline-block">
                     ✓ {groupSize >= 20 ? "8% Large Group Discount Applied" : "5% Group Discount Applied"}
                   </div>
                 )}
               </div>
 
               {/* Summary bullets */}
-              <div className="space-y-2 text-xs text-stone-600">
+              <div className="space-y-2 text-xs text-stone-600 dark:text-stone-400">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-700 shrink-0" />
-                  <span><strong>{destObj.name}</strong> • {days} Days / {days - 1} Nights</span>
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <span><strong className="text-stone-900 dark:text-stone-100">{destObj.name}</strong> • {days} Days / {days - 1} Nights</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-700 shrink-0" />
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                   <span>{transObj.label}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-700 shrink-0" />
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                   <span>{stayObj.label}</span>
                 </div>
                 {includeBbq && (
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-700 shrink-0" />
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                     <span>Traditional Night BBQ &amp; Campfire setup</span>
                   </div>
                 )}
@@ -350,27 +350,27 @@ export default function PlannerPage() {
               {/* AI Concierge Preload Link */}
               <Link
                 href={`/concierge?q=${conciergePrompt}`}
-                className="w-full py-3 px-4 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-semibold transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-800/40 text-xs font-semibold transition-all flex items-center justify-center gap-2"
               >
-                <Bot className="h-4 w-4 text-amber-700" />
+                <Bot className="h-4 w-4 text-amber-700 dark:text-amber-400" />
                 <span>Discuss This Plan with AI Concierge</span>
               </Link>
 
               {/* Request Official Quote Form */}
-              <div className="pt-4 border-t border-[#F0EBE1]">
-                <h4 className="text-sm font-serif font-bold text-stone-900 mb-1">
+              <div className="pt-4 border-t border-[#F0EBE1] dark:border-[#1e2434]">
+                <h4 className="text-sm font-serif font-bold text-stone-900 dark:text-stone-100 mb-1">
                   Request Official Custom Quote
                 </h4>
-                <p className="text-xs text-stone-500 mb-4">
+                <p className="text-xs text-stone-500 dark:text-stone-400 mb-4">
                   Our group coordinator will review your exact dates and provide tailored invoicing and payment terms.
                 </p>
 
                 {submittedTicket ? (
-                  <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs text-center space-y-2">
-                    <CheckCircle2 className="h-6 w-6 text-emerald-700 mx-auto" />
+                  <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 text-emerald-900 dark:text-emerald-200 text-xs text-center space-y-2">
+                    <CheckCircle2 className="h-6 w-6 text-emerald-600 dark:text-emerald-400 mx-auto" />
                     <div className="font-bold text-sm">Quote Request Registered!</div>
-                    <p>Ticket Reference ID: <strong className="font-mono">{submittedTicket}</strong></p>
-                    <p className="text-[11px] text-emerald-700">A coordinator will call you within 4 hours.</p>
+                    <p>Ticket Reference ID: <strong className="font-mono text-emerald-700 dark:text-emerald-300">{submittedTicket}</strong></p>
+                    <p className="text-[11px] text-emerald-700 dark:text-emerald-400">A coordinator will call you within 4 hours.</p>
                   </div>
                 ) : (
                   <form onSubmit={handleRequestQuote} className="space-y-3">
@@ -380,7 +380,7 @@ export default function PlannerPage() {
                       placeholder="Your Full Name *"
                       value={leadName}
                       onChange={(e) => setLeadName(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF8F5] border border-[#E5DFD5] text-xs text-stone-900 focus:outline-none focus:border-stone-900"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF8F5] dark:bg-[#10131c] border border-[#E5DFD5] dark:border-[#262d3d] text-xs text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:border-emerald-500"
                     />
                     <input
                       type="tel"
@@ -388,28 +388,22 @@ export default function PlannerPage() {
                       placeholder="Contact Phone Number *"
                       value={leadPhone}
                       onChange={(e) => setLeadPhone(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF8F5] border border-[#E5DFD5] text-xs text-stone-900 focus:outline-none focus:border-stone-900"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF8F5] dark:bg-[#10131c] border border-[#E5DFD5] dark:border-[#262d3d] text-xs text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:border-emerald-500"
                     />
                     <input
                       type="email"
                       placeholder="Email Address (Optional)"
                       value={leadEmail}
                       onChange={(e) => setLeadEmail(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF8F5] border border-[#E5DFD5] text-xs text-stone-900 focus:outline-none focus:border-stone-900"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF8F5] dark:bg-[#10131c] border border-[#E5DFD5] dark:border-[#262d3d] text-xs text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:border-emerald-500"
                     />
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="w-full py-3 rounded-xl bg-stone-900 hover:bg-stone-800 disabled:bg-stone-400 text-stone-50 text-xs font-semibold transition-all shadow-xs flex items-center justify-center gap-1.5"
+                      className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-xs transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer"
                     >
-                      {submitting ? (
-                        <span>Submitting...</span>
-                      ) : (
-                        <>
-                          <Send className="h-3.5 w-3.5" />
-                          <span>Submit Custom Quote Request</span>
-                        </>
-                      )}
+                      <Send className="h-3.5 w-3.5" />
+                      <span>{submitting ? "Submitting Request..." : "Submit Quote Request"}</span>
                     </button>
                   </form>
                 )}
