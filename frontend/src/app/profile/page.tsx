@@ -550,7 +550,7 @@ function DashboardContent() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] text-[#111827] flex font-sans antialiased">
+    <div className="min-h-screen bg-[#F9FAFB] dark:bg-[#090b0e] text-[#111827] dark:text-stone-100 flex font-sans antialiased">
       {/* 1. LEFT SIDEBAR */}
       <DashboardSidebar
         sidebarOpen={sidebarOpen}
@@ -583,10 +583,10 @@ function DashboardContent() {
           {/* Header Subtitle */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-[#111827] tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-bold text-[#111827] dark:text-stone-100 tracking-tight">
                 {navItems.find((n) => n.id === activeTab)?.label || "Dashboard"}
               </h1>
-              <p className="text-xs text-[#4B5563] mt-0.5">
+              <p className="text-xs text-[#4B5563] dark:text-stone-400 mt-0.5">
                 {isSuperAdmin
                   ? "Supreme platform administration, security governance, and dispatch."
                   : isAdmin
@@ -600,7 +600,7 @@ function DashboardContent() {
               {!isTraveller && (
                 <button
                   onClick={() => setCreateTourOpen(true)}
-                  className="px-3.5 py-2 bg-[#111827] hover:bg-black text-white rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors"
+                  className="px-3.5 py-2 bg-[#111827] dark:bg-emerald-600 hover:bg-black dark:hover:bg-emerald-500 text-white rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span>Create Tour Package</span>
@@ -609,7 +609,7 @@ function DashboardContent() {
               {isTraveller && (
                 <Link
                   href="/tours"
-                  className="px-3.5 py-2 bg-[#111827] hover:bg-black text-white rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors"
+                  className="px-3.5 py-2 bg-[#111827] dark:bg-emerald-600 hover:bg-black dark:hover:bg-emerald-500 text-white rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
                 >
                   <Compass className="h-3.5 w-3.5" />
                   <span>Browse Expeditions</span>

@@ -188,19 +188,19 @@ html.dark #live-chat-trigger {
   border-color: rgba(16, 185, 129, 0.5) !important;
 }
 
-html.dark button.bg-stone-900:not(nav *):not(#live-chat-trigger),
-html.dark a.bg-stone-900:not(nav *),
-html.dark button.bg-\[\#111827\]:not(nav *):not(#live-chat-trigger),
-html.dark a.bg-\[\#111827\]:not(nav *) {
+html.dark button.bg-stone-900:not(nav *):not(#live-chat-trigger):not(aside *):not(header *),
+html.dark a.bg-stone-900:not(nav *):not(aside *):not(header *),
+html.dark button.bg-\[\#111827\]:not(nav *):not(#live-chat-trigger):not(aside *):not(header *),
+html.dark a.bg-\[\#111827\]:not(nav *):not(aside *):not(header *) {
   background-color: #f8fafc !important;
   color: #0b0d11 !important;
   font-weight: 600 !important;
 }
 
-html.dark button.bg-stone-900:not(nav *):not(#live-chat-trigger):hover,
-html.dark a.bg-stone-900:not(nav *):hover,
-html.dark button.bg-\[\#111827\]:not(nav *):not(#live-chat-trigger):hover,
-html.dark a.bg-\[\#111827\]:not(nav *):hover {
+html.dark button.bg-stone-900:not(nav *):not(#live-chat-trigger):not(aside *):not(header *):hover,
+html.dark a.bg-stone-900:not(nav *):not(aside *):not(header *):hover,
+html.dark button.bg-\[\#111827\]:not(nav *):not(#live-chat-trigger):not(aside *):not(header *):hover,
+html.dark a.bg-\[\#111827\]:not(nav *):not(aside *):not(header *):hover {
   background-color: #e2e8f0 !important;
   color: #000000 !important;
 }
@@ -305,6 +305,32 @@ html.dark ::-webkit-scrollbar-thumb {
 
 html.dark ::-webkit-scrollbar-thumb:hover {
   background: #3e485e !important;
+}
+
+/* 12. Global Dark Mode Hover Contrast Protection */
+html.dark tr[class*="hover:bg-[#F9FAFB]"]:hover,
+html.dark tr[class*="hover:bg-[#FAFAFA]"]:hover,
+html.dark tr[class*="hover:bg-stone-50"]:hover,
+html.dark [class*="hover:bg-[#F9FAFB]"]:hover,
+html.dark [class*="hover:bg-[#F3F4F6]"]:hover,
+html.dark [class*="hover:bg-[#FAFAFA]"]:hover,
+html.dark [class*="hover:bg-[#FAF8F5]"]:hover,
+html.dark [class*="hover:bg-stone-50"]:hover,
+html.dark [class*="hover:bg-stone-100"]:hover,
+html.dark [class*="hover:bg-stone-200"]:hover {
+  background-color: #1a1e2b !important;
+  color: #f8fafc !important;
+}
+
+html.dark [class*="hover:bg-[#FEF2F2]"]:hover,
+html.dark [class*="hover:bg-rose-50"]:hover {
+  background-color: rgba(244, 63, 94, 0.2) !important;
+  color: #fb7185 !important;
+}
+
+html.dark [class*="hover:bg-emerald-50"]:hover {
+  background-color: rgba(16, 185, 129, 0.2) !important;
+  color: #34d399 !important;
 }
 
 /* Smooth motion animations */

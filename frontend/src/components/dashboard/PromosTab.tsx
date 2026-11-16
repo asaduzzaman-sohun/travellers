@@ -212,7 +212,7 @@ export function PromosTab() {
         {/* Promos Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-stone-600">
-            <thead className="bg-stone-50 border-b border-stone-200 text-stone-900 font-semibold">
+            <thead className="bg-stone-50 dark:bg-[#141720] border-b border-stone-200 dark:border-[#1e2434] text-stone-900 dark:text-stone-200 font-semibold">
               <tr>
                 <th className="py-3 px-5">Promo Code</th>
                 <th className="py-3 px-5">Discount</th>
@@ -223,11 +223,11 @@ export function PromosTab() {
                 <th className="py-3 px-5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-200">
+            <tbody className="divide-y divide-stone-200 dark:divide-[#1e2434]">
               {filteredPromos.map((p) => {
                 const isExpired = p.expiresAtUtc && new Date(p.expiresAtUtc) < new Date();
                 return (
-                  <tr key={p.id} className="hover:bg-stone-50/80 transition-colors">
+                  <tr key={p.id} className="hover:bg-stone-50/80 dark:hover:bg-[#161a25] transition-colors">
                     <td className="py-3.5 px-5">
                       <div className="flex items-center gap-2">
                         <span className="font-mono font-bold text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded">

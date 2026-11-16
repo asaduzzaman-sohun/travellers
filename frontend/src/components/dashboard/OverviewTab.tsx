@@ -451,8 +451,8 @@ export function OverviewTab({
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-[#4B5563]">
-            <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB] text-[#111827] font-semibold">
+          <table className="w-full text-left text-xs text-[#4B5563] dark:text-stone-300">
+            <thead className="bg-[#F9FAFB] dark:bg-[#141720] border-b border-[#E5E7EB] dark:border-[#1e2434] text-[#111827] dark:text-stone-200 font-semibold">
               <tr>
                 <th className="py-3 px-6">Reference</th>
                 <th className="py-3 px-6">Traveler</th>
@@ -461,9 +461,9 @@ export function OverviewTab({
                 <th className="py-3 px-6 text-right">Amount</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E5E7EB]">
+            <tbody className="divide-y divide-[#E5E7EB] dark:divide-[#1e2434]">
               {bookingsList.slice(0, 5).map((row) => (
-                <tr key={row.id} className="hover:bg-[#F9FAFB] transition-colors">
+                <tr key={row.id} className="hover:bg-[#F9FAFB] dark:hover:bg-[#161a25] transition-colors">
                   <td className="py-3.5 px-6 font-mono text-[#111827] font-semibold">
                     {row.bookingReference}
                   </td>

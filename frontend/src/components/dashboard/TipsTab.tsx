@@ -207,7 +207,7 @@ export function TipsTab() {
         {/* Tips Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-stone-600">
-            <thead className="bg-stone-50 border-b border-stone-200 text-stone-900 font-semibold">
+            <thead className="bg-stone-50 dark:bg-[#141720] border-b border-stone-200 dark:border-[#1e2434] text-stone-900 dark:text-stone-200 font-semibold">
               <tr>
                 <th className="py-3 px-5">Title & Summary</th>
                 <th className="py-3 px-5">Category</th>
@@ -216,9 +216,9 @@ export function TipsTab() {
                 <th className="py-3 px-5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-200">
+            <tbody className="divide-y divide-stone-200 dark:divide-[#1e2434]">
               {filteredTips.map((t) => (
-                <tr key={t.id} className="hover:bg-stone-50/80 transition-colors">
+                <tr key={t.id} className="hover:bg-stone-50/80 dark:hover:bg-[#161a25] transition-colors">
                   <td className="py-3.5 px-5">
                     <div className="font-semibold text-stone-900">{t.title}</div>
                     <div className="text-[11px] text-stone-500 line-clamp-1 mt-0.5">

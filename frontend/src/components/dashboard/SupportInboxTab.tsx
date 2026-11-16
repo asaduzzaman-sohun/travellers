@@ -140,11 +140,11 @@ export function SupportInboxTab() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[540px]">
         {/* Session Queue */}
-        <div className="rounded-2xl border border-[#E5DFD3] bg-white overflow-hidden flex flex-col">
-          <div className="px-4 py-3 border-b border-stone-100 bg-[#FAF8F5] text-xs font-semibold text-stone-700">
+        <div className="rounded-2xl border border-[#E5DFD3] dark:border-[#1e2434] bg-white dark:bg-[#0c0f16] overflow-hidden flex flex-col">
+          <div className="px-4 py-3 border-b border-stone-100 dark:border-[#1e2434] bg-[#FAF8F5] dark:bg-[#141720] text-xs font-semibold text-stone-700 dark:text-stone-300">
             Traveler Threads ({displayedSessions.length})
           </div>
-          <div className="flex-1 overflow-y-auto divide-y divide-stone-100">
+          <div className="flex-1 overflow-y-auto divide-y divide-stone-100 dark:divide-[#1e2434]">
             {displayedSessions.map((s) => {
               const selected = s.id === activeSessionId;
               return (
@@ -153,11 +153,11 @@ export function SupportInboxTab() {
                   type="button"
                   onClick={() => handleSelectThread(s.id)}
                   className={`w-full text-left px-4 py-3.5 transition-colors cursor-pointer ${
-                    selected ? "bg-emerald-50/70" : "hover:bg-stone-50"
+                    selected ? "bg-emerald-50/70 dark:bg-emerald-950/40" : "hover:bg-stone-50 dark:hover:bg-[#161a25]"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-bold text-stone-950 truncate">
+                    <span className="text-xs font-bold text-stone-950 dark:text-stone-100 truncate">
                       {s.ownerName}
                     </span>
                     {s.isEscalatedToHuman && (

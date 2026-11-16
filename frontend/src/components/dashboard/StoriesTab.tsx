@@ -111,10 +111,10 @@ export function StoriesTab({
                 <button
                   key={div}
                   onClick={() => setDivisionFilter(div)}
-                  className={`px-2.5 py-1 rounded text-xs font-medium transition-colors ${
+                  className={`px-2.5 py-1 rounded text-xs font-medium transition-colors cursor-pointer ${
                     isActive
-                      ? "bg-[#111827] text-white"
-                      : "bg-white text-stone-600 hover:text-stone-900 border border-stone-200"
+                      ? "bg-[#111827] dark:bg-emerald-600 text-white"
+                      : "bg-white dark:bg-[#141720] text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white border border-stone-200 dark:border-[#2a3142]"
                   }`}
                 >
                   {div === "all" ? "All Regions" : div} ({count})
@@ -126,8 +126,8 @@ export function StoriesTab({
 
         {/* Stories Table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-[#4B5563]">
-            <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB] text-[#111827] font-semibold">
+          <table className="w-full text-left text-xs text-[#4B5563] dark:text-stone-300">
+            <thead className="bg-[#F9FAFB] dark:bg-[#141720] border-b border-[#E5E7EB] dark:border-[#1e2434] text-[#111827] dark:text-stone-200 font-semibold">
               <tr>
                 <th className="py-3 px-5">Story Title</th>
                 <th className="py-3 px-5">Author</th>
@@ -137,9 +137,9 @@ export function StoriesTab({
                 <th className="py-3 px-5 text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E5E7EB]">
+            <tbody className="divide-y divide-[#E5E7EB] dark:divide-[#1e2434]">
               {filteredStories.map((s) => (
-                <tr key={s.id} className="hover:bg-[#F9FAFB] transition-colors">
+                <tr key={s.id} className="hover:bg-[#F9FAFB] dark:hover:bg-[#161a25] transition-colors">
                   <td className="py-3.5 px-5">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-14 rounded overflow-hidden bg-stone-100 border border-stone-200 shrink-0 relative">
