@@ -9,14 +9,23 @@ import {
   Clock,
   XCircle,
   AlertCircle,
+  AlertTriangle,
   Copy,
   Printer,
   Calendar,
   Users,
   MapPin,
   Ticket,
+  Download,
+  X,
 } from "lucide-react";
-import { BookingRecord, initiatePayment, verifyPayment } from "@/lib/api";
+import {
+  BookingRecord,
+  initiatePayment,
+  verifyPayment,
+  cancelBooking,
+  downloadBookingsCsv,
+} from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useToast } from "@/lib/toast-context";
 import TravelVoucherModal from "@/components/ui/TravelVoucherModal";
@@ -52,6 +61,53 @@ export function BookingsTab({
   const [bookingStatusFilter, setBookingStatusFilter] = useState("all");
   const [payingBookingId, setPayingBookingId] = useState<string | null>(null);
   const [activeVoucherBooking, setActiveVoucherBooking] = useState<BookingRecord | null>(null);
+  const [cancellingBooking, setCancellingBooking] = useState<BookingRecord | null>(null);
+  const [cancelReason, setCancelReason] = useState("");
+  const [cancelling, setCancelling] = useState(false);
+  const [exportingCsv, setExportingCsv] = useState(false);
+
+  const handleExportCsv = async () => {
+    if (!token) return;
+    try {
+      setExportingCsv(true);
+      const blob = await downloadBookingsCsv(token);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `TourFlow_Bookings_${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success("CSV Export Ready", "Downloaded all registered bookings to CSV file.");
+    } catch (err: unknown) {
+      toast.error(
+        "Export Failed",
+        err instanceof Error ? err.message : "Could not export CSV"
+      );
+    } finally {
+      setExportingCsv(false);
+    }
+  };
+
+  const handleConfirmCancel = async () => {
+    if (!cancellingBooking || !token) return;
+    try {
+      setCancelling(true);
+      const res = await cancelBooking(cancellingBooking.id, cancelReason, token);
+      toast.success("Booking Cancelled", res.message || "Reservation cancelled and seats released.");
+      setCancellingBooking(null);
+      setCancelReason("");
+      if (onRefresh) onRefresh();
+    } catch (err: unknown) {
+      toast.error(
+        "Cancellation Failed",
+        err instanceof Error ? err.message : "Could not cancel booking"
+      );
+    } finally {
+      setCancelling(false);
+    }
+  };
 
   const filteredBookings = bookingsList.filter((b) => {
     const matchesSearch =
@@ -284,6 +340,18 @@ export function BookingsTab({
           </div>
 
           <div className="flex items-center gap-1.5 flex-wrap">
+            {!isTraveller && (
+              <button
+                type="button"
+                onClick={handleExportCsv}
+                disabled={exportingCsv}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-semibold bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-300 transition-colors mr-1 shadow-2xs"
+                title="Export all bookings as CSV spreadsheet"
+              >
+                <Download className="h-3 w-3 text-stone-600" />
+                <span>{exportingCsv ? "Exporting..." : "Export CSV"}</span>
+              </button>
+            )}
             {["all", "Confirmed", "Pending", "Cancelled"].map((status) => {
               const count =
                 status === "all"
@@ -345,7 +413,14 @@ export function BookingsTab({
                   </td>
                   <td className="py-3.5 px-5 font-medium text-stone-900">{b.tourTitle}</td>
                   <td className="py-3.5 px-5 font-medium">{b.numberOfTravelers}</td>
-                  <td className="py-3.5 px-5">{getStatusBadge(b.status)}</td>
+                  <td className="py-3.5 px-5">
+                    <div>{getStatusBadge(b.status)}</div>
+                    {b.refundStatus && (
+                      <span className="inline-block text-[10px] text-amber-700 font-medium bg-amber-50 border border-amber-200 px-1.5 py-0.2 rounded mt-1">
+                        Refund: {b.refundStatus}
+                      </span>
+                    )}
+                  </td>
                   <td className="py-3.5 px-5">{getPaymentBadge(b.paymentStatus)}</td>
                   <td className="py-3.5 px-5 text-right font-semibold text-[#111827]">
                     BDT {b.totalAmount.toLocaleString()}
@@ -377,24 +452,40 @@ export function BookingsTab({
                           <option value="Completed">Completed</option>
                         </select>
                       ) : (
-                        b.paymentStatus !== "Paid" && (
-                          <div className="inline-flex items-center gap-1.5">
-                            <Link
-                              href={`/booking/payment?bookingId=${b.id}`}
-                              className="px-2.5 py-1 bg-white border border-stone-300 hover:border-stone-900 text-stone-900 text-[11px] font-medium rounded transition-colors inline-flex items-center gap-1"
-                            >
-                              <CreditCard className="h-3 w-3" />
-                              <span>Checkout</span>
-                            </Link>
+                        <div className="inline-flex items-center gap-1.5">
+                          {b.status !== "Cancelled" && b.status !== "Completed" && (
                             <button
-                              onClick={() => handlePayNow(b)}
-                              disabled={payingBookingId === b.id}
-                              className="px-2.5 py-1 bg-[#111827] hover:bg-black text-white text-[11px] font-medium rounded transition-colors inline-flex items-center gap-1 shadow-xs"
+                              type="button"
+                              onClick={() => {
+                                setCancellingBooking(b);
+                                setCancelReason("");
+                              }}
+                              className="px-2 py-1 bg-white border border-rose-200 text-rose-700 hover:bg-rose-50 text-[11px] font-medium rounded transition-colors inline-flex items-center gap-1"
+                              title="Cancel Booking & Restore Available Seats"
                             >
-                              <span>{payingBookingId === b.id ? "Processing..." : "Pay bKash"}</span>
+                              <XCircle className="h-3 w-3" />
+                              <span>Cancel</span>
                             </button>
-                          </div>
-                        )
+                          )}
+                          {b.paymentStatus !== "Paid" && b.status !== "Cancelled" && (
+                            <>
+                              <Link
+                                href={`/booking/payment?bookingId=${b.id}`}
+                                className="px-2.5 py-1 bg-white border border-stone-300 hover:border-stone-900 text-stone-900 text-[11px] font-medium rounded transition-colors inline-flex items-center gap-1"
+                              >
+                                <CreditCard className="h-3 w-3" />
+                                <span>Checkout</span>
+                              </Link>
+                              <button
+                                onClick={() => handlePayNow(b)}
+                                disabled={payingBookingId === b.id}
+                                className="px-2.5 py-1 bg-[#111827] hover:bg-black text-white text-[11px] font-medium rounded transition-colors inline-flex items-center gap-1 shadow-xs"
+                              >
+                                <span>{payingBookingId === b.id ? "Processing..." : "Pay bKash"}</span>
+                              </button>
+                            </>
+                          )}
+                        </div>
                       )}
                     </div>
                   </td>
@@ -463,6 +554,88 @@ export function BookingsTab({
             status: activeVoucherBooking.status,
           }}
         />
+      )}
+
+      {/* Self-service Cancellation Modal */}
+      {cancellingBooking && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full border border-stone-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="p-4 border-b border-stone-200 flex items-center justify-between bg-stone-50">
+              <div className="flex items-center gap-2 text-rose-700">
+                <AlertTriangle className="h-4 w-4" />
+                <h3 className="text-sm font-semibold text-stone-900">Cancel Booking Reservation</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCancellingBooking(null)}
+                className="text-stone-400 hover:text-stone-700 p-1 rounded"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              <div className="bg-stone-50 p-3.5 rounded border border-stone-200 text-xs space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-stone-500">Booking Reference:</span>
+                  <span className="font-mono font-bold text-stone-900">{cancellingBooking.bookingReference}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-stone-500">Tour Package:</span>
+                  <span className="font-medium text-stone-800 line-clamp-1">{cancellingBooking.tourTitle}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-stone-500">Travelers / Seats:</span>
+                  <span className="font-medium text-stone-800">{cancellingBooking.numberOfTravelers} Seats</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-stone-500">Total Amount:</span>
+                  <span className="font-semibold text-stone-900">BDT {cancellingBooking.totalAmount.toLocaleString()}</span>
+                </div>
+              </div>
+
+              <div className="text-xs text-stone-600 bg-amber-50/70 border border-amber-200 p-3 rounded">
+                <p className="font-semibold text-amber-900 mb-1">Standard Cancellation Policy:</p>
+                <p>
+                  Cancellations made at least 24 hours prior to departure release booked seats immediately back to expedition inventory. Any paid deposit transitions to <strong>Pending Refund</strong> review.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-stone-700 mb-1.5">
+                  Reason for cancellation (optional):
+                </label>
+                <textarea
+                  rows={3}
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  placeholder="e.g. Personal schedule change, emergency..."
+                  className="w-full text-xs rounded border border-stone-300 p-2.5 focus:outline-none focus:border-stone-800"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-stone-200">
+                <button
+                  type="button"
+                  onClick={() => setCancellingBooking(null)}
+                  disabled={cancelling}
+                  className="px-3.5 py-1.5 text-xs font-medium text-stone-700 hover:text-stone-900 bg-white border border-stone-300 rounded hover:bg-stone-50"
+                >
+                  Keep Reservation
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmCancel}
+                  disabled={cancelling}
+                  className="px-4 py-1.5 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded transition-colors inline-flex items-center gap-1.5 shadow-xs"
+                >
+                  <XCircle className="h-3.5 w-3.5" />
+                  <span>{cancelling ? "Cancelling..." : "Confirm Cancellation"}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

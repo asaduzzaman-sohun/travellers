@@ -21,6 +21,7 @@ public interface ITourFlowDbContext
     DbSet<ChatMessage> ChatMessages { get; }
     DbSet<RealtimeNotification> RealtimeNotifications { get; }
     DbSet<WishlistItem> WishlistItems { get; }
+    DbSet<ContactInquiry> ContactInquiries { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

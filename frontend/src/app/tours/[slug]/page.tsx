@@ -40,6 +40,7 @@ import TravelVoucherModal from "@/components/ui/TravelVoucherModal";
 import PackingChecklist from "@/components/tours/PackingChecklist";
 import TourQuickActions from "@/components/tours/TourQuickActions";
 import ReviewSubmissionModal, { SubmittedReview } from "@/components/tours/ReviewSubmissionModal";
+import { WeatherAdvisoryWidget } from "@/components/weather/WeatherAdvisoryWidget";
 
 export default function TourDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = use(params);
@@ -719,6 +720,10 @@ export default function TourDetailPage({ params }: { params: Promise<{ slug: str
               <div>✓ Instant booking confirmation voucher</div>
               <div>✓ Support via bKash, Nagad &amp; Bank Transfer</div>
             </div>
+          </div>
+
+          <div className="mt-6">
+            <WeatherAdvisoryWidget destination={tour.destination || tour.title} />
           </div>
         </div>
       </div>

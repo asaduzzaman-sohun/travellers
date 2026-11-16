@@ -176,10 +176,10 @@ The seed data provides pre-configured accounts for testing different user roles:
 
 | Role | Email Address | Password | Permissions & Features |
 | :--- | :--- | :--- | :--- |
-| **Super Admin** | `super.admin@traveller.com` | `Traveller@2026` | Full platform access, user management, system metrics |
-| **Admin** | `admin@traveller.com` | `Admin@2026` | Tour CRUD, booking status updates, booking vouchers |
-| **Traveler (Primary)**| `traveler@tourflow.com.bd` | `Traveler@123456` | Book tours, view boarding passes, write reviews |
-| **Traveler (Demo)** | `tanvir.ahmed@gmail.com` | `Traveler@123456` | Pre-seeded confirmed bookings in Sajek & Tanguar Haor |
+| **Super Admin** | `superadmin@example.com` | `Traveller@2026` | Full platform access, user management, system metrics |
+| **Admin** | `admin@example.com` | `Admin@2026` | Tour CRUD, booking status updates, booking vouchers |
+| **Traveler (Primary)**| `traveler@example.com` | `Traveler@123456` | Book tours, view boarding passes, write reviews |
+| **Traveler (Demo)** | `tanvir.ahmed@example.com` | `Traveler@123456` | Pre-seeded confirmed bookings in Sajek & Tanguar Haor |
 
 ---
 

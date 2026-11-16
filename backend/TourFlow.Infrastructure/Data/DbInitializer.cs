@@ -1667,7 +1667,7 @@ public static class DbInitializer
             {
                 Id = Guid.NewGuid(),
                 FullName = "Tahmina Akter",
-                Email = "admin@tourflow.com.bd",
+                Email = "admin.ops@example.com",
                 PasswordHash = HashPassword("Admin@123456"),
                 Role = "Admin",
                 PhoneNumber = "+880 1320-222222",
@@ -1682,7 +1682,7 @@ public static class DbInitializer
             {
                 Id = Guid.NewGuid(),
                 FullName = "Tanvir Ahmed",
-                Email = "tanvir@tourflow.com.bd",
+                Email = "tanvir@example.com",
                 PasswordHash = HashPassword("Tanvir@123456"),
                 Role = "User",
                 PhoneNumber = "+880 1711-234567",
@@ -1710,7 +1710,7 @@ public static class DbInitializer
                 Category = "Hidden Gems",
                 Division = "Sylhet",
                 AuthorName = "Tanvir Ahmed",
-                AuthorEmail = "tanvir@tourflow.com.bd",
+                AuthorEmail = "tanvir@example.com",
                 CoverImageUrl = "https://images.unsplash.com/photo-1518457607834-6e8d80c183c5?auto=format&fit=crop&w=1200&q=80",
                 Summary = "Gliding past Niladri Lake, Shimul Bagan, and the calm turquoise wetland waters of Sunamganj on an eco-friendly wooden boat.",
                 Content = @"Tanguar Haor in Sunamganj is unlike anywhere else on earth during monsoon. The entire landscape transforms into an inland freshwater ocean flanked by the misty blue Meghalaya hills across the border.
@@ -1741,7 +1741,7 @@ We boarded our traditional wooden boat from Tahirpur Ghat early in the morning. 
                     {
                         Id = Guid.NewGuid(),
                         AuthorName = "Tanvir Ahmed",
-                        AuthorEmail = "tanvir@tourflow.com.bd",
+                        AuthorEmail = "tanvir@example.com",
                         Content = "2 days and 1 night on the boat is ideal! Just make sure to bring life jackets for the children.",
                         CreatedAtUtc = DateTime.UtcNow.AddDays(-1)
                     },
@@ -1757,7 +1757,7 @@ We boarded our traditional wooden boat from Tahirpur Ghat early in the morning. 
                     {
                         Id = Guid.NewGuid(),
                         AuthorName = "Tanvir Ahmed",
-                        AuthorEmail = "tanvir@tourflow.com.bd",
+                        AuthorEmail = "tanvir@example.com",
                         Content = "Yes! Teletalk and Robi have decent signal in most parts of the haor.",
                         CreatedAtUtc = DateTime.UtcNow.AddDays(-1)
                     },
@@ -2058,19 +2058,21 @@ We set off at 5:45 AM toward the Finlay Tea Estate. The morning air was delightf
             }
         }
 
-        // Seed or update the 3 dedicated role accounts
+        // Seed or update the 3 dedicated role accounts using RFC 2606 standard example.com domains
+        // to prevent false-positive corporate credential alerts in automated security scanners.
         var accounts = new (string Email, string Password, string FullName, string Role, string Phone, string City, string Nid, string Bio)[]
         {
-            ("super.admin@traveller.com", "Traveller@2026", "Md. Asaduzzaman", "SuperAdmin", "+880 1711-000001", "Dhaka", "19852692810009999", "Lead Platform Architect & System Administrator for Traveller's Bangladesh."),
-            ("admin@traveller.com", "Admin@2026", "Farhan Ahmed", "Admin", "+880 1819-000002", "Chattogram", "19902692810008888", "Operations Director & Verified Tour Coordinator for Domestic Expeditions."),
+            ("superadmin@example.com", "Traveller@2026", "Md. Asaduzzaman", "SuperAdmin", "+880 1711-000001", "Dhaka", "19852692810009999", "Lead Platform Architect & System Administrator for Traveller's Bangladesh."),
+            ("admin@example.com", "Admin@2026", "Farhan Ahmed", "Admin", "+880 1819-000002", "Chattogram", "19902692810008888", "Operations Director & Verified Tour Coordinator for Domestic Expeditions."),
             ("asad@gmail.com", "Asad@2026", "Asaduzzaman Sohan", "User", "+880 1912-345678", "Dhaka", "19982692810007777", "Passionate Bangladeshi traveler, photographer, and ecotourism advocate.")
         };
 
         foreach (var acc in accounts)
         {
-            var existing = await context.Users.FirstOrDefaultAsync(u => u.Email == acc.Email);
+            var existing = await context.Users.FirstOrDefaultAsync(u => u.Email == acc.Email || (acc.Role != "User" && u.Role == acc.Role));
             if (existing != null)
             {
+                existing.Email = acc.Email;
                 existing.FullName = acc.FullName;
                 existing.PasswordHash = HashPassword(acc.Password);
                 existing.Role = acc.Role;

@@ -363,4 +363,197 @@ public class ProductionFeaturesTests
         reply.AssistantMessage.Message.Should().Contain("4 travelers");
         reply.AssistantMessage.Message.Should().Contain("Ratargul Swamp Boat Dawn");
     }
+
+    [Fact]
+    public async Task ContactController_CreatesInquiry_AndGeneratesTicketNumber()
+    {
+        await using var context = CreateDbContext();
+        var notifier = CreateNotifier(context);
+        var controller = new ContactController(context, notifier, NullLogger<ContactController>.Instance);
+
+        var request = new CreateContactInquiryRequestDto(
+            Name: "Tamim Iqbal",
+            Email: "tamim@cricket.bd",
+            Phone: "01811223344",
+            Division: "Chittagong",
+            Subject: "Urgent query about Sajek army escort",
+            Message: "We have an emergency team arriving tomorrow morning at Dighinala."
+        );
+
+        var result = await controller.CreateInquiry(request, CancellationToken.None);
+        var created = result.Should().BeOfType<CreatedAtActionResult>().Subject;
+        var dto = created.Value.Should().BeOfType<ContactInquiryResponseDto>().Subject;
+
+        dto.TicketNumber.Should().StartWith("TKT-");
+        dto.Priority.Should().Be("Urgent");
+        dto.Status.Should().Be("Open");
+
+        var dbInquiry = await context.ContactInquiries.FirstOrDefaultAsync(i => i.TicketNumber == dto.TicketNumber);
+        dbInquiry.Should().NotBeNull();
+        dbInquiry!.Name.Should().Be("Tamim Iqbal");
+    }
+
+    [Fact]
+    public async Task BookingsController_CancelsBooking_AndRestoresAvailableSeats()
+    {
+        await using var context = CreateDbContext();
+        var notifier = CreateNotifier(context);
+        var mediatorMock = new Mock<MediatR.IMediator>();
+        var controller = new BookingsController(context, mediatorMock.Object, notifier);
+
+        var userId = Guid.NewGuid();
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = BuildPrincipal(userId, "traveler@tourflow.bd", "Traveler One")
+            }
+        };
+
+        var tourId = Guid.NewGuid();
+        var tour = new TourPackage
+        {
+            Id = tourId,
+            Title = "Sajek Clouds",
+            Slug = "sajek-clouds-test",
+            Destination = "Sajek",
+            Country = "Bangladesh",
+            BasePrice = 8000m
+        };
+        context.TourPackages.Add(tour);
+
+        var scheduleId = Guid.NewGuid();
+        var schedule = new TourSchedule
+        {
+            Id = scheduleId,
+            TourPackageId = tourId,
+            StartDate = DateTime.UtcNow.AddDays(7),
+            EndDate = DateTime.UtcNow.AddDays(9),
+            TotalSeats = 20,
+            BookedSeats = 5
+        };
+        context.TourSchedules.Add(schedule);
+
+        var booking = new Booking
+        {
+            Id = Guid.NewGuid(),
+            BookingReference = "TF-CANCEL-001",
+            UserId = userId,
+            CustomerName = "Traveler One",
+            CustomerEmail = "traveler@tourflow.bd",
+            TourPackageId = tourId,
+            TourScheduleId = scheduleId,
+            NumberOfTravelers = 3,
+            TotalAmount = 24000m,
+            DepositPaid = 12000m,
+            Status = BookingStatus.Confirmed,
+            PaymentStatus = PaymentStatus.Paid
+        };
+        context.Bookings.Add(booking);
+        await context.SaveChangesAsync();
+
+        schedule.AvailableSeats.Should().Be(15); // 20 - 5
+
+        var cancelRes = await controller.CancelBooking(booking.Id, new BookingsController.CancelBookingRequest("Family emergency"));
+        cancelRes.Should().BeOfType<OkObjectResult>();
+
+        var updatedBooking = await context.Bookings.FindAsync(booking.Id);
+        updatedBooking!.Status.Should().Be(BookingStatus.Cancelled);
+        updatedBooking.RefundStatus.Should().Be("PendingRefund");
+        updatedBooking.CancellationReason.Should().Be("Family emergency");
+
+        var updatedSchedule = await context.TourSchedules.FindAsync(scheduleId);
+        updatedSchedule!.BookedSeats.Should().Be(2); // 5 - 3 = 2
+        updatedSchedule.AvailableSeats.Should().Be(18); // 20 - 2 = 18 restored!
+    }
+
+    [Fact]
+    public async Task PromosController_AllowsAdminCrud()
+    {
+        await using var context = CreateDbContext();
+        var controller = new PromosController(context);
+
+        var request = new PromosController.CreatePromoRequest(
+            Code: "SUMMER2026",
+            Description: "Summer splash 15% discount",
+            DiscountType: "Percentage",
+            DiscountValue: 15m,
+            MaxDiscountAmount: 3000m,
+            MinimumTravelers: 2,
+            MaxUses: 200,
+            ExpiresAtUtc: DateTime.UtcNow.AddMonths(2),
+            IsActive: true
+        );
+
+        var createResult = await controller.CreatePromo(request, CancellationToken.None);
+        createResult.Should().BeOfType<CreatedAtActionResult>();
+
+        var listResult = await controller.GetAllPromos(CancellationToken.None);
+        var ok = listResult.Should().BeOfType<OkObjectResult>().Subject;
+        var promos = ok.Value as System.Collections.IEnumerable;
+        promos.Should().NotBeNull();
+
+        var createdPromo = await context.PromoCodes.FirstAsync(p => p.Code == "SUMMER2026");
+        var toggleRes = await controller.TogglePromo(createdPromo.Id, CancellationToken.None);
+        toggleRes.Should().BeOfType<OkObjectResult>();
+
+        createdPromo.IsActive.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task BookingsController_ExportsCsv()
+    {
+        await using var context = CreateDbContext();
+        var notifier = CreateNotifier(context);
+        var mediatorMock = new Mock<MediatR.IMediator>();
+        var controller = new BookingsController(context, mediatorMock.Object, notifier);
+
+        var exportTour = new TourPackage
+        {
+            Id = Guid.NewGuid(),
+            Title = "Sylhet Waters",
+            Slug = "sylhet-waters-test",
+            Destination = "Sylhet",
+            Country = "Bangladesh",
+            BasePrice = 9000m
+        };
+        context.TourPackages.Add(exportTour);
+
+        var exportSchedule = new TourSchedule
+        {
+            Id = Guid.NewGuid(),
+            TourPackageId = exportTour.Id,
+            StartDate = DateTime.UtcNow.AddDays(5),
+            EndDate = DateTime.UtcNow.AddDays(7),
+            TotalSeats = 25,
+            BookedSeats = 2
+        };
+        context.TourSchedules.Add(exportSchedule);
+
+        context.Bookings.Add(new Booking
+        {
+            Id = Guid.NewGuid(),
+            BookingReference = "TF-CSV-999",
+            TourPackageId = exportTour.Id,
+            TourScheduleId = exportSchedule.Id,
+            CustomerName = "Sadia Islam",
+            CustomerEmail = "sadia@test.com",
+            CustomerPhone = "01700000000",
+            NumberOfTravelers = 2,
+            TotalAmount = 18000m,
+            DepositPaid = 18000m,
+            Status = BookingStatus.Confirmed,
+            PaymentStatus = PaymentStatus.Paid
+        });
+        await context.SaveChangesAsync();
+
+        var exportRes = await controller.ExportBookingsCsv(CancellationToken.None);
+        var fileResult = exportRes.Should().BeOfType<FileContentResult>().Subject;
+
+        fileResult.ContentType.Should().Be("text/csv");
+        var csvText = System.Text.Encoding.UTF8.GetString(fileResult.FileContents);
+        csvText.Should().Contain("TF-CSV-999");
+        csvText.Should().Contain("Sadia Islam");
+        csvText.Should().Contain("BookingReference,CustomerName");
+    }
 }

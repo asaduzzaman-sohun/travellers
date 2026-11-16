@@ -1,6 +1,39 @@
 export const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace(/\/$/, "");
 export const API_ROOT = API_BASE.replace(/\/api\/?$/, "");
 
+export async function apiRequest<T = unknown>(
+  endpoint: string,
+  options?: RequestInit & { token?: string }
+): Promise<T> {
+  const normalizedPath = endpoint.startsWith("/api/")
+    ? endpoint.slice(4)
+    : endpoint.startsWith("/")
+    ? endpoint
+    : `/${endpoint}`;
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(options?.headers as Record<string, string>),
+  };
+
+  if (options?.token) {
+    headers["Authorization"] = `Bearer ${options.token}`;
+  }
+
+  const res = await fetch(`${API_BASE}${normalizedPath}`, {
+    ...options,
+    headers,
+  });
+
+  if (!res.ok) {
+    const errorBody = await res.json().catch(() => ({}));
+    throw new Error(errorBody.message || `Request failed with status ${res.status}`);
+  }
+
+  if (res.status === 204) return {} as T;
+  return res.json();
+}
+
 export interface TourSummary {
   id: string;
   title: string;
@@ -89,6 +122,9 @@ export interface BookingRecord {
   balanceRemaining: number;
   status: string;
   paymentStatus: string;
+  cancellationReason?: string;
+  cancelledAtUtc?: string;
+  refundStatus?: string;
   dietaryRequirements?: string;
   specialRequests?: string;
   emergencyContactName?: string;
@@ -1176,6 +1212,114 @@ export async function clearWishlistApi(token: string): Promise<void> {
   });
   if (!res.ok) throw new Error("Failed to clear wishlist");
 }
+
+export async function cancelBooking(
+  bookingId: string,
+  reason: string | undefined,
+  token: string
+): Promise<{ message: string; bookingId: string }> {
+  const res = await fetch(`${API_BASE}/bookings/${bookingId}/cancel`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ reason: reason || "Traveler self-service cancellation" }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to cancel booking");
+  }
+  return res.json();
+}
+
+export async function rescheduleBooking(
+  bookingId: string,
+  newScheduleId: string,
+  token: string
+): Promise<{ message: string; bookingId: string }> {
+  const res = await fetch(`${API_BASE}/bookings/${bookingId}/reschedule`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ newScheduleId }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to reschedule booking");
+  }
+  return res.json();
+}
+
+export async function downloadBookingsCsv(token: string): Promise<Blob> {
+  const res = await fetch(`${API_BASE}/bookings/export-csv`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to export bookings CSV");
+  return res.blob();
+}
+
+export interface PromoItem {
+  id: string;
+  code: string;
+  description: string;
+  discountType: "Percentage" | "Flat";
+  discountValue: number;
+  maxDiscountAmount?: number;
+  minimumTravelers: number;
+  maxUses: number;
+  timesUsed: number;
+  expiresAtUtc?: string;
+  isActive: boolean;
+  applicableCategory?: string;
+  createdAtUtc: string;
+}
+
+export async function fetchPromos(token: string): Promise<PromoItem[]> {
+  const res = await fetch(`${API_BASE}/promos`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to load promo codes");
+  return res.json();
+}
+
+export async function createPromo(
+  data: Omit<PromoItem, "id" | "timesUsed" | "createdAtUtc">,
+  token: string
+): Promise<PromoItem> {
+  const res = await fetch(`${API_BASE}/promos`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to create promo code");
+  }
+  return res.json();
+}
+
+export async function togglePromo(id: string, token: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/promos/${id}/toggle`, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to toggle promo code");
+}
+
+export async function deletePromo(id: string, token: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/promos/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to delete promo code");
+}
+
 
 
 

@@ -27,7 +27,7 @@ async function run() {
     const loginRes = await request('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: 'admin@traveller.com', password: 'Admin@2026' })
+        body: JSON.stringify({ email: 'admin@example.com', password: 'Admin@2026' })
     });
 
     if (loginRes.status !== 200 || !loginRes.data.token) {

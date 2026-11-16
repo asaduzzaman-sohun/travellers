@@ -49,7 +49,7 @@ async function run() {
     const loginRes = await request('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: { email: 'admin@traveller.com', password: 'Admin@2026' }
+        body: { email: 'admin@example.com', password: 'Admin@2026' }
     });
     console.log(`- Admin login status: ${loginRes.status}`);
     const token = loginRes.data.token;

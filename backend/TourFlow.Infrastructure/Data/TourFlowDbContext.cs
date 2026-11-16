@@ -26,6 +26,7 @@ public class TourFlowDbContext : DbContext, ITourFlowDbContext
     public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
     public DbSet<RealtimeNotification> RealtimeNotifications => Set<RealtimeNotification>();
     public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();
+    public DbSet<ContactInquiry> ContactInquiries => Set<ContactInquiry>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -282,6 +283,25 @@ public class TourFlowDbContext : DbContext, ITourFlowDbContext
                 .WithMany()
                 .HasForeignKey(e => e.TourPackageId)
                 .OnDelete(DeleteBehavior.Cascade);
+            entity.HasQueryFilter(e => !e.IsDeleted);
+        });
+
+        // ContactInquiry (Customer Support Desks & Inquiries)
+        modelBuilder.Entity<ContactInquiry>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.TicketNumber).IsUnique();
+            entity.Property(e => e.TicketNumber).HasMaxLength(40).IsRequired();
+            entity.Property(e => e.Name).HasMaxLength(150).IsRequired();
+            entity.Property(e => e.Email).HasMaxLength(180).IsRequired();
+            entity.Property(e => e.Phone).HasMaxLength(40).IsRequired();
+            entity.Property(e => e.Division).HasMaxLength(80).IsRequired();
+            entity.Property(e => e.Subject).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.Message).HasMaxLength(4000).IsRequired();
+            entity.Property(e => e.Status).HasMaxLength(40).IsRequired();
+            entity.Property(e => e.Priority).HasMaxLength(40).IsRequired();
+            entity.Property(e => e.AdminNotes).HasMaxLength(2000);
+            entity.HasIndex(e => new { e.Status, e.CreatedAtUtc });
             entity.HasQueryFilter(e => !e.IsDeleted);
         });
     }

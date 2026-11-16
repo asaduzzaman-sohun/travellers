@@ -1,20 +1,68 @@
 "use client";
 
 import { useState } from "react";
-import { Send, CheckCircle2, ShieldCheck, MapPin, Phone, Mail, Clock } from "lucide-react";
+import { Send, CheckCircle2, ShieldCheck, MapPin, Copy, Check, AlertCircle, Clock } from "lucide-react";
+import { apiRequest } from "@/lib/api";
+
+interface TicketResult {
+  id: string;
+  ticketNumber: string;
+  name: string;
+  subject: string;
+  status: string;
+  priority: string;
+}
 
 export default function ContactPage() {
-  const [submitted, setSubmitted] = useState(false);
+  const [ticketResult, setTicketResult] = useState<TicketResult | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [division, setDivision] = useState("Dhaka");
+  const [subject, setSubject] = useState("General Travel Inquiry");
   const [message, setMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !phone.trim() || !message.trim()) return;
-    setSubmitted(true);
+
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const res = await apiRequest<TicketResult>("/api/contact", {
+        method: "POST",
+        body: JSON.stringify({
+          name: name.trim(),
+          phone: phone.trim(),
+          email: email.trim() || `${phone.replace(/\D/g, "") || "traveler"}@inquiry.tourflow.bd`,
+          division,
+          subject: subject.trim() || "General Travel Inquiry",
+          message: message.trim(),
+        }),
+      });
+
+      if (!res || !res.ticketNumber) {
+        setSubmitError("Failed to submit inquiry. Please try again.");
+      } else {
+        setTicketResult(res);
+      }
+    } catch {
+      setSubmitError("Network error. Please try again or call our hotline.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const copyTicket = () => {
+    if (!ticketResult) return;
+    navigator.clipboard.writeText(ticketResult.ticketNumber);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -99,22 +147,50 @@ export default function ContactPage() {
               <div className="mb-6 space-y-2">
                 <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">Send Us An Inquiry</h2>
                 <p className="text-sm text-stone-500">
-                  Our domestic travel specialists respond within 24 hours with verified field updates and local guidance.
+                  Our domestic travel specialists respond within 4 hours with verified field updates and local guidance.
                 </p>
               </div>
 
-              {submitted ? (
-                <div className="py-16 text-center space-y-4 bg-[#FAF8F5] rounded-3xl border border-[#E5DFD5] p-8">
+              {ticketResult ? (
+                <div className="py-12 text-center space-y-5 bg-[#FAF8F5] rounded-3xl border border-[#E5DFD5] p-8">
                   <div className="h-16 w-16 mx-auto rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center justify-center">
                     <CheckCircle2 className="h-8 w-8" />
                   </div>
-                  <h3 className="text-2xl font-serif font-bold text-stone-900">Message Received!</h3>
-                  <p className="text-sm text-stone-600 max-w-md mx-auto leading-relaxed">
-                    Thank you, <strong className="text-stone-900">{name}</strong>. Our field coordinator will review your inquiry and reach out via phone or email shortly.
+                  <div className="space-y-1">
+                    <h3 className="text-2xl font-serif font-bold text-stone-900">Inquiry Ticket Registered</h3>
+                    <p className="text-sm text-stone-600 max-w-md mx-auto leading-relaxed">
+                      Thank you, <strong className="text-stone-900">{ticketResult.name}</strong>. Your inquiry has been routed to our regional field coordinator.
+                    </p>
+                  </div>
+
+                  {/* Ticket Badge */}
+                  <div className="inline-flex items-center gap-3 bg-white border border-[#E5DFD5] rounded-2xl px-5 py-3 shadow-2xs">
+                    <div className="text-left">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400 block">Ticket Reference ID</span>
+                      <span className="font-mono text-base font-bold text-stone-900">{ticketResult.ticketNumber}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={copyTicket}
+                      className="p-2 rounded-xl hover:bg-stone-100 text-stone-600 transition"
+                      title="Copy Ticket Reference"
+                    >
+                      {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
+                    </button>
+                    {ticketResult.priority === "Urgent" && (
+                      <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                        Urgent Desk
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-xs text-stone-500 max-w-sm mx-auto">
+                    Keep this ticket ID for status follow-ups. You will receive an SMS and email reply as soon as an agent is assigned.
                   </p>
+
                   <button
                     onClick={() => {
-                      setSubmitted(false);
+                      setTicketResult(null);
                       setName("");
                       setPhone("");
                       setEmail("");
@@ -127,6 +203,13 @@ export default function ContactPage() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
+                  {submitError && (
+                    <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
+                      <span>{submitError}</span>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <label className="text-xs sm:text-sm font-semibold text-stone-800">Your Full Name *</label>
@@ -154,7 +237,7 @@ export default function ContactPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <label className="text-xs sm:text-sm font-semibold text-stone-800">Email Address (Optional)</label>
+                      <label className="text-xs sm:text-sm font-semibold text-stone-800">Email Address</label>
                       <input
                         type="email"
                         value={email}
@@ -184,10 +267,22 @@ export default function ContactPage() {
                   </div>
 
                   <div className="space-y-1.5">
+                    <label className="text-xs sm:text-sm font-semibold text-stone-800">Subject / Inquiry Type *</label>
+                    <input
+                      type="text"
+                      required
+                      value={subject}
+                      onChange={(e) => setSubject(e.target.value)}
+                      placeholder="e.g. Inquiring about Sajek convoy schedule or custom group package"
+                      className="w-full px-4 py-3 rounded-2xl bg-[#FAF8F5] border border-[#E5DFD5] text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-stone-900 transition-colors"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
                     <label className="text-xs sm:text-sm font-semibold text-stone-800">Your Message or Travel Query *</label>
                     <textarea
                       required
-                      rows={5}
+                      rows={4}
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Please mention dates, number of travelers, budget constraints, or any specific accommodation preferences..."
@@ -197,10 +292,15 @@ export default function ContactPage() {
 
                   <button
                     type="submit"
-                    className="w-full py-3.5 px-6 rounded-2xl bg-stone-900 hover:bg-stone-800 text-stone-50 font-semibold text-sm transition-all shadow-xs flex items-center justify-center gap-2"
+                    disabled={submitting}
+                    className="w-full py-3.5 px-6 rounded-2xl bg-stone-900 hover:bg-stone-800 disabled:bg-stone-400 text-stone-50 font-semibold text-sm transition-all shadow-xs flex items-center justify-center gap-2"
                   >
-                    <Send className="h-4 w-4" />
-                    <span>Submit Inquiry</span>
+                    {submitting ? (
+                      <span className="inline-block animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                    ) : (
+                      <Send className="h-4 w-4" />
+                    )}
+                    <span>{submitting ? "Submitting Inquiry..." : "Submit Inquiry"}</span>
                   </button>
                 </form>
               )}

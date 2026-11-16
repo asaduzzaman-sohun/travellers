@@ -118,6 +118,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/planner" className="hover:text-stone-950 font-semibold text-amber-900 transition-colors">
+                  Group Tour Planner &amp; Cost Splitter
+                </Link>
+              </li>
+              <li>
                 <Link href="/profile?tab=expeditions" className="hover:text-stone-950 transition-colors">
                   Retrieve Booking Voucher
                 </Link>

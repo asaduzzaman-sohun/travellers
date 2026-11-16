@@ -21,6 +21,7 @@ import { TourSummary, API_BASE } from "@/lib/api";
 import ImageWithFallback from "@/components/ImageWithFallback";
 import TourQuickActions from "@/components/tours/TourQuickActions";
 import { TourCardSkeleton } from "@/components/ui/Skeletons";
+import { WeatherAdvisoryWidget } from "@/components/weather/WeatherAdvisoryWidget";
 
 function DestinationsContent() {
   const searchParams = useSearchParams();
@@ -204,6 +205,9 @@ function DestinationsContent() {
           })}
         </div>
       </div>
+
+      {/* Regional Field Weather & Advisory */}
+      <WeatherAdvisoryWidget destination={selectedDivision !== "All" ? selectedDivision : "Sajek"} />
 
       {/* Results Count & Badges */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-1 text-sm text-stone-600">

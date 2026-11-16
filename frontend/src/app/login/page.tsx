@@ -55,10 +55,10 @@ export default function LoginPage() {
     let targetPass = "";
 
     if (roleType === "superadmin") {
-      targetEmail = "super.admin@traveller.com";
+      targetEmail = "superadmin@example.com";
       targetPass = "Traveller@2026";
     } else if (roleType === "admin") {
-      targetEmail = "admin@traveller.com";
+      targetEmail = "admin@example.com";
       targetPass = "Admin@2026";
     } else {
       targetEmail = "asad@gmail.com";

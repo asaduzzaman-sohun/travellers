@@ -3,6 +3,13 @@
 :root {
   --background: #FAF8F5;
   --foreground: #1C1917;
+  color-scheme: light dark;
+}
+
+html.dark {
+  --background: #090b0e;
+  --foreground: #f8fafc;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -22,6 +29,211 @@ body {
   font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* =========================================================================
+   TourFlow Dark Theme Overrides
+   ========================================================================= */
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #090b0e !important;
+  color: #f1f5f9 !important;
+}
+
+/* 1. Deep Canvas Backgrounds */
+html.dark .bg-\[\#FAF8F5\],
+html.dark .bg-\[\#FAF8F5\]\/95,
+html.dark .bg-\[\#FAF8F5\]\/90,
+html.dark .bg-\[\#FAF8F5\]\/80,
+html.dark .bg-\[\#FAF8F5\]\/70,
+html.dark .bg-\[\#FAF8F5\]\/60,
+html.dark .bg-\[\#F9FAFB\],
+html.dark .bg-\[\#F9FAFB\]\/70,
+html.dark .bg-\[\#FAFAFA\],
+html.dark .bg-stone-50,
+html.dark .bg-stone-50\/60,
+html.dark .bg-stone-50\/80 {
+  background-color: #0b0d11 !important;
+}
+
+/* 2. Card, Surface, Panel, Dropdown and Modal Backgrounds */
+html.dark .bg-white,
+html.dark .bg-\[\#FFFFFF\],
+html.dark .bg-\[\#F5F2EB\],
+html.dark .bg-\[\#F5F2EB\]\/60,
+html.dark .bg-\[\#F5F2EB\]\/70,
+html.dark .bg-stone-100 {
+  background-color: #141720 !important;
+}
+
+/* 3. Subtle Inner Sections / Wells */
+html.dark .bg-\[\#F3F4F6\],
+html.dark .bg-stone-200\/60,
+html.dark .bg-stone-200\/40 {
+  background-color: #1a1e2b !important;
+}
+
+/* 4. Borders and Dividers */
+html.dark .border-\[\#EBE6DC\],
+html.dark .border-\[\#E5DFD5\],
+html.dark .border-\[\#E5DFD3\],
+html.dark .border-\[\#E5E7EB\],
+html.dark .border-\[\#D1D5DB\],
+html.dark .border-stone-200,
+html.dark .border-stone-300,
+html.dark .border-stone-100,
+html.dark .border-\[\#F0EBE1\] {
+  border-color: #222836 !important;
+}
+
+html.dark .divide-\[\#E5E7EB\] > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-\[\#F0EBE1\] > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-stone-200 > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-stone-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #222836 !important;
+}
+
+/* 5. Typography */
+html.dark .text-stone-900,
+html.dark .text-\[\#111827\],
+html.dark .text-stone-800 {
+  color: #f8fafc !important;
+}
+
+html.dark .text-stone-700,
+html.dark .text-stone-600,
+html.dark .text-\[\#4B5563\],
+html.dark .text-\[\#374151\] {
+  color: #cbd5e1 !important;
+}
+
+html.dark .text-stone-500,
+html.dark .text-\[\#6B7280\],
+html.dark .text-\[\#9CA3AF\],
+html.dark .text-stone-400 {
+  color: #94a3b8 !important;
+}
+
+/* 6. Form Controls */
+html.dark input:not([type="checkbox"]):not([type="radio"]),
+html.dark textarea,
+html.dark select {
+  background-color: #12151d !important;
+  color: #f8fafc !important;
+  border-color: #2a3142 !important;
+}
+
+html.dark input:focus,
+html.dark textarea:focus,
+html.dark select:focus {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 0 1px #38bdf8 !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #64748b !important;
+}
+
+html.dark select option {
+  background-color: #12151d;
+  color: #f8fafc;
+}
+
+/* 7. Primary Action Buttons & Inverted Elements */
+html.dark button.bg-stone-900:not(nav *),
+html.dark a.bg-stone-900:not(nav *),
+html.dark button.bg-\[\#111827\]:not(nav *),
+html.dark a.bg-\[\#111827\]:not(nav *) {
+  background-color: #f8fafc !important;
+  color: #0b0d11 !important;
+  font-weight: 600 !important;
+}
+
+html.dark button.bg-stone-900:not(nav *):hover,
+html.dark a.bg-stone-900:not(nav *):hover,
+html.dark button.bg-\[\#111827\]:not(nav *):hover,
+html.dark a.bg-\[\#111827\]:not(nav *):hover {
+  background-color: #e2e8f0 !important;
+  color: #000000 !important;
+}
+
+/* 8. Active Nav Pills in Header */
+html.dark nav a.bg-\[\#F5F2EB\],
+html.dark nav button.bg-\[\#F5F2EB\] {
+  background-color: #1f2533 !important;
+  border-color: #3b465c !important;
+  color: #ffffff !important;
+}
+
+html.dark nav a:not(.bg-\[\#F5F2EB\]):hover {
+  background-color: rgba(31, 37, 51, 0.6) !important;
+  border-color: rgba(59, 70, 92, 0.4) !important;
+  color: #ffffff !important;
+}
+
+/* 9. Badges & Indicators */
+html.dark .bg-emerald-50 {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  color: #34d399 !important;
+}
+
+html.dark .bg-amber-50,
+html.dark .bg-amber-50\/70,
+html.dark .bg-amber-50\/60 {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+  color: #fbbf24 !important;
+}
+
+html.dark .bg-rose-50 {
+  background-color: rgba(244, 63, 94, 0.15) !important;
+  border-color: rgba(244, 63, 94, 0.3) !important;
+  color: #fb7185 !important;
+}
+
+html.dark .bg-blue-50,
+html.dark .bg-sky-50 {
+  background-color: rgba(56, 189, 248, 0.15) !important;
+  border-color: rgba(56, 189, 248, 0.3) !important;
+  color: #38bdf8 !important;
+}
+
+/* 10. Dashboard Sidebar & Layout */
+html.dark aside {
+  background-color: #0c0f14 !important;
+  border-color: #1e2430 !important;
+}
+
+html.dark header {
+  background-color: rgba(11, 13, 17, 0.94) !important;
+  border-color: #1e2430 !important;
+}
+
+html.dark footer {
+  background-color: #07090c !important;
+  border-color: #191e28 !important;
+}
+
+/* 11. Custom Scrollbars in Dark Mode */
+html.dark {
+  scrollbar-color: #2b3344 #0b0d11;
+}
+
+html.dark ::-webkit-scrollbar-track {
+  background: #0b0d11 !important;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #2b3344 !important;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3e485e !important;
 }
 
 /* Smooth motion animations */

@@ -32,6 +32,11 @@ public class Booking : BaseEntity
     public decimal PromoDiscountAmount { get; set; }
     public bool PayDepositOnly { get; set; } = true;
 
+    // Self-service cancellation and refund tracking
+    public string? CancellationReason { get; set; }
+    public DateTime? CancelledAtUtc { get; set; }
+    public string? RefundStatus { get; set; }
+
     // Associated User account (optional for guest bookings)
     public Guid? UserId { get; set; }
     public User? User { get; set; }

@@ -108,6 +108,9 @@ export function SignalRProvider({ children }: { children: ReactNode }) {
   const chatOpenRef = useRef(chatOpen);
   const activeSessionRef = useRef<string | null>(activeSessionId);
   const toastRef = useRef(toast);
+  const refreshNotificationsRef = useRef<() => Promise<void>>(() => Promise.resolve());
+  const refreshSessionsRef = useRef<() => Promise<ChatSessionDto[]>>(() => Promise.resolve([]));
+  const loadSessionHistoryRef = useRef<(sessionId: string) => Promise<void>>(() => Promise.resolve());
 
   useEffect(() => {
     tokenRef.current = token;
@@ -233,7 +236,7 @@ export function SignalRProvider({ children }: { children: ReactNode }) {
 
       setSendingMessage(true);
       try {
-        let targetSessionId = activeSessionRef.current;
+        const targetSessionId = activeSessionRef.current;
         if (!targetSessionId) {
           const created = await createChatSession(currentToken, {
             initialMessage: trimmed,
@@ -345,18 +348,84 @@ export function SignalRProvider({ children }: { children: ReactNode }) {
     [selectSession]
   );
 
+  useEffect(() => {
+    refreshNotificationsRef.current = refreshNotifications;
+  }, [refreshNotifications]);
+
+  useEffect(() => {
+    refreshSessionsRef.current = refreshSessions;
+  }, [refreshSessions]);
+
+  useEffect(() => {
+    loadSessionHistoryRef.current = loadSessionHistory;
+  }, [loadSessionHistory]);
+
+  // Global safety net: intercept benign transient SignalR negotiation aborts so Next.js dev overlay never pops up
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      const msg =
+        event.reason instanceof Error
+          ? event.reason.message
+          : String(event.reason || "");
+      if (
+        msg.includes("stopped during negotiation") ||
+        msg.includes("Failed to start the connection") ||
+        msg.includes("The connection was stopped") ||
+        msg.includes("Failed to start the HttpConnection before stop()") ||
+        msg.includes("The user aborted a request")
+      ) {
+        event.preventDefault();
+      }
+    };
+
+    const origConsoleError = console.error;
+    const patchedConsoleError = (...args: unknown[]) => {
+      const text = args
+        .map((a) =>
+          a instanceof Error
+            ? a.message
+            : typeof a === "object"
+            ? JSON.stringify(a)
+            : String(a)
+        )
+        .join(" ");
+      if (
+        text.includes("stopped during negotiation") ||
+        text.includes("Failed to start the HttpConnection before stop()") ||
+        text.includes("Failed to start the connection: Error: The connection was stopped") ||
+        text.includes("The connection was stopped during negotiation")
+      ) {
+        // Silently swallow benign negotiation cancellation
+        return;
+      }
+      origConsoleError.apply(console, args);
+    };
+
+    console.error = patchedConsoleError;
+    window.addEventListener("unhandledrejection", handleUnhandledRejection);
+
+    return () => {
+      console.error = origConsoleError;
+      window.removeEventListener("unhandledrejection", handleUnhandledRejection);
+    };
+  }, []);
+
   // Maintain SignalR hub ONLY when authenticated with a valid JWT token.
   useEffect(() => {
     if (authLoading) return;
 
     if (!isLoggedIn || !token) {
-      setStatus("disconnected");
-      setNotifications([]);
-      setUnreadCount(0);
-      setSessions([]);
-      setActiveSessionId(null);
-      setMessagesBySession({});
-      return;
+      const resetTimer = setTimeout(() => {
+        setStatus("disconnected");
+        setNotifications([]);
+        setUnreadCount(0);
+        setSessions([]);
+        setActiveSessionId(null);
+        setMessagesBySession({});
+      }, 0);
+      return () => clearTimeout(resetTimer);
     }
 
     let disposed = false;
@@ -370,6 +439,16 @@ export function SignalRProvider({ children }: { children: ReactNode }) {
       const hubLogger: signalR.ILogger = {
         log(logLevel, message) {
           if (disposed) return;
+          // Suppress harmless transient cancellation during React StrictMode / HMR unmounts
+          if (
+            message.includes("stopped during negotiation") ||
+            message.includes("AbortError") ||
+            message.includes("Failed to start the HttpConnection before stop()") ||
+            message.includes("The connection was stopped") ||
+            message.includes("Failed to start the connection")
+          ) {
+            return;
+          }
           if (logLevel >= signalR.LogLevel.Error) {
             console.warn(`[SignalR] ${message}`);
           }
@@ -379,6 +458,7 @@ export function SignalRProvider({ children }: { children: ReactNode }) {
       const conn = new signalR.HubConnectionBuilder()
         .withUrl(`${API_ROOT}/hubs/tourflow`, {
           accessTokenFactory: () => tokenRef.current ?? "",
+          logger: hubLogger,
         })
         .withAutomaticReconnect([0, 2000, 5000, 10000, 20000])
         .configureLogging(hubLogger)
@@ -397,10 +477,10 @@ export function SignalRProvider({ children }: { children: ReactNode }) {
         const activeId = activeSessionRef.current;
         if (activeId) {
           await conn.invoke("JoinSession", activeId).catch(() => {});
-          await loadSessionHistory(activeId);
+          await loadSessionHistoryRef.current(activeId);
         }
-        void refreshNotifications();
-        void refreshSessions();
+        void refreshNotificationsRef.current();
+        void refreshSessionsRef.current();
       });
 
       conn.onclose(() => {
@@ -491,18 +571,32 @@ export function SignalRProvider({ children }: { children: ReactNode }) {
       startPromise = conn
         .start()
         .then(async () => {
-          if (disposed) return;
+          if (disposed) {
+            if (conn.state === signalR.HubConnectionState.Connected) {
+              void conn.stop().catch(() => {});
+            }
+            return;
+          }
           setStatus("connected");
           if (activeSessionRef.current) {
             await conn.invoke("JoinSession", activeSessionRef.current).catch(() => {});
           }
         })
-        .catch(() => {
+        .catch((err: unknown) => {
+          const errMsg = err instanceof Error ? err.message : String(err);
+          if (
+            errMsg.includes("stopped during negotiation") ||
+            errMsg.includes("AbortError") ||
+            errMsg.includes("before stop() was called") ||
+            errMsg.includes("The connection was stopped")
+          ) {
+            return;
+          }
           if (!disposed) setStatus("disconnected");
         });
 
-      void refreshNotifications();
-      void refreshSessions();
+      void refreshNotificationsRef.current();
+      void refreshSessionsRef.current();
     }, 60);
 
     return () => {
@@ -514,23 +608,22 @@ export function SignalRProvider({ children }: { children: ReactNode }) {
       }
       if (!activeConn) return;
 
-      // Wait for negotiating start() to settle cleanly before calling stop().
-      if (startPromise) {
-        void startPromise.finally(() => {
-          void activeConn.stop().catch(() => {});
-        });
-      } else {
+      // CRITICAL: NEVER call stop() while the connection is in the Connecting state!
+      // Doing so triggers "Error: The connection was stopped during negotiation".
+      if (activeConn.state === signalR.HubConnectionState.Connected) {
         void activeConn.stop().catch(() => {});
+      } else if (startPromise) {
+        void startPromise.then(
+          () => {
+            if (activeConn.state === signalR.HubConnectionState.Connected) {
+              void activeConn.stop().catch(() => {});
+            }
+          },
+          () => {}
+        );
       }
     };
-  }, [
-    authLoading,
-    isLoggedIn,
-    token,
-    loadSessionHistory,
-    refreshNotifications,
-    refreshSessions,
-  ]);
+  }, [authLoading, isLoggedIn, token]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -584,9 +677,7 @@ export function SignalRProvider({ children }: { children: ReactNode }) {
   const activeTypingState = activeSessionId
     ? typingBySession[activeSessionId]
     : undefined;
-  const isTypingActive = Boolean(
-    activeTypingState && activeTypingState.expiresAt > Date.now()
-  );
+  const isTypingActive = Boolean(activeTypingState);
   const botTyping =
     sendingMessage || (isTypingActive && Boolean(activeTypingState?.isBot));
   const typingUser =

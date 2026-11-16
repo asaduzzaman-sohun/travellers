@@ -14,6 +14,9 @@ import {
   Settings,
   Lock,
   Plus,
+  Tag,
+  Building2,
+  Lightbulb,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useToast } from "@/lib/toast-context";
@@ -45,6 +48,9 @@ import { DashboardSidebar, NavItem } from "@/components/dashboard/DashboardSideb
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { OverviewTab } from "@/components/dashboard/OverviewTab";
 import { SupportInboxTab } from "@/components/dashboard/SupportInboxTab";
+import { PromosTab } from "@/components/dashboard/PromosTab";
+import { HotelsTab } from "@/components/dashboard/HotelsTab";
+import { TipsTab } from "@/components/dashboard/TipsTab";
 import { UsersTab } from "@/components/dashboard/UsersTab";
 import { BookingsTab } from "@/components/dashboard/BookingsTab";
 import { ToursTab } from "@/components/dashboard/ToursTab";
@@ -510,6 +516,21 @@ function DashboardContent() {
             label: "Support Inbox",
             icon: Headset,
           },
+          {
+            id: "promos",
+            label: "Promo Codes",
+            icon: Tag,
+          },
+          {
+            id: "hotels",
+            label: "Partner Hotels",
+            icon: Building2,
+          },
+          {
+            id: "tips",
+            label: "Travel Advisories",
+            icon: Lightbulb,
+          },
         ]
       : []),
     ...(isTraveller
@@ -654,6 +675,18 @@ function DashboardContent() {
 
           {activeTab === "support" && !isTraveller && (
             <SupportInboxTab />
+          )}
+
+          {activeTab === "promos" && !isTraveller && (
+            <PromosTab />
+          )}
+
+          {activeTab === "hotels" && !isTraveller && (
+            <HotelsTab />
+          )}
+
+          {activeTab === "tips" && !isTraveller && (
+            <TipsTab />
           )}
 
           {activeTab === "saved" && isTraveller && (

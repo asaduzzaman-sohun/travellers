@@ -90,7 +90,7 @@ public class ReviewsController : ControllerBase
             userId = dbUser?.Id;
         }
 
-        var reviewerEmail = dbUser?.Email ?? emailClaim ?? "anonymous@traveller.com";
+        var reviewerEmail = dbUser?.Email ?? emailClaim ?? "anonymous@example.com";
         var reviewerName = dbUser?.FullName ?? nameClaim ?? "Fellow Traveler";
         var reviewerLocation = request.ReviewerLocation ?? dbUser?.HomeCity ?? "Dhaka, Bangladesh";
         var tripDate = request.TripDateFormatted ?? $"Traveled {DateTime.UtcNow:MMMM yyyy}";

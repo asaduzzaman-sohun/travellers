@@ -4,21 +4,11 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  User,
-  Bookmark,
-  Settings,
   LogOut,
   PenSquare,
   Menu,
   X,
-  ChevronDown,
-  ShieldCheck,
   AlertCircle,
-  Mail,
-  Lock,
-  Crown,
-  Compass,
-  BookOpen,
   LayoutDashboard,
   Search
 } from "lucide-react";
@@ -26,6 +16,7 @@ import { useAuth } from "@/lib/auth-context";
 import { forgotPasswordRequest, resetPasswordRequest } from "@/lib/api";
 import { NotificationBell } from "@/components/realtime/NotificationBell";
 import GlobalSearchModal from "@/components/GlobalSearchModal";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -34,7 +25,6 @@ export default function Navbar() {
   const {
     user,
     isLoggedIn,
-    isAdmin,
     login,
     register,
     logout,
@@ -167,10 +157,10 @@ export default function Navbar() {
     let targetPass = "";
 
     if (roleType === "superadmin") {
-      targetEmail = "super.admin@traveller.com";
+      targetEmail = "superadmin@example.com";
       targetPass = "Traveller@2026";
     } else if (roleType === "admin") {
-      targetEmail = "admin@traveller.com";
+      targetEmail = "admin@example.com";
       targetPass = "Admin@2026";
     } else {
       targetEmail = "asad@gmail.com";
@@ -194,10 +184,10 @@ export default function Navbar() {
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "Destinations", href: "/destinations" },
+    { label: "Group Planner", href: "/planner" },
     { label: "Travel Tips", href: "/tips" },
-    { label: "Hotels Review", href: "/hotels" },
-    { label: "Community / Forum", href: "/community" },
-    { label: "AI Concierge", href: "/concierge" },
+    { label: "Hotels", fullLabel: "Hotels Review", href: "/hotels" },
+    { label: "Community", fullLabel: "Community / Forum", href: "/community" },
     { label: "About Us", href: "/about" },
     { label: "Contact", href: "/contact" },
   ];
@@ -205,10 +195,10 @@ export default function Navbar() {
   const isRouteActive = (href: string) => {
     if (href === "/") return pathname === "/";
     if (href === "/destinations") return pathname.startsWith("/destinations") || pathname.startsWith("/tours");
+    if (href === "/planner") return pathname.startsWith("/planner");
     if (href === "/tips") return pathname.startsWith("/tips");
     if (href === "/hotels") return pathname.startsWith("/hotels");
     if (href === "/community") return pathname.startsWith("/community") || pathname.startsWith("/write-post");
-    if (href === "/concierge") return pathname.startsWith("/concierge");
     if (href === "/about") return pathname.startsWith("/about");
     if (href === "/contact") return pathname.startsWith("/contact");
     return pathname === href;
@@ -218,61 +208,70 @@ export default function Navbar() {
     <>
       <header className="sticky top-0 z-40 w-full border-b border-[#EBE6DC] bg-[#FAF8F5]/95 backdrop-blur-md transition-all shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
         {/* Full-width container consistent with page content */}
-        <div className="w-full max-w-[1720px] mx-auto px-6 sm:px-10 lg:px-14 2xl:px-20">
-          <div className="flex h-20 items-center justify-between">
+        <div className="w-full max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-6 xl:px-10 2xl:px-14">
+          <div className="flex h-20 items-center justify-between gap-1.5 lg:gap-2 xl:gap-4">
             {/* Text Logo: Traveller's */}
             <Link href="/" className="flex items-center gap-2 shrink-0 group">
-              <span className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 group-hover:text-stone-700 transition-colors">
+              <span className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 group-hover:text-stone-700 transition-colors whitespace-nowrap">
                 Traveller&apos;s
               </span>
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-1 xl:gap-2 text-xs lg:text-xs xl:text-sm font-medium text-stone-600">
+            <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1.5 2xl:gap-2 text-xs xl:text-sm font-medium text-stone-600 shrink-0">
               {navLinks.map((item) => {
                 const isActive = isRouteActive(item.href);
                 return (
                   <Link
                     key={item.label}
                     href={item.href}
-                    className={`px-3 xl:px-4 py-2 rounded-full transition-all duration-150 border ${
+                    className={`px-2 xl:px-3 2xl:px-3.5 py-1.5 xl:py-2 rounded-full transition-all duration-150 border whitespace-nowrap shrink-0 ${
                       isActive
                         ? "text-stone-900 font-semibold bg-[#F5F2EB] border-[#E5DFD5] shadow-2xs"
                         : "border-transparent text-stone-600 hover:text-stone-900 hover:bg-[#F5F2EB]/60 hover:border-[#E5DFD5]/40"
                     }`}
                   >
-                    {item.label}
+                    {item.fullLabel ? (
+                      <>
+                        <span className="inline 2xl:hidden">{item.label}</span>
+                        <span className="hidden 2xl:inline">{item.fullLabel}</span>
+                      </>
+                    ) : (
+                      item.label
+                    )}
                   </Link>
                 );
               })}
             </nav>
 
             {/* Desktop Action Area */}
-            <div className="hidden lg:flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-1.5 xl:gap-2.5 shrink-0">
               <button
                 type="button"
                 onClick={() => setSearchOpen(true)}
-                className="inline-flex items-center gap-2 rounded-full border border-[#E5DFD3] bg-[#FAF8F5] hover:border-stone-400 px-3 py-1.5 text-xs font-medium text-stone-600 hover:text-stone-950 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 xl:gap-2 rounded-full border border-[#E5DFD3] bg-[#FAF8F5] hover:border-stone-400 p-2 xl:px-3 xl:py-1.5 text-xs font-medium text-stone-600 hover:text-stone-950 transition-colors cursor-pointer whitespace-nowrap shrink-0"
                 aria-label="Open global search"
+                title="Global Search (Ctrl+K)"
               >
-                <Search className="h-3.5 w-3.5 text-stone-500" />
-                <span className="inline-block">Search</span>
-                <kbd className="rounded border border-stone-200 bg-white px-1.5 py-0.5 text-[10px] font-mono text-stone-500">
+                <Search className="h-3.5 w-3.5 text-stone-500 shrink-0" />
+                <span className="hidden xl:inline-block">Search</span>
+                <kbd className="hidden xl:inline-block rounded border border-stone-200 bg-white px-1.5 py-0.5 text-[10px] font-mono text-stone-500">
                   Ctrl+K
                 </kbd>
               </button>
+              <ThemeToggle />
               {!isLoggedIn ? (
                 /* Logged Out State: Login | Register */
-                <div className="flex items-center gap-2 text-xs xl:text-sm font-semibold">
+                <div className="flex items-center gap-1.5 xl:gap-2 text-xs xl:text-sm font-semibold shrink-0">
                   <Link
                     href="/login"
-                    className="px-3.5 xl:px-4 py-2 rounded-full text-stone-700 hover:text-stone-900 hover:bg-[#F5F2EB] border border-transparent hover:border-[#E5DFD5] transition-all font-medium"
+                    className="px-3 xl:px-4 py-1.5 xl:py-2 rounded-full text-stone-700 hover:text-stone-900 hover:bg-[#F5F2EB] border border-transparent hover:border-[#E5DFD5] transition-all font-medium whitespace-nowrap"
                   >
                     Login
                   </Link>
                   <Link
                     href="/register"
-                    className="px-4 xl:px-5 py-2.5 rounded-full bg-stone-900 hover:bg-stone-800 text-stone-50 font-semibold transition-all shadow-xs"
+                    className="px-3.5 xl:px-5 py-2 xl:py-2.5 rounded-full bg-stone-900 hover:bg-stone-800 text-stone-50 font-semibold transition-all shadow-xs whitespace-nowrap"
                   >
                     Register
                   </Link>
@@ -358,8 +357,9 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Mobile Bell + Menu Toggle Button */}
-            <div className="flex items-center gap-2 lg:hidden">
+            {/* Mobile Bell + Theme + Menu Toggle Button */}
+            <div className="flex items-center gap-1.5 lg:hidden">
+              <ThemeToggle />
               <NotificationBell />
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

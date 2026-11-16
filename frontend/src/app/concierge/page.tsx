@@ -7,6 +7,8 @@ import {
   Lock,
   Menu,
   MessageSquarePlus,
+  Mic,
+  MicOff,
   Send,
   ShieldCheck,
   Sparkles,
@@ -57,9 +59,84 @@ export default function ConciergePage() {
   const [escalating, setEscalating] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [specialistReplyMode, setSpecialistReplyMode] = useState(false);
+  const [isListening, setIsListening] = useState(false);
 
   const listEndRef = useRef<HTMLDivElement>(null);
   const typingLastSentRef = useRef(0);
+  const recognitionRef = useRef<unknown>(null);
+
+  const toggleVoiceInput = () => {
+    if (typeof window === "undefined") return;
+    const win = window as unknown as {
+      SpeechRecognition?: new () => {
+        continuous: boolean;
+        interimResults: boolean;
+        lang: string;
+        onstart: () => void;
+        onresult: (e: { results: { [key: number]: { [key: number]: { transcript: string } } } }) => void;
+        onerror: () => void;
+        onend: () => void;
+        start: () => void;
+        stop: () => void;
+      };
+      webkitSpeechRecognition?: new () => {
+        continuous: boolean;
+        interimResults: boolean;
+        lang: string;
+        onstart: () => void;
+        onresult: (e: { results: { [key: number]: { [key: number]: { transcript: string } } } }) => void;
+        onerror: () => void;
+        onend: () => void;
+        start: () => void;
+        stop: () => void;
+      };
+    };
+
+    const SpeechRec = win.SpeechRecognition || win.webkitSpeechRecognition;
+
+    if (!SpeechRec) {
+      toast.info("Microphone Not Supported", "Voice recognition is not supported in this browser.");
+      return;
+    }
+
+    if (isListening && recognitionRef.current) {
+      (recognitionRef.current as { stop: () => void }).stop();
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRec();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = "bn-BD";
+
+      recognition.onstart = () => {
+        setIsListening(true);
+        toast.info("Listening...", "Speak your query in Bangla or English.");
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results?.[0]?.[0]?.transcript;
+        if (transcript) {
+          setPrompt((prev) => (prev ? `${prev} ${transcript}` : transcript));
+        }
+      };
+
+      recognition.onerror = () => {
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch {
+      setIsListening(false);
+    }
+  };
 
   const isStaff = isAdmin || isSuperAdmin;
   const isViewingCustomerEscalation =
@@ -496,6 +573,19 @@ export default function ConciergePage() {
               maxLength={2000}
               className="min-w-0 flex-1 resize-none rounded-2xl border border-[#DFD8CA] bg-[#FAF8F5] px-4 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 focus:border-stone-500 focus:bg-white focus:outline-none max-h-32"
             />
+            <button
+              type="button"
+              onClick={toggleVoiceInput}
+              aria-label={isListening ? "Stop listening" : "Voice input"}
+              title={isListening ? "Listening... click to stop" : "Speak in Bangla or English"}
+              className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all cursor-pointer ${
+                isListening
+                  ? "bg-rose-600 text-white animate-pulse"
+                  : "bg-[#FAF8F5] text-stone-600 hover:text-stone-900 border border-[#DFD8CA] hover:bg-stone-100"
+              }`}
+            >
+              {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+            </button>
             <button
               type="submit"
               disabled={sendingMessage || !prompt.trim()}

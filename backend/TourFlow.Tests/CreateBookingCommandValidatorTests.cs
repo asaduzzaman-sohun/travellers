@@ -14,7 +14,7 @@ public class CreateBookingCommandValidatorTests
         var command = new CreateBookingCommand(
             TourScheduleId: Guid.NewGuid(),
             CustomerName: "Kazi Nazrul",
-            CustomerEmail: "nazrul@tourflow.com",
+            CustomerEmail: "nazrul@example.com",
             CustomerPhone: "+8801711223344",
             NumberOfTravelers: 2,
             DietaryRequirements: "Halal",
